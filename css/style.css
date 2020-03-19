@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------- File Name: style.css ---------------------------------------------------------------------*/
 
-
 /*--------------------------------------------------------------------- import Fonts ---------------------------------------------------------------------*/
 
 @import url('https://fonts.googleapis.com/css?family=Rajdhani:300,400,500,600,700');
 @import url('https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i');
+
 @font-face {
     font-family: "Righteous";
     src: url("../fonts/BalooChettan-Regular.ttf");
@@ -117,7 +117,7 @@ h4 a,
 h5 a,
 h6 a {
     color: #212121;
-    text-decoration: none!important;
+    text-decoration: none !important;
     opacity: 1
 }
 
@@ -162,14 +162,22 @@ img {
     height: auto;
 }
 
- :focus {
+:focus {
     outline: 0;
 }
 
 .paddind_bottom_0 {
     padding-bottom: 0 !important;
 }
-.tlinks{text-indent:-9999px;height:0;line-height:0;font-size:0;overflow:hidden;}
+
+.tlinks {
+    text-indent: -9999px;
+    height: 0;
+    line-height: 0;
+    font-size: 0;
+    overflow: hidden;
+}
+
 .btn-custom {
     margin-top: 20px;
     background-color: transparent !important;
@@ -217,7 +225,7 @@ button {
 }
 
 .layout_padding {
-    padding-top: 90px;
+    padding-top: 10px;
     padding-bottom: 0px;
 }
 
@@ -330,7 +338,7 @@ button {
 
 .mb-lg-0,
 .my-lg-0 {
-    margin-bottom: 0!important;
+    margin-bottom: 0 !important;
     width: 20%;
     float: left;
 }
@@ -368,15 +376,18 @@ button {
 .banner_text {
     width: 63%;
     margin: 0 auto;
-    font-size: 16px;
+    font-size: 2em;
+    line-height: 1.5em;
+    /*letter-spacing: 0.2em;*/
     color: #ffffff;
     text-align: center;
 }
 
 .read_bt {
-    width: 200px;
+    width: 300px;
     margin: 0 auto;
     text-align: center;
+    font-size: 2em;
 }
 
 .read_bt a {
@@ -420,7 +431,8 @@ button {
 .services_text {
     width: 100%;
     float: left;
-    font-size: 16px;
+    font-size: 2em;
+    line-height: 1.5em;
     color: #1f1f1f;
     margin: 0px;
 }
@@ -432,6 +444,11 @@ button {
 }
 
 .services_img {
+    min-height: 300px;
+    border-style: solid;
+    border-color: #000d10;
+    border-width: 2px;
+    border-radius: 20px;
     width: 100%;
     float: left;
     text-align: center;
@@ -482,17 +499,18 @@ button {
 .about_taital_main {
     width: 100%;
     padding-left: 100px;
-    padding-top: 70px;
+    padding-top: 30px;
 }
 
 .padding_right_0 {
+    padding-top: 100px;
     padding-right: 0px;
 }
 
 .about_taital {
     width: 100%;
     float: left;
-    font-size: 40px;
+    font-size: 50px;
     color: #1f1f1f;
     font-weight: bold;
 }
@@ -500,16 +518,25 @@ button {
 .about_text {
     width: 100%;
     float: left;
-    font-size: 16px;
+    font-size: 1.5em;
+    line-height: 1.5em;
     color: #1f1f1f;
     margin: 0px;
     padding-top: 40px;
 }
 
 .readmore_bt {
-    width: 170px;
+    min-width: 200px;
     float: left;
     margin-top: 50px;
+    font-size: 2em;
+}
+
+.readmore_center {
+    min-width: 200px;
+    float: none;
+    margin-top: 50px;
+    font-size: 2em;
 }
 
 .readmore_bt a {
@@ -533,6 +560,10 @@ button {
 .about_img {
     width: 100%;
     float: left;
+    border-style: solid;
+    border-color: #000d10;
+    border-width: 2px;
+    border-radius: 20px;
 }
 
 
@@ -558,14 +589,14 @@ button {
     font-size: 40px;
     color: #ffffff;
     font-weight: bold;
-    padding-top: 30px;
+    padding-top: 10px;
     text-align: center;
 }
 
 .blog_text {
     width: 80%;
     margin: 0 auto;
-    font-size: 16px;
+    font-size: 1.5em;
     color: #ffffff;
     padding-top: 40px;
     text-align: center;
@@ -611,9 +642,10 @@ button {
     }
 }
 
-.margin_top_90{
+.margin_top_90 {
     margin-top: 90px;
 }
+
 /* blog section end */
 
 
@@ -651,21 +683,23 @@ button {
 }
 
 .box_left {
-    width: 48%;
+    width: 70%;
 }
 
 .box_right {
-    width: 48%;
+    min-height: 350px;
+    width: 30%;
     float: right;
-    padding-top: 65px;
+    padding-top: 15px;
     margin-left: 30px;
 }
 
 .lorem_text {
     width: 100%;
-    font-size: 16px;
+    height: 100%;
+    font-size: 2em;
+    line-height: 1em;
     text-align: center;
-    margin: 0px;
     color: #0d0d0d;
     border: 1px solid #0d0d0d;
     padding: 90px 30px;
@@ -679,11 +713,11 @@ button {
 
 .client_taital_right {
     width: 60%;
-    float: left;
+    /*float: left;*/
 }
 
 .client_img {
-    width: 100%;
+    width: 250%;
     float: left;
     text-align: left;
 }
@@ -692,19 +726,19 @@ button {
     width: 100%;
     float: left;
     text-align: center;
-    padding-top: 30px;
+    padding-top: 0px;
 }
 
 .client_name {
     width: 100%;
     float: left;
-    font-size: 24px;
+    font-size: 40px;
     color: #012628;
     font-weight: bold;
     text-transform: uppercase;
     text-align: left;
-    padding-top: 53px;
-    padding-bottom: 0px;
+    padding-top: 10px;
+    /*padding-bottom: 0px;*/
 }
 
 .customer_text {
@@ -834,6 +868,7 @@ button {
     float: left;
     padding-bottom: 90px;
 }
+
 .contact_taital {
     width: 100%;
     float: left;
@@ -842,12 +877,14 @@ button {
     text-align: center;
     font-weight: bold;
 }
+
 .email_text {
     width: 70%;
     margin: 0 auto;
     text-align: center;
     padding-top: 120px;
 }
+
 .email-bt {
     width: 100%;
     float: left;
@@ -858,6 +895,7 @@ button {
     border: 0px;
     border: 1px solid #2b2278 !important;
 }
+
 .massage-bt {
     width: 100%;
     float: left;
@@ -868,11 +906,13 @@ button {
     border: 0px;
     border: 1px solid #2b2278 !important;
 }
+
 .send_btn {
     width: 170px;
     margin: 0 auto;
     text-align: center;
 }
+
 .send_btn a {
     width: 100%;
     float: right;
@@ -883,12 +923,13 @@ button {
     background-color: #000d10;
     padding: 7px;
 }
+
 .send_btn a:hover {
     color: #ffffff;
     background-color: #2b2278;
 }
-/* contact section end */
 
+/* contact section end */
 
 
 /* footer section start */
