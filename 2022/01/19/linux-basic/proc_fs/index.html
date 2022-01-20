@@ -1,0 +1,500 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="mem::swap(Rust, 🦀 )">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1. procfs 是什么众所周知，文件系统是 Linux 的骨架，proc 文件系统就是其中一个展示程序运行状态的虚拟文件系统。 如果你查看 &#x2F;proc 目录下的内容，会发现，除了一堆数字命名的文件夹，还有很多杂七杂八的文件，比如 kallsyms cpuinfo meminfo，这些文件也都是系统的一些信息，比如 kallsyms 可以展示当前 vmlinux 的所有符号，cpuinfo 展示">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Proc Fs">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2022/01/19/linux-basic/proc_fs/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. procfs 是什么众所周知，文件系统是 Linux 的骨架，proc 文件系统就是其中一个展示程序运行状态的虚拟文件系统。 如果你查看 &#x2F;proc 目录下的内容，会发现，除了一堆数字命名的文件夹，还有很多杂七杂八的文件，比如 kallsyms cpuinfo meminfo，这些文件也都是系统的一些信息，比如 kallsyms 可以展示当前 vmlinux 的所有符号，cpuinfo 展示">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-01-19T08:49:40.000Z">
+<meta property="article:modified_time" content="2022-01-20T00:36:19.791Z">
+<meta property="article:author" content="mem::swap(Rust, 🦀 )">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>Proc Fs - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"hsqstephenzhang.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>mem::swap</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-user-fill"></i>
+                Links
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Proc Fs">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-01-19 16:49" pubdate>
+        January 19, 2022 pm
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      7.2k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      60 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Proc Fs</h1>
+            
+            <div class="markdown-body">
+              <h2 id="1-procfs-是什么"><a href="#1-procfs-是什么" class="headerlink" title="1. procfs 是什么"></a>1. procfs 是什么</h2><p>众所周知，文件系统是 Linux 的骨架，proc 文件系统就是其中一个<strong>展示程序运行状态</strong>的<strong>虚拟</strong>文件系统。</p>
+<p>如果你查看 <code>/proc</code> 目录下的内容，会发现，除了一堆数字命名的文件夹，还有很多杂七杂八的文件，比如 <code>kallsyms cpuinfo meminfo</code>，这些文件也都是系统的一些信息，比如 kallsyms 可以展示当前 vmlinux 的所有符号，cpuinfo 展示的是 cpu 的一些参数，meminfo 展示的是内存的一些参数。这些实现都比较简单；稍微复杂一些的是以数字命名的文件夹，也就是所有进程的信息，这也正是 proc 文件系统名字的由来。</p>
+<p>之前的一篇 <a href="/2022/01/19/linux-basic/seq_file/" title="文章">文章</a>中已经介绍了 procfs 下 <code>/proc/kallsyms</code> 以及 seq_file 的实现机制，而本文着重 procfs 的整体框架，并着重分析和 process 有关的 <code>/proc/$&#123;pid&#125;</code> 一系列内容</p>
+<h2 id="2-procfs-的-inode-以及-file-operations"><a href="#2-procfs-的-inode-以及-file-operations" class="headerlink" title="2. procfs 的 inode 以及 file_operations"></a>2. procfs 的 inode 以及 file_operations</h2><p>了解一个文件系统，可以直接从 inode_operations &amp;&amp; file_operations 入手</p>
+<p>在 <code>fs/proc/root.c</code> 可以查到，procfs 的根目录为 <code>/proc</code>，根目录项为 <code>proc_root</code>，对应 inode_operations 为 <code>proc_root_inode_operations</code>，最关键的就是 lookup 回调函数</p>
+<p>其实这种虚拟文件系统的 lookup 已经比 ext 这种磁盘文件系统简化很多了，大部分 dentry 都是非常有规律地保存在内存中的，而不像磁盘那样还要和硬件存取打交道。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// fs/proc/root.c</span><br><span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">inode_operations</span> <span class="hljs-title">proc_root_inode_operations</span> =</span> &#123;<br>    .lookup        = proc_root_lookup,<br>    <span class="hljs-comment">// ...</span><br>&#125;;<br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">proc_dir_entry</span> <span class="hljs-title">proc_root</span> =</span> &#123;<br>    .proc_iops    = &amp;proc_root_inode_operations, <br>    .proc_dir_ops    = &amp;proc_root_operations,<br>    .name        = <span class="hljs-string">&quot;/proc&quot;</span>,<br>    <span class="hljs-comment">// ...</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p><code>proc_root_lookup</code> 逻辑非常简单：首先尝试 <code>proc_pid_lookup</code>，失败之后尝试 <code>proc_lookup</code>。从名字可以猜想一波，是不是前者和进程 pid 有关，后者比较普通呢？</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> struct dentry *<span class="hljs-title">proc_root_lookup</span><span class="hljs-params">(struct inode * dir, struct dentry * dentry, <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> flags)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (!proc_pid_lookup(dentry, flags))<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br><br>    <span class="hljs-keyword">return</span> proc_lookup(dir, dentry, flags);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>The anwser is: Yes!</p>
+<p>上面已经提到，procfs 的内容正好可以分为两大类：1.进程信息；2.额外的系统信息，而 <code>/proc/$&#123;pid&#125;</code> 和 <code>/proc/cpuinfo</code> 这两种文件，对应的查找方式就分别为 <code>proc_pid_lookup</code> 和 <code>proc_lookup</code></p>
+<p>后者是比较常见一些的，通过 rb_tree 进行目录项的查找，前者是 procfs 的基础，所以接下来探究一下 proc_pid_lookup 做了什么</p>
+<p>如下所示，<code>proc_pid_lookup</code> 主要做了下面的几件事：</p>
+<ol>
+<li>通过 dentry 获取文件的 fs_info，从而得到 namespace</li>
+<li>通过 pid 查找进程 task_struct 结构体</li>
+<li>判断该进程是否是隐藏起来的，如果是，就无法在 procfs 中显示</li>
+<li>初始化 pid 对应的 dentry</li>
+</ol>
+<p>最后一点非常有意思，什么叫初始化 dentry？这是因为，procfs 是一个虚拟文件系统，所有的文件并没有持久化保存，而是随用随取，自然，这些目录项也没有必要在系统启动的时候就创建好，而是等到 lookup 操作的时候再按需创建</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function">struct dentry *<span class="hljs-title">proc_pid_lookup</span><span class="hljs-params">(struct dentry *dentry, <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> flags)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">task_struct</span> *<span class="hljs-title">task</span>;</span><br>    <span class="hljs-keyword">unsigned</span> tgid;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">proc_fs_info</span> *<span class="hljs-title">fs_info</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pid_namespace</span> *<span class="hljs-title">ns</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dentry</span> *<span class="hljs-title">result</span> =</span> ERR_PTR(-ENOENT);<br><br>    tgid = name_to_int(&amp;dentry-&gt;d_name);<br>    <span class="hljs-keyword">if</span> (tgid == ~<span class="hljs-number">0U</span>)<br>        <span class="hljs-keyword">goto</span> out;<br><br>    <span class="hljs-comment">// 1. 获取 fs_info</span><br>    fs_info = proc_sb_info(dentry-&gt;d_sb);<br>    ns = fs_info-&gt;pid_ns;<br>    rcu_read_lock();<br>    <br>    <span class="hljs-comment">// 2. 获取 pid 对应的 task</span><br>    task = find_task_by_pid_ns(tgid, ns);<br>    <span class="hljs-keyword">if</span> (task)<br>        get_task_struct(task);<br>    rcu_read_unlock();<br>    <span class="hljs-keyword">if</span> (!task)<br>        <span class="hljs-keyword">goto</span> out;<br><br>    <span class="hljs-comment">// 3. 判断该 task 是否被隐藏</span><br>    <span class="hljs-keyword">if</span> (fs_info-&gt;hide_pid == HIDEPID_NOT_PTRACEABLE) &#123;<br>        <span class="hljs-keyword">if</span> (!has_pid_permissions(fs_info, task, HIDEPID_NO_ACCESS))<br>            <span class="hljs-keyword">goto</span> out_put_task;<br>    &#125;<br><br>    <span class="hljs-comment">// 4. 初始化 dentry</span><br>    result = proc_pid_instantiate(dentry, task, <span class="hljs-literal">NULL</span>);<br>out_put_task:<br>    put_task_struct(task);<br>out:<br>    <span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>proc_pid_instantiate</code> 主要是分配了 inode，并且设置了对应的 <code>inode_operations &amp;&amp; file_operations</code>，这样的话，下一次更深入一层，在 <code>/proc/$&#123;pid&#125;</code> 下查找目录项的时候，就会触发 <code>proc_tgid_base_inode_operations.proc_tgid_base_lookup</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs c"><br><span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">inode_operations</span> <span class="hljs-title">proc_tgid_base_inode_operations</span> =</span> &#123;<br>    .lookup        = proc_tgid_base_lookup, <span class="hljs-comment">// !important</span><br>    <span class="hljs-comment">// ...</span><br>&#125;;<br><br><span class="hljs-function"><span class="hljs-keyword">static</span> struct dentry *<span class="hljs-title">proc_pid_instantiate</span><span class="hljs-params">(struct dentry * dentry,</span></span><br><span class="hljs-params"><span class="hljs-function">                   struct task_struct *task, <span class="hljs-keyword">const</span> <span class="hljs-keyword">void</span> *ptr)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">inode</span> *<span class="hljs-title">inode</span>;</span><br><br>    <span class="hljs-comment">// 创建 inode</span><br>    inode = proc_pid_make_inode(dentry-&gt;d_sb, task, S_IFDIR | S_IRUGO | S_IXUGO);<br>    <span class="hljs-keyword">if</span> (!inode)<br>        <span class="hljs-keyword">return</span> ERR_PTR(-ENOENT);<br><br>    <span class="hljs-comment">// 设置回调函数</span><br>    inode-&gt;i_op = &amp;proc_tgid_base_inode_operations;<br>    inode-&gt;i_fop = &amp;proc_tgid_base_operations; <span class="hljs-comment">// 不太重要</span><br>    inode-&gt;i_flags|=S_IMMUTABLE;<br><br>    set_nlink(inode, nlink_tgid);<br>    pid_update_inode(task, inode);<br><br>    d_set_d_op(dentry, &amp;pid_dentry_operations);<br>    <span class="hljs-keyword">return</span> d_splice_alias(inode, dentry);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>重新整理一下，从 <code>/proc</code> 到 <code>/proc/$&#123;pid&#125;</code>，其 inode 对应的操作是不同的，前者需要兼顾进程信息和普通系统信息两种类型的文件，后者则负责查找每一个进程所对应的虚拟文件（进程状态）</p>
+<h2 id="2-procfs-如何显示进程状态"><a href="#2-procfs-如何显示进程状态" class="headerlink" title="2. procfs 如何显示进程状态"></a>2. procfs 如何显示进程状态</h2><p>前面说到，通过一级级的 dentry 查找，触发 inode 的 lookup 函数之后，来到了 <code>proc_tgid_base_lookup</code>。</p>
+<p>比如，如果执行命令 <code>cat /proc/1/maps</code>，就会进入 <code>proc_pident_lookup</code>，参数中 <code>dentry-&gt;d_name.name == &#39;maps&#39;</code> ，所以这个函数中就需要比较 <code>/proc/1</code> 目录下，是否有和 ‘maps’ 名字相同的文件</p>
+<p>暂时不了解 pid_entry 结构没有关系，就算盲猜，也知道这个结构当中保存了目录项的 <code>name,name&#39;s length</code> 两个属性，这个函数的操作也就非常简单了，就是通过一个 <code>proc_pident_lookup</code>，循环比较 <code>pid_entry</code> 数组中的所有元素和当前查找的 dentry，比较名字是否相同。有意思的一点是，时间复杂度并不是 O(N)，因为 <code>/proc/$&#123;pid&#125;</code> 下的所有文件都是固定的，几乎没有改动，所以复杂度还是 O(1) 的，源码中也注明了: ‘Yes, it does not scale. And it should not’</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> struct dentry *<span class="hljs-title">proc_pident_lookup</span><span class="hljs-params">(struct inode *dir, </span></span><br><span class="hljs-params"><span class="hljs-function">                     struct dentry *dentry,</span></span><br><span class="hljs-params"><span class="hljs-function">                     <span class="hljs-keyword">const</span> struct pid_entry *p,</span></span><br><span class="hljs-params"><span class="hljs-function">                     <span class="hljs-keyword">const</span> struct pid_entry *end)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">task_struct</span> *<span class="hljs-title">task</span> =</span> get_proc_task(dir);<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dentry</span> *<span class="hljs-title">res</span> =</span> ERR_PTR(-ENOENT);<br><br>    <span class="hljs-keyword">if</span> (!task)<br>        <span class="hljs-keyword">goto</span> out_no_task;<br><br>    <span class="hljs-keyword">for</span> (; p &lt; end; p++) &#123;<br>        <span class="hljs-keyword">if</span> (p-&gt;len != dentry-&gt;d_name.len)<br>            <span class="hljs-keyword">continue</span>;<br>        <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">memcmp</span>(dentry-&gt;d_name.name, p-&gt;name, p-&gt;len)) &#123;<br>            res = proc_pident_instantiate(dentry, task, p);<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br>    &#125;<br>    put_task_struct(task);<br>out_no_task:<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">static</span> struct dentry *<span class="hljs-title">proc_tgid_base_lookup</span><span class="hljs-params">(struct inode *dir, struct dentry *dentry, <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> flags)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">return</span> proc_pident_lookup(dir, dentry,<br>                  tgid_base_stuff,<br>                  tgid_base_stuff + ARRAY_SIZE(tgid_base_stuff));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>struct pid_entry</code> 用来描述一个进程下的虚拟文件，其结构如下，核心也是 iop 和 fop 这两个 operations，这样就可以控制 <code>/proc/$&#123;pid&#125;</code> 下面每一个文件的打开读取方式，以及每一个子目录的查找方式</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pid_entry</span> &#123;</span><br>    <span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> *name; <span class="hljs-comment">// 目录项名称</span><br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> len; <span class="hljs-comment">// 目录项名称长度</span><br>    <span class="hljs-keyword">umode_t</span> mode; <span class="hljs-comment">// 文件权限</span><br>    <span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">inode_operations</span> *<span class="hljs-title">iop</span>;</span> <span class="hljs-comment">// inode 操作</span><br>    <span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">file_operations</span> *<span class="hljs-title">fop</span>;</span> <span class="hljs-comment">// file 操作</span><br>    <span class="hljs-class"><span class="hljs-keyword">union</span> <span class="hljs-title">proc_op</span> <span class="hljs-title">op</span>;</span> <span class="hljs-comment">//</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>并且，通过 NOD，DIR 等一系列宏，又可以减少很多 boilerplate 样板代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> NOD(NAME, MODE, IOP, FOP, OP) &#123;            \</span><br><span class="hljs-meta">    .name = (NAME),                    \</span><br><span class="hljs-meta">    .len  = sizeof(NAME) - 1,            \</span><br><span class="hljs-meta">    .mode = MODE,                    \</span><br><span class="hljs-meta">    .iop  = IOP,                    \</span><br><span class="hljs-meta">    .fop  = FOP,                    \</span><br><span class="hljs-meta">    .op   = OP,                    \</span><br><span class="hljs-meta">&#125;</span><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> DIR(NAME, MODE, iops, fops)    \</span><br><span class="hljs-meta">    NOD(NAME, (S_IFDIR|(MODE)), &amp;iops, &amp;fops, &#123;&#125; )</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> LNK(NAME, get_link)                    \</span><br><span class="hljs-meta">    NOD(NAME, (S_IFLNK|S_IRWXUGO),                \</span><br><span class="hljs-meta">        &amp;proc_pid_link_inode_operations, NULL,        \</span><br><span class="hljs-meta">        &#123; .proc_get_link = get_link &#125; )</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> REG(NAME, MODE, fops)                \</span><br><span class="hljs-meta">    NOD(NAME, (S_IFREG|(MODE)), NULL, &amp;fops, &#123;&#125;)</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> ONE(NAME, MODE, show)                \</span><br><span class="hljs-meta">    NOD(NAME, (S_IFREG|(MODE)),            \</span><br><span class="hljs-meta">        NULL, &amp;proc_single_file_operations,    \</span><br><span class="hljs-meta">        &#123; .proc_show = show &#125; )</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> ATTR(LSM, NAME, MODE)                \</span><br><span class="hljs-meta">    NOD(NAME, (S_IFREG|(MODE)),            \</span><br><span class="hljs-meta">        NULL, &amp;proc_pid_attr_operations,    \</span><br><span class="hljs-meta">        &#123; .lsm = LSM &#125;)</span><br></code></pre></td></tr></table></figure>
+
+<p>因此，一个文件的所有属性，或者说状态信息，都被抽象为了一个个子文件，或者子文件夹，也就可以使用 pid_entry 数组来表示这个结构</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pid_entry</span> <span class="hljs-title">tid_base_stuff</span>[] =</span> &#123;<br>    DIR(<span class="hljs-string">&quot;fd&quot;</span>,        S_IRUSR|S_IXUSR, proc_fd_inode_operations, proc_fd_operations),<br>    DIR(<span class="hljs-string">&quot;fdinfo&quot;</span>,    S_IRUSR|S_IXUSR, proc_fdinfo_inode_operations, proc_fdinfo_operations),<br>    DIR(<span class="hljs-string">&quot;ns&quot;</span>,     S_IRUSR|S_IXUGO, proc_ns_dir_inode_operations, proc_ns_dir_operations),<br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> CONFIG_NET</span><br>    DIR(<span class="hljs-string">&quot;net&quot;</span>,        S_IRUGO|S_IXUGO, proc_net_inode_operations, proc_net_operations),<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br>    REG(<span class="hljs-string">&quot;environ&quot;</span>,   S_IRUSR, proc_environ_operations),<br>    REG(<span class="hljs-string">&quot;auxv&quot;</span>,      S_IRUSR, proc_auxv_operations),<br>    ONE(<span class="hljs-string">&quot;status&quot;</span>,    S_IRUGO, proc_pid_status),<br>    ONE(<span class="hljs-string">&quot;personality&quot;</span>, S_IRUSR, proc_pid_personality),<br>    ONE(<span class="hljs-string">&quot;limits&quot;</span>,     S_IRUGO, proc_pid_limits),<br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> CONFIG_SCHED_DEBUG</span><br>    REG(<span class="hljs-string">&quot;sched&quot;</span>,     S_IRUGO|S_IWUSR, proc_pid_sched_operations),<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br>    NOD(<span class="hljs-string">&quot;comm&quot;</span>,      S_IFREG|S_IRUGO|S_IWUSR,<br>             &amp;proc_tid_comm_inode_operations,<br>             &amp;proc_pid_set_comm_operations, &#123;&#125;),<br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> CONFIG_HAVE_ARCH_TRACEHOOK</span><br>    ONE(<span class="hljs-string">&quot;syscall&quot;</span>,   S_IRUSR, proc_pid_syscall),<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br>    REG(<span class="hljs-string">&quot;cmdline&quot;</span>,   S_IRUGO, proc_pid_cmdline_ops),<br>    ONE(<span class="hljs-string">&quot;stat&quot;</span>,      S_IRUGO, proc_tid_stat),<br>    ONE(<span class="hljs-string">&quot;statm&quot;</span>,     S_IRUGO, proc_pid_statm),<br>    <span class="hljs-comment">// ......</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>相信聪明的你们已经可以举一反三了，如果是 <code>REG</code> 宏表示的 regular file，设定好 file_operations 之后，就可以通过 seq_file 接口和 <code>open/read</code> 等系统调用交互了，如果是 <code>DIR</code> 宏表示的 directory file，还需要提供新的 inode_operations，如果下一级还有目录，再提供一个 inode_operations 即可 ……</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/">linux</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/01/19/linux-basic/mount/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Mount</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/01/19/linux-basic/seq_file/">
+                        <span class="hidden-mobile">Seq File</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+  <div class="col-lg-7 mx-auto nopadding-x-md">
+    <div class="container custom post-custom mx-auto">
+      <img src="https://octodex.github.com/images/jetpacktocat.png" srcset="/img/loading.gif" lazyload class="rounded mx-auto d-block mt-5" style="width:150px; height:150px;">
+    </div>
+  </div>
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
