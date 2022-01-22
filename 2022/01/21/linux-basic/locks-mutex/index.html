@@ -16,19 +16,36 @@
   <meta name="author" content="mem::swap(Rust, 🦀 )">
   <meta name="keywords" content="">
   
-    <meta property="og:type" content="website">
-<meta property="og:title" content="Archives">
-<meta property="og:url" content="https://hsqstephenzhang.github.io/archives/2022/page/3/index.html">
+    <meta property="og:type" content="article">
+<meta property="og:title" content="Locks3-Mutex">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2022/01/21/linux-basic/locks-mutex/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-01-21T02:54:40.000Z">
+<meta property="article:modified_time" content="2022-01-21T02:57:21.053Z">
 <meta property="article:author" content="mem::swap(Rust, 🦀 )">
 <meta name="twitter:card" content="summary_large_image">
   
   
-  <title>Archives - Hexo</title>
+  <title>Locks3-Mutex - Hexo</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
 
 
 <!-- 主题依赖的图标库，不要自行修改 -->
@@ -55,7 +72,7 @@
 
 
 <body>
-  <header style="height: 60vh;">
+  <header style="height: 70vh;">
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -168,9 +185,43 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Archive">
+            <span class="h2" id="subtitle" title="Locks3-Mutex">
               
             </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-01-21 10:54" pubdate>
+        January 21, 2022 am
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      0 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      1 分钟
+    </span>
+  
+
+  
+  
+</div>
 
             
           </div>
@@ -183,100 +234,93 @@
 
   <main>
     
-      <div class="container nopadding-x-md">
-        <div class="py-5" id="board"
-          >
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
-
-<div class="list-group">
-  <p class="h4">47 posts in total.</p>
-  <hr>
-  
-  
-    
       
-      <p class="h5">2022</p>
-    
-    <a href="/2022/01/10/tower_internal/middleware-rate/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">2.2 tower-rate limit</span>
-      <time style="float: right;">01-10</time>
-    </a>
-  
-    
-    <a href="/2022/01/10/tower_internal/middleware-timeout/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">2.3 tower-timeout limit</span>
-      <time style="float: right;">01-10</time>
-    </a>
-  
-    
-    <a href="/2022/01/10/tower_internal/service-ext/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">1.4 tower-ext</span>
-      <time style="float: right;">01-10</time>
-    </a>
-  
-    
-    <a href="/2022/01/10/tower_internal/tower-core/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">1.1 tower 核心抽象</span>
-      <time style="float: right;">01-10</time>
-    </a>
-  
-    
-    <a href="/2022/01/10/tower_internal/tower-issues/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">3.1 tower 不足之处</span>
-      <time style="float: right;">01-10</time>
-    </a>
-  
-    
-    <a href="/2022/01/10/tower_internal/tower-service/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">1.2 tower service 设计心路历程</span>
-      <time style="float: right;">01-10</time>
-    </a>
-  
-    
-    <a href="/2022/01/09/linux-tracing/ftrace/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">ftrace</span>
-      <time style="float: right;">01-09</time>
-    </a>
-  
-    
-    <a href="/2022/01/09/linux-tracing/int3/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">int3 黑魔法</span>
-      <time style="float: right;">01-09</time>
-    </a>
-  
-    
-    <a href="/2022/01/09/linux-tracing/kprobe/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">kprobe</span>
-      <time style="float: right;">01-09</time>
-    </a>
-  
-    
-    <a href="/2022/01/09/linux-tracing/notify_chain/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">notify chain</span>
-      <time style="float: right;">01-09</time>
-    </a>
-  
-</div>
 
-
-  <nav aria-label="navigation">
-    <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/archives/2022/page/2/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/archives/2022/">1</a><a class="page-number" href="/archives/2022/page/2/#board">2</a><span class="page-number current">3</span><a class="page-number" href="/archives/2022/page/4/#board">4</a><a class="extend next" rel="next" href="/archives/2022/page/4/#board"><i class="iconfont icon-arrowright"></i></a>
-    </span>
-  </nav>
-
-
-
-
-              </div>
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Locks3-Mutex</h1>
+            
+            <div class="markdown-body">
+              
             </div>
-          </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/">linux</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/01/21/linux-basic/apic/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">x86 APIC</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/01/21/linux-basic/locks-rcu/">
+                        <span class="hidden-mobile">Locks5-RCU</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
         </div>
       </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+  <div class="col-lg-7 mx-auto nopadding-x-md">
+    <div class="container custom post-custom mx-auto">
+      <img src="https://octodex.github.com/images/jetpacktocat.png" srcset="/img/loading.gif" lazyload class="rounded mx-auto d-block mt-5" style="width:150px; height:150px;">
+    </div>
+  </div>
+
+
     
 
     
@@ -359,6 +403,19 @@
   
 
 
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
 
 
 

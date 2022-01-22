@@ -203,6 +203,330 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/01/19/linux-basic/proc_fs/" target="_self">
+          Proc Fs
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/19/linux-basic/proc_fs/" target="_self">
+          
+          1. procfs 是什么众所周知，文件系统是 Linux 的骨架，proc 文件系统就是其中一个展示程序运行状态的虚拟文件系统。 如果你查看 &#x2F;proc 目录下的内容，会发现，除了一堆数字命名的文件夹，还有很多杂七杂八的文件，比如 kallsyms cpuinfo meminfo，这些文件也都是系统的一些信息，比如 kallsyms 可以展示当前 vmlinux 的所有符号，cpuinfo 展示
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-19 16:49" pubdate>
+              2022-01-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/19/linux-basic/seq_file/" target="_self">
+          Seq File
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/19/linux-basic/seq_file/" target="_self">
+          
+          Seq File 在 Linux 中很常见，因此这里稍微整理一下，也分享一下我的理解。 由于 procfs 的默认操作函数只使用一页的缓存，在处理较大的proc文件时就有点麻烦，并且在输出一系列结构体中的数据时也比较不灵活，因此内核开发者们抽象出了seq_file（Sequence file：序列文件）接口。 提供了一套简单的函数来解决以上 procfs 编程时存在的问题，使得编程更加容易。 同时
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-19 16:49" pubdate>
+              2022-01-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/19/linux-basic/trace_fs/" target="_self">
+          Trace Fs
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/19/linux-basic/trace_fs/" target="_self">
+          
+          
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-19 16:49" pubdate>
+              2022-01-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/19/hardware/LCD%20vs%20OLED/" target="_self">
+          LCD vs OLED
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/19/hardware/LCD%20vs%20OLED/" target="_self">
+          
+          1. LCD 原理LCD 的发光，简要概括为：所有像素点对应一个背光层，负责发光，每个像素点最外层对应一个彩色滤光片，由中间层的正负极电路来控制液晶层的偏角，从而控制 RGB 三种颜色的混合比例。 2. OLED 原理OLED 全程为 Organic Light-Emitting Diode，即有机发光二极管 OLED 是一种特殊设计的自发光二极管，通过正负极电路，控制夹在中间的发光二极管发光。通
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-19 13:17" pubdate>
+              2022-01-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/hardware/">hardware</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/19/hardware/pcie/" target="_self">
+          PCIE
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/19/hardware/pcie/" target="_self">
+          
+          1. South bridge在解释 PCIE 之前，有必要先来解释一下 South bridge，cpu，主板之间的一些概念。 大家都知道，计算机中所有的数据都需要交给 CPU 处理才能发挥作用（不完全对），但那么多的设备，难道都需要和 CPU 交互吗？ 当然不行，那样不仅极大地加重了 CPU 的负担（无论是制造还是运行），对于主板的布线也是一大考验，那有什么解决方案呢？ 其实，这里可以分级的思
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-19 13:17" pubdate>
+              2022-01-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/hardware/">hardware</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/18/linux-basic/initcall/" target="_self">
+          Linux initcall 机制
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/18/linux-basic/initcall/" target="_self">
+          
+          1. initcall 设计思想linux 对驱动程序提供静态编译进内核和动态加载两种方式，当我们试图将一个驱动程序编译进内核时，开发者通常提供一个xxx_init() 函数接口，以启动这个驱动程序同时提供某些服务。 那么，根据常识来说，这个 xxx_init() 函数肯定是要在系统启动的某个时候被调用，才能启动这个驱动程序。 最简单直观地做法就是：开发者试图添加一个驱动程序时，在内核启动 ini
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-18 13:47" pubdate>
+              2022-01-18
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/10/tower_internal/middleware-buffer/" target="_self">
+          2.5 middleware-buffer
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/10/tower_internal/middleware-buffer/" target="_self">
+          
+          不知道大家有没有发现，Tower Service trait 中，要求 ready + call 都接收一个 &amp;mut self，这也就意味着，我们无法将其很好地扩展到多线程上！ 你可能会觉得，针对每一个 service，调用一下 service.clone()，再传入不就好了吗？但假如一个 Service 包装了很多中间件，clone 的开销也是不可小觑的。 Tower 提供了这样一个中
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-10 13:47" pubdate>
+              2022-01-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/tower/">tower</a>
+            
+              <a href="/categories/tower/2-middleware/">2.middleware</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/10/tower_internal/middleware-concurrency/" target="_self">
+          2.4 tower-concurrency limit
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/10/tower_internal/middleware-concurrency/" target="_self">
+          
+          Concurrency 翻译过来是 并发，Concurrency Limit 也就是 并发控制，其核心限制条件是：同一时刻最多接收 n 个请求，和 RateLimit 有一定的相似之处，内层似乎都要使用一个计数器计数，但是具体如何实现，又有很大的不同。 1. 并发控制模型可以将对于请求的响应能力看成是一种资源，资源的数量是有限的，先到先得，那得不到的请求就应该置之不理吗？当然不是，得不到的可以排队
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-10 13:47" pubdate>
+              2022-01-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/tower/">tower</a>
+            
+              <a href="/categories/tower/2-middleware/">2.middleware</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/01/10/tower_internal/middleware-core/" target="_self">
           1.3 tower 中间件模型
         </a>
@@ -281,343 +605,11 @@
     </article>
   </div>
 
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/10/tower_internal/middleware-rate/" target="_self">
-          2.2 tower-rate limit
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/10/tower_internal/middleware-rate/" target="_self">
-          
-          Tower 自带的流量控制中间件，核心功能为：在 x 时间内，最多接收 n 个请求，如果超出最大流量，休眠直到下一个刷新点 1. 核心数据结构为了描述这个核心功能，我们定义了下面的核心数据结构:  rate: 描述一段时间内，最多允许多少请求通过 sleep: 定时器，表示休眠的时间  而这里的 RateLimit 就是我们想要对外提供的 Service，通过相对应的 RateLayer 创建，结
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-10 13:47" pubdate>
-              2022-01-10
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/tower/">tower</a>
-            
-              <a href="/categories/tower/2-middleware/">2.middleware</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/10/tower_internal/middleware-timeout/" target="_self">
-          2.3 tower-timeout limit
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/10/tower_internal/middleware-timeout/" target="_self">
-          
-          Timeout 这个中间件的责任也非常明确：如果某个服务调用时间过长，超出了规定的超时时间，直接返回错误 1. 模型抽象为此，Timeout 肯定需要保留下面两个结构  inner Service 超时时间 duration  12345#[derive(Debug, Clone)]pub struct Timeout&lt;T&gt; &amp;#123;    inner: T,    timeout
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-10 13:47" pubdate>
-              2022-01-10
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/tower/">tower</a>
-            
-              <a href="/categories/tower/2-middleware/">2.middleware</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/10/tower_internal/service-ext/" target="_self">
-          1.4 tower-ext
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/10/tower_internal/service-ext/" target="_self">
-          
-          1. ext 设计模式xxx-ext 是 Rust 当中常用的一个设计模式，在满足某个 Trait 的前提下，引入很多的扩展功能（比如最常用的 Iterator，其实 skip, enumerate, take 都是针对 Iterator trait 的扩充） Tower 也给 Service 引入了这个设计模式，十分好用。 源码如下，TL；DR 1234567891011121314151617
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-10 13:47" pubdate>
-              2022-01-10
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/tower/">tower</a>
-            
-              <a href="/categories/tower/1-basic/">1.basic</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/10/tower_internal/tower-core/" target="_self">
-          1.1 tower 核心抽象
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/10/tower_internal/tower-core/" target="_self">
-          
-          1. Tower 的起源说起 Tower，就不得不提到 Rust 另一个重要的框架，Tokio，这两个单词连起来读，就是 Tokyo Tower（东京塔），这也从另一个方面说明，Tower 是 Tokio 官方支持的中间件框架，Axum ，Tower-web，Tonic 这些项目，都广泛使用了 Tower 这层抽象。 那么，我们不禁要问，Tower 到底是什么？官方给出的答案是： Tower 是一
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-10 13:47" pubdate>
-              2022-01-10
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/tower/">tower</a>
-            
-              <a href="/categories/tower/1-basic/">1.basic</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/10/tower_internal/tower-issues/" target="_self">
-          3.1 tower 不足之处
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/10/tower_internal/tower-issues/" target="_self">
-          
-          这一部分，主要是探讨 Tower 中的一些不足之处，主要参考我实习期间使用 Tower 之后的一些体验以及和同事的讨论。 1. 问题1.1 call 是否应该使用 Pin&lt;&amp;mut Self&gt; ？关于这个问题，已经有了一些github 讨论。但是到目前为止，Tower 官方还是决定采用一个普通的 &amp;mut self，这意味着 Service 必须是Unpin。 这个问题
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-10 13:47" pubdate>
-              2022-01-10
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/tower/">tower</a>
-            
-              <a href="/categories/tower/3-more/">3.more</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/10/tower_internal/tower-service/" target="_self">
-          1.2 tower service 设计心路历程
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/10/tower_internal/tower-service/" target="_self">
-          
-          Tower Service 设计思路 -by tokio
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-10 13:47" pubdate>
-              2022-01-10
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/tower/">tower</a>
-            
-              <a href="/categories/tower/1-basic/">1.basic</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/09/linux-tracing/ftrace/" target="_self">
-          ftrace
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/09/linux-tracing/ftrace/" target="_self">
-          
-          先说一个非常重要的参考资料，也就是 ftrace 作者本人的 pdf：ftrace kernel hook 接下来，主要跟着作者的思路，融入自己的一些思考，给大家解读一下 ftrace 究竟做了什么？ 1. 什么是 ftraceftrace，顾名思义，就是 function trace，针对函数级别的追踪调试机制。 我们平时是如何使用这个强大功能的呢？ 1.1 如何使用 ftrace可以通过 tr
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-09 13:47" pubdate>
-              2022-01-09
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/trace/">trace</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/09/linux-tracing/int3/" target="_self">
-          int3 黑魔法
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/09/linux-tracing/int3/" target="_self">
-          
-          发现和 tracing 有关的好多内容，脱离了 int3 都无法很好的展开。要么需要额外写很多内容，要么是不够详细，所以想在这里单独说明一下 int3 的黑魔法。 1. 程序执行视角众所周知，可执行程序，在 CPU 看来，只是很多的指令罢了，对于不同的指令，CPU 会有不同的反应，如果学习过汇编，可能会了解 mov add sub mul push pop call 这些最常见的指令，但是 CPU
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-09 13:47" pubdate>
-              2022-01-09
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/trace/">trace</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
 
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#board">3</a><a class="page-number" href="/page/4/#board">4</a><a class="extend next" rel="next" href="/page/3/#board"><i class="iconfont icon-arrowright"></i></a>
+      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#board">3</a><a class="page-number" href="/page/4/#board">4</a><a class="page-number" href="/page/5/#board">5</a><a class="extend next" rel="next" href="/page/3/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 
