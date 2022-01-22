@@ -1,0 +1,509 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="mem::swap(Rust, 🦀 )">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Timeout 这个中间件的责任也非常明确：如果某个服务调用时间过长，超出了规定的超时时间，直接返回错误 1. 模型抽象为此，Timeout 肯定需要保留下面两个结构  inner Service 超时时间 duration  12345#[derive(Debug, Clone)]pub struct Timeout&lt;T&gt; &amp;#123;    inner: T,    timeout">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2.3 tower-timeout limit">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2022/01/10/rust/tower_internal/middleware-timeout/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Timeout 这个中间件的责任也非常明确：如果某个服务调用时间过长，超出了规定的超时时间，直接返回错误 1. 模型抽象为此，Timeout 肯定需要保留下面两个结构  inner Service 超时时间 duration  12345#[derive(Debug, Clone)]pub struct Timeout&lt;T&gt; &amp;#123;    inner: T,    timeout">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-01-10T05:47:40.000Z">
+<meta property="article:modified_time" content="2022-01-22T14:32:51.448Z">
+<meta property="article:author" content="mem::swap(Rust, 🦀 )">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>2.3 tower-timeout limit - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"hsqstephenzhang.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>mem::swap</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-user-fill"></i>
+                Links
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="2.3 tower-timeout limit">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-01-10 13:47" pubdate>
+        January 10, 2022 pm
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.3k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      36 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">2.3 tower-timeout limit</h1>
+            
+            <div class="markdown-body">
+              <p>Timeout 这个中间件的责任也非常明确：如果某个服务调用时间过长，超出了规定的超时时间，直接返回错误</p>
+<h2 id="1-模型抽象"><a href="#1-模型抽象" class="headerlink" title="1. 模型抽象"></a>1. 模型抽象</h2><p>为此，Timeout 肯定需要保留下面两个结构</p>
+<ol>
+<li>inner Service</li>
+<li>超时时间 duration</li>
+</ol>
+<figure class="highlight rust"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><pre><code class="hljs rust"><span class="hljs-meta">#[derive(Debug, Clone)]</span><br><span class="hljs-keyword">pub</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Timeout</span></span>&lt;T&gt; &#123;<br>    inner: T,<br>    timeout: Duration,<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>参考 RateLimit，在这里需要明确定时器的工作起止时机。对于 Timeout 来说，我们关注的是内部服务调用的时长，因此，只有通过 <code>inner.call(req)</code> 发生了调用，才会开始计时，调用内部服务时候，每次返回 Pending 状态之后，再来检查定时器是否超时，做出响应的处理</p>
+<p>仔细一看，这和我们之前自定义的 LogService 有一定相似之处：都需要在内部 Service 返回一定状态之后，添加 post-hook 逻辑，只不过 LogService 是在返回 Poll::Ready 之后输出 Response 内容，这里是在返回 Pending 之后，再去检查定时器。</p>
+<p>对 Timeout 的场景再做一层抽象，其实和 <code>select!</code> 非常类似：按顺序循环等待多个任务执行，如果前面的 future 返回正确结果，直接返回，否则 falldown，检查优先级较低的 future 的结果。但这也要求在 async 代码块中执行这个操作。</p>
+<h2 id="2-为-Timeout-实现-Service-trait"><a href="#2-为-Timeout-实现-Service-trait" class="headerlink" title="2. 为 Timeout 实现 Service trait"></a>2. 为 Timeout 实现 Service trait</h2><p>接下来就试着将刚刚分析的模型用代码表述出来，大体是下面的结构：</p>
+<ol>
+<li>poll_ready 函数中，仅仅是转发 inner service 的 poll_ready 结果，这没有什么好说的</li>
+<li>call 函数中，一旦我们通过 <code>inner.call(reqeust)</code> 调用内层服务，马上设置 sleep 这个定时器</li>
+</ol>
+<p>最关键的问题是，返回什么样的 Future？</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">impl</span>&lt;S, Request&gt; Service&lt;Request&gt; <span class="hljs-keyword">for</span> Timeout&lt;S&gt;<br><span class="hljs-keyword">where</span><br>    S: Service&lt;Request&gt;,<br>    S::Error: <span class="hljs-built_in">Into</span>&lt;crate::BoxError&gt;,<br>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Response</span></span> = S::Response;<br>    <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Error</span></span> = todo!();<br>    <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Future</span></span> = todo!();<br><br>    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">poll_ready</span></span>(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>, cx: &amp;<span class="hljs-keyword">mut</span> Context&lt;<span class="hljs-symbol">&#x27;_</span>&gt;) -&gt; Poll&lt;<span class="hljs-built_in">Result</span>&lt;(), Self::Error&gt;&gt; &#123;<br>        <span class="hljs-keyword">match</span> <span class="hljs-keyword">self</span>.inner.poll_ready(cx) &#123;<br>            Poll::Pending =&gt; Poll::Pending,<br>            Poll::Ready(r) =&gt; Poll::Ready(r.map_err(<span class="hljs-built_in">Into</span>::into)),<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">call</span></span>(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>, request: Request) -&gt; Self::Future &#123;<br>        <span class="hljs-keyword">let</span> response = <span class="hljs-keyword">self</span>.inner.call(request);<br>        <span class="hljs-keyword">let</span> sleep = tokio::time::sleep(<span class="hljs-keyword">self</span>.timeout);<br><br>        todo!()<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>和 LogService 类似，我们在这里也有两个选择：</p>
+<ol>
+<li>手动实现 Future，包装 response</li>
+<li>返回 <code>Box::pin(async &#123; todo!()&#125;)</code></li>
+</ol>
+<h3 id="2-1-高级-Future"><a href="#2-1-高级-Future" class="headerlink" title="2.1 高级 Future"></a>2.1 高级 Future</h3><p>先来看后者，通过 <code>Box::pin</code> 封装一个 async 代码块，虽然带来了额外的开销，但是有一个最大的好处：<strong>可以用上 async/await 这组高级抽象</strong>。这也带来了一连串的效应：可以使用 <code>select!</code> 宏来简化我们的实现，更加优雅，大体实现如下所示</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">call</span></span>(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>, request: Request) -&gt; Self::Future &#123;<br>    <span class="hljs-keyword">let</span> response = <span class="hljs-keyword">self</span>.inner.call(request);<br>    <span class="hljs-keyword">let</span> sleep = tokio::time::sleep(<span class="hljs-keyword">self</span>.timeout);<br><br>    <span class="hljs-built_in">Box</span>::pin(<span class="hljs-keyword">async</span> <span class="hljs-keyword">move</span>&#123;<br>        tokio::<span class="hljs-built_in">select!</span> &#123;<br>            v = response =&gt; &#123;<br>                Poll::Ready(v.map_err(<span class="hljs-built_in">Into</span>::into))<br>            &#125;<br>            _ = sleep =&gt; &#123;<br>                Poll::Ready(<span class="hljs-literal">Err</span>(Elapsed(()).into()))<br>            &#125;<br>        &#125;;<br>        Poll::Pending<br>    &#125;)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>虽然 async 可以简化 Future 的编写，但也带来了额外的开销，真正 zero-cost 的众人就轮到了 <strong>手动实现 Future</strong> 手上</p>
+<h3 id="2-2-手动实现-ResponseFuture"><a href="#2-2-手动实现-ResponseFuture" class="headerlink" title="2.2 手动实现 ResponseFuture"></a>2.2 手动实现 ResponseFuture</h3><p>在 LogFuture 的实现中也提到了 pin_project! 的必要性：因为我们在 ResponseFuture::poll 函数中只能获取到 Poll&lt;&amp;mut Self&gt;，但是我们真正想要做的是 poll 内部的 future，这就要求从 Pin&lt;&amp;mut Self&gt; 投影到 Pin&lt;&amp;mut T&gt;，同时也应当投影到 Pin&lt;&amp;mut Sleep&gt;，而 pin_proejct! 在内部也为我们保证安全性，可以放心大胆使用。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs rust">pin_project! &#123;<br>    <span class="hljs-meta">#[derive(Debug)]</span><br>    <span class="hljs-keyword">pub</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ResponseFuture</span></span>&lt;T&gt; &#123;<br>        <span class="hljs-meta">#[pin]</span><br>        response: T,<br>        <span class="hljs-meta">#[pin]</span><br>        sleep: Sleep,<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">impl</span>&lt;T&gt; ResponseFuture&lt;T&gt; &#123;<br>    <span class="hljs-keyword">pub</span>(<span class="hljs-keyword">crate</span>) <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">new</span></span>(response: T, sleep: Sleep) -&gt; <span class="hljs-keyword">Self</span> &#123;<br>        ResponseFuture &#123; response, sleep &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>为 ResponseFuture 实现的 Future trait 也非常简单，我们要做的仅仅是通过投影，分别获取到 Pin&lt;&amp;mut InnerService&gt; 和 Pin&lt;&amp;mut Sleep&gt;，参考 select!，轮流去查看这两个 Future 是否已经 Ready 即可，分为三种情况：</p>
+<ol>
+<li>response 为 Ready。返回该结果</li>
+<li>response 为 Pending，sleep 也为 Pending。此时内部服务仍在调用过程中，且没有超时</li>
+<li>response 为 Pending，sleep 已经返回 Ready。说明内部服务调用已经超时了，返回 Error</li>
+</ol>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">impl</span>&lt;F, T, E&gt; Future <span class="hljs-keyword">for</span> ResponseFuture&lt;F&gt;<br><span class="hljs-keyword">where</span><br>    F: Future&lt;Output = <span class="hljs-built_in">Result</span>&lt;T, E&gt;&gt;,<br>    E: <span class="hljs-built_in">Into</span>&lt;crate::BoxError&gt;,<br>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Output</span></span> = <span class="hljs-built_in">Result</span>&lt;T, crate::BoxError&gt;;<br><br>    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">poll</span></span>(<span class="hljs-keyword">self</span>: Pin&lt;&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">Self</span>&gt;, cx: &amp;<span class="hljs-keyword">mut</span> Context&lt;<span class="hljs-symbol">&#x27;_</span>&gt;) -&gt; Poll&lt;Self::Output&gt; &#123;<br>        <span class="hljs-keyword">let</span> this = <span class="hljs-keyword">self</span>.project();<br><br>        <span class="hljs-comment">// First, try polling the future</span><br>        <span class="hljs-keyword">match</span> this.response.poll(cx) &#123;<br>            Poll::Ready(v) =&gt; <span class="hljs-keyword">return</span> Poll::Ready(v.map_err(<span class="hljs-built_in">Into</span>::into)),<br>            Poll::Pending =&gt; &#123;&#125;<br>        &#125;<br><br>        <span class="hljs-comment">// Now check the sleep</span><br>        <span class="hljs-keyword">match</span> this.sleep.poll(cx) &#123;<br>            Poll::Pending =&gt; Poll::Pending,<br>            Poll::Ready(_) =&gt; Poll::Ready(<span class="hljs-literal">Err</span>(Elapsed(()).into())),<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>最后千万别忘记了给 Timeout 创建一个对应的 Layer，否则无法在 ServiceBuilder 中创建这个服务<br>TimeoutLayer 只需要<strong>透传</strong>给 Timeout 一个 timeout 参数即可，实现起来也非常容易。<br>至此，超时控制中间件圆满完成。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-meta">#[derive(Debug, Clone)]</span><br><span class="hljs-keyword">pub</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">TimeoutLayer</span></span> &#123;<br>    timeout: Duration,<br>&#125;<br><br><span class="hljs-keyword">impl</span> TimeoutLayer &#123;<br>    <span class="hljs-comment">/// Create a timeout from a duration</span><br>    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">new</span></span>(timeout: Duration) -&gt; <span class="hljs-keyword">Self</span> &#123;<br>        TimeoutLayer &#123; timeout &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">impl</span>&lt;S&gt; Layer&lt;S&gt; <span class="hljs-keyword">for</span> TimeoutLayer &#123;<br>    <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Service</span></span> = Timeout&lt;S&gt;;<br><br>    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">layer</span></span>(&amp;<span class="hljs-keyword">self</span>, service: S) -&gt; Self::Service &#123;<br>        Timeout::new(service, <span class="hljs-keyword">self</span>.timeout)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a>3. 总结</h2><p>Timeout 中间件也遵循了中间件编写的几个准则:</p>
+<ol>
+<li>首先考虑中间件的功能，为 Timeout 添加对应的字段</li>
+<li>考虑 Timeout::call 函数中应当返回什么样的 Future，是 high-level 的 <code>async &#123;..&#125;</code>，但是有额外的开销，还是 low-level 的手动实现 Future，麻烦但 zero-cost，需要进行权衡</li>
+<li>最终通过 TimeoutLayer，为 Timeout 添加创建流程，相对来说是一个 boilerplate</li>
+</ol>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/rust/">rust</a>
+                    
+                      <a class="hover-with-bg" href="/categories/rust/tower/">tower</a>
+                    
+                      <a class="hover-with-bg" href="/categories/rust/tower/middlewares/">middlewares</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/01/10/rust/tower_internal/middleware-rate/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">2.2 tower-rate limit</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/01/10/rust/tower_internal/service-ext/">
+                        <span class="hidden-mobile">1.4 tower-ext</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+  <div class="col-lg-7 mx-auto nopadding-x-md">
+    <div class="container custom post-custom mx-auto">
+      <img src="https://octodex.github.com/images/jetpacktocat.png" srcset="/img/loading.gif" lazyload class="rounded mx-auto d-block mt-5" style="width:150px; height:150px;">
+    </div>
+  </div>
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

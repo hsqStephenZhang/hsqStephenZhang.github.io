@@ -203,13 +203,13 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/10/tower_internal/middleware-rate/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/middleware-rate/" target="_self">
           2.2 tower-rate limit
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/10/tower_internal/middleware-rate/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/middleware-rate/" target="_self">
           
           Tower 自带的流量控制中间件，核心功能为：在 x 时间内，最多接收 n 个请求，如果超出最大流量，休眠直到下一个刷新点 1. 核心数据结构为了描述这个核心功能，我们定义了下面的核心数据结构:  rate: 描述一段时间内，最多允许多少请求通过 sleep: 定时器，表示休眠的时间  而这里的 RateLimit 就是我们想要对外提供的 Service，通过相对应的 RateLayer 创建，结
         </a>
@@ -228,9 +228,11 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/tower/">tower</a>
+              <a href="/categories/rust/">rust</a>
             
-              <a href="/categories/tower/2-middleware/">2.middleware</a>
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/middlewares/">middlewares</a>
             
           </div>
         
@@ -245,13 +247,13 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/10/tower_internal/middleware-timeout/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/middleware-timeout/" target="_self">
           2.3 tower-timeout limit
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/10/tower_internal/middleware-timeout/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/middleware-timeout/" target="_self">
           
           Timeout 这个中间件的责任也非常明确：如果某个服务调用时间过长，超出了规定的超时时间，直接返回错误 1. 模型抽象为此，Timeout 肯定需要保留下面两个结构  inner Service 超时时间 duration  12345#[derive(Debug, Clone)]pub struct Timeout&lt;T&gt; &amp;#123;    inner: T,    timeout
         </a>
@@ -270,9 +272,11 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/tower/">tower</a>
+              <a href="/categories/rust/">rust</a>
             
-              <a href="/categories/tower/2-middleware/">2.middleware</a>
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/middlewares/">middlewares</a>
             
           </div>
         
@@ -287,13 +291,13 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/10/tower_internal/service-ext/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/service-ext/" target="_self">
           1.4 tower-ext
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/10/tower_internal/service-ext/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/service-ext/" target="_self">
           
           1. ext 设计模式xxx-ext 是 Rust 当中常用的一个设计模式，在满足某个 Trait 的前提下，引入很多的扩展功能（比如最常用的 Iterator，其实 skip, enumerate, take 都是针对 Iterator trait 的扩充） Tower 也给 Service 引入了这个设计模式，十分好用。 源码如下，TL；DR 1234567891011121314151617
         </a>
@@ -312,9 +316,11 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/tower/">tower</a>
+              <a href="/categories/rust/">rust</a>
             
-              <a href="/categories/tower/1-basic/">1.basic</a>
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/basic/">basic</a>
             
           </div>
         
@@ -329,15 +335,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/10/tower_internal/tower-core/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/tower-core/" target="_self">
           1.1 tower 核心抽象
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/10/tower_internal/tower-core/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/tower-core/" target="_self">
           
-          1. Tower 的起源说起 Tower，就不得不提到 Rust 另一个重要的框架，Tokio，这两个单词连起来读，就是 Tokyo Tower（东京塔），这也从另一个方面说明，Tower 是 Tokio 官方支持的中间件框架，Axum ，Tower-web，Tonic 这些项目，都广泛使用了 Tower 这层抽象。 那么，我们不禁要问，Tower 到底是什么？官方给出的答案是： Tower 是一
+          1. Tower 的起源说起 Tower，就不得不提到 Rust 另一个重要的框架，Tokio，这两个单词连起来读，就是 Tokyo Tower（东京塔），这也从另一个方面说明，Tower 是 Tokio 官方支持的中间件框架，Axum ，Tower-web，Tonic 这些项目，都广泛使用了 Tower 这层抽象。 那么，我们不禁要问，Tower 到底是什么？官方给出的答案是：Tower 是一个
         </a>
       </p>
 
@@ -354,9 +360,11 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/tower/">tower</a>
+              <a href="/categories/rust/">rust</a>
             
-              <a href="/categories/tower/1-basic/">1.basic</a>
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/basic/">basic</a>
             
           </div>
         
@@ -371,15 +379,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/10/tower_internal/tower-issues/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/tower-issues/" target="_self">
           3.1 tower 不足之处
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/10/tower_internal/tower-issues/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/tower-issues/" target="_self">
           
-          这一部分，主要是探讨 Tower 中的一些不足之处，主要参考我实习期间使用 Tower 之后的一些体验以及和同事的讨论。 1. 问题1.1 call 是否应该使用 Pin&lt;&amp;mut Self&gt; ？关于这个问题，已经有了一些github 讨论。但是到目前为止，Tower 官方还是决定采用一个普通的 &amp;mut self，这意味着 Service 必须是Unpin。 这个问题
+          这一部分，主要是探讨 Tower 中的一些不足之处，主要参考我实习期间使用 Tower 之后的一些体验以及和同事的讨论。 1. 问题1.1 call是否应该使用 Pin&lt;&amp;mut Self&gt; ？关于这个问题，已经有了一些github 讨论。但是到目前为止，Tower 官方还是决定采用一个普通的 &amp;mut self，这意味着 Service 必须是Unpin。 这个问题的
         </a>
       </p>
 
@@ -396,9 +404,11 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/tower/">tower</a>
+              <a href="/categories/rust/">rust</a>
             
-              <a href="/categories/tower/3-more/">3.more</a>
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/more/">more</a>
             
           </div>
         
@@ -413,13 +423,13 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/10/tower_internal/tower-service/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/tower-service/" target="_self">
           1.2 tower service 设计心路历程
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/10/tower_internal/tower-service/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/tower-service/" target="_self">
           
           Tower Service 设计思路 -by tokio
         </a>
@@ -438,9 +448,11 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/tower/">tower</a>
+              <a href="/categories/rust/">rust</a>
             
-              <a href="/categories/tower/1-basic/">1.basic</a>
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/basic/">basic</a>
             
           </div>
         
@@ -455,13 +467,13 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/09/linux-tracing/ftrace/" target="_self">
+        <a href="/2022/01/09/linux/tracing/ftrace/" target="_self">
           ftrace
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/09/linux-tracing/ftrace/" target="_self">
+        <a href="/2022/01/09/linux/tracing/ftrace/" target="_self">
           
           先说一个非常重要的参考资料，也就是 ftrace 作者本人的 pdf：ftrace kernel hook 接下来，主要跟着作者的思路，融入自己的一些思考，给大家解读一下 ftrace 究竟做了什么？ 1. 什么是 ftraceftrace，顾名思义，就是 function trace，针对函数级别的追踪调试机制。 我们平时是如何使用这个强大功能的呢？ 1.1 如何使用 ftrace可以通过 tr
         </a>
@@ -480,7 +492,9 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/trace/">trace</a>
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/trace/">trace</a>
             
           </div>
         
@@ -495,13 +509,13 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/09/linux-tracing/int3/" target="_self">
+        <a href="/2022/01/09/linux/tracing/int3/" target="_self">
           int3 黑魔法
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/09/linux-tracing/int3/" target="_self">
+        <a href="/2022/01/09/linux/tracing/int3/" target="_self">
           
           发现和 tracing 有关的好多内容，脱离了 int3 都无法很好的展开。要么需要额外写很多内容，要么是不够详细，所以想在这里单独说明一下 int3 的黑魔法。 1. 程序执行视角众所周知，可执行程序，在 CPU 看来，只是很多的指令罢了，对于不同的指令，CPU 会有不同的反应，如果学习过汇编，可能会了解 mov add sub mul push pop call 这些最常见的指令，但是 CPU
         </a>
@@ -520,7 +534,9 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/trace/">trace</a>
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/trace/">trace</a>
             
           </div>
         
@@ -535,13 +551,13 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/09/linux-tracing/kprobe/" target="_self">
+        <a href="/2022/01/09/linux/tracing/kprobe/" target="_self">
           kprobe
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/09/linux-tracing/kprobe/" target="_self">
+        <a href="/2022/01/09/linux/tracing/kprobe/" target="_self">
           
           1. kprobe 是什么Kprobe是一种内核调测手段，它可以动态地跟踪内核的行为、收集debug信息和性能信息。 可以跟踪内核几乎所有的代码地址。这点非常神奇啊，几乎所有的代码，Wow，究竟如何办到这一点呢？我们可以从 debugger 角度出发，探究一下这个问题。 众所周知，debugger 是依赖于 ptrace 这个系统调用，ptrace 赋予了程序调试别的进程的能力，这一点是如何办到的
         </a>
@@ -560,7 +576,9 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/trace/">trace</a>
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/trace/">trace</a>
             
           </div>
         
@@ -575,15 +593,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/09/linux-tracing/notify_chain/" target="_self">
+        <a href="/2022/01/09/linux/tracing/notify_chain/" target="_self">
           notify chain
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/09/linux-tracing/notify_chain/" target="_self">
+        <a href="/2022/01/09/linux/tracing/notify_chain/" target="_self">
           
-          notify chain 机制Linux 中广泛采用了事件通知机制，即 注册 + 回调，notify chain 就是很典型的例子。 1. notify chain 是什么首先要明白，notify chain 是什么？ 将其比作 发布-订阅模式，可能更加容易理解： 某个读者订阅了某个杂志，当杂志发版之后，就会收到对应的通知；一旦不再想看这个杂志，取消订阅即可。 Linux 中为了及时相应某一些到来
+          Linux 中广泛采用了事件通知机制，即 注册 + 回调，notify chain 就是很典型的例子。 1. notify chain 是什么首先要明白，notify chain 是什么？ 将其比作 发布-订阅模式，可能更加容易理解： 某个读者订阅了某个杂志，当杂志发版之后，就会收到对应的通知；一旦不再想看这个杂志，取消订阅即可。 Linux 中为了及时相应某一些到来的事件，采取了通知链机制，可以
         </a>
       </p>
 
@@ -600,7 +618,9 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/trace/">trace</a>
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/trace/">trace</a>
             
           </div>
         

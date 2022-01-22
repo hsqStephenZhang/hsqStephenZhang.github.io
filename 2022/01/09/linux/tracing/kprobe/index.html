@@ -1,0 +1,492 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="mem::swap(Rust, 🦀 )">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1. kprobe 是什么Kprobe是一种内核调测手段，它可以动态地跟踪内核的行为、收集debug信息和性能信息。 可以跟踪内核几乎所有的代码地址。这点非常神奇啊，几乎所有的代码，Wow，究竟如何办到这一点呢？我们可以从 debugger 角度出发，探究一下这个问题。 众所周知，debugger 是依赖于 ptrace 这个系统调用，ptrace 赋予了程序调试别的进程的能力，这一点是如何办到的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kprobe">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2022/01/09/linux/tracing/kprobe/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. kprobe 是什么Kprobe是一种内核调测手段，它可以动态地跟踪内核的行为、收集debug信息和性能信息。 可以跟踪内核几乎所有的代码地址。这点非常神奇啊，几乎所有的代码，Wow，究竟如何办到这一点呢？我们可以从 debugger 角度出发，探究一下这个问题。 众所周知，debugger 是依赖于 ptrace 这个系统调用，ptrace 赋予了程序调试别的进程的能力，这一点是如何办到的">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-01-09T05:47:40.000Z">
+<meta property="article:modified_time" content="2022-01-22T14:20:06.888Z">
+<meta property="article:author" content="mem::swap(Rust, 🦀 )">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>kprobe - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"hsqstephenzhang.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>mem::swap</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-user-fill"></i>
+                Links
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="kprobe">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-01-09 13:47" pubdate>
+        January 9, 2022 pm
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.3k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      11 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">kprobe</h1>
+            
+            <div class="markdown-body">
+              <h2 id="1-kprobe-是什么"><a href="#1-kprobe-是什么" class="headerlink" title="1. kprobe 是什么"></a>1. kprobe 是什么</h2><p>Kprobe是一种内核调测手段，它可以动态地跟踪内核的行为、收集debug信息和性能信息。 可以跟踪内核<strong>几乎所有的代码地址</strong>。这点非常神奇啊，几乎所有的代码，Wow，究竟如何办到这一点呢？我们可以从 debugger 角度出发，探究一下这个问题。</p>
+<p>众所周知，debugger 是依赖于 ptrace 这个系统调用，ptrace 赋予了程序调试别的进程的能力，这一点是如何办到的呢？</p>
+<p>不得不仔细观察 ptrace 的参数选项，我们发现，ptrace 有一个神奇的选项，叫做 <code>PTRACE_POKETEXT</code>，文档中说，这个选项可以 <code>Copy the word data to the address addr in the tracee&#39;s memory</code>，既然是修改内存中的内容，也就可以修改指令？</p>
+<p>kprobe 是作用于指令级别的探针手段，因此和指令的执行分不开关系，必须要提前明确其中的细节：cpu取指令，执行指令，pc指向下一条指令地址，并且检查标志位（中断，eflags），判断是否会触发异常。而异常处理程序是由操作系统提前设置好的。</p>
+<h2 id="2-kprobe-实现原理"><a href="#2-kprobe-实现原理" class="headerlink" title="2. kprobe 实现原理"></a>2. kprobe 实现原理</h2><p>有的同学可能很诧异，what？代码段还能修改？不是只有可读可写的数据段之类的，才能修改其中的内容吗？Too young too simple</p>
+<p>只要是内存中的东西，内核都有办法将其修改掉，只不过，这种手段并不会轻易暴露给用户，否则可不把系统玩崩了</p>
+<h3 id="2-1-register-kprobe"><a href="#2-1-register-kprobe" class="headerlink" title="2.1 register_kprobe"></a>2.1 register_kprobe</h3><p>做了下面几件事：</p>
+<ol>
+<li>根据符号获取 kprobe 的地址，或者直接获取到传入参数中的 kprobe 地址</li>
+<li>准备一个可执行 mmap 区间中的 slot，并且将被 probe 的指令保存到 slot 中</li>
+<li>添加这个 kprobe 到全局的 kprobe 哈希表中</li>
+<li>通过 arm_probe 将对应位置上的指令的第一个字节替换为 0xcc</li>
+</ol>
+<p>如此一来，执行到这个 kprobe 之后，就会触发 int3 trap，就会陷入内核设置的 int3 处理函数中，即 <code>do_int3</code></p>
+<h3 id="2-2-kprobe-int3-handler"><a href="#2-2-kprobe-int3-handler" class="headerlink" title="2.2 kprobe_int3_handler"></a>2.2 kprobe_int3_handler</h3><p>做了下面几件事：</p>
+<ol>
+<li>执行 pre_handler</li>
+<li>设置单步中断标志位</li>
+<li>将 pt_regs 中的 ip 指向保存的指令地址</li>
+</ol>
+<figure class="highlight markdown"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><pre><code class="hljs markdown">Tips:<br><span class="hljs-bullet">1.</span> 注意，此时已经将被修改指令的第一个字节修改为 0xcc(int3)，如果该指令的地址为 x,那么此时的 ip = x + 1<br><span class="hljs-bullet">2.</span> 因为单步中断是完全可控的，所以可以将 ip 指向我们保存在可执行段中的指令，之后再将 ip 重新指回去就好了<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-3-kprobe-debug-handler"><a href="#2-3-kprobe-debug-handler" class="headerlink" title="2.3 kprobe_debug_handler"></a>2.3 kprobe_debug_handler</h3><p>重置该 kprobe，并且修正一些由于上一条指令执行导致的问题：</p>
+<ol>
+<li>函数调用</li>
+</ol>
+<p>之所以要修正，主要是因为如果我们刚好将一条 <code>call %rip(xxx)</code> 执行的第一个字节修改为 <code>0xcc</code> 了，在单步执行之后，就会将返回地址压栈，压栈的地址又是通过当前的 EIP 来决定的，但此时的 EIP 已经不是正常执行流中的预期值了，这样，函数调用返回之后，return 直接爆炸</p>
+<p>因此，这里有必要修正一下位于栈顶的 return_address</p>
+<h3 id="2-4-unregister-kprobe"><a href="#2-4-unregister-kprobe" class="headerlink" title="2.4 unregister_kprobe"></a>2.4 unregister_kprobe</h3><p>做了几件事：</p>
+<ol>
+<li>弹出对应指令地址处，最上方的一个 kprobe 探针</li>
+<li>对于弹出的探针，将其禁止，也就是通过 <code>disarm_kprobe</code> 将原先指令还原</li>
+</ol>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/">linux</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/trace/">trace</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/01/09/linux/tracing/int3/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">int3 黑魔法</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/01/09/linux/tracing/notify_chain/">
+                        <span class="hidden-mobile">notify chain</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+  <div class="col-lg-7 mx-auto nopadding-x-md">
+    <div class="container custom post-custom mx-auto">
+      <img src="https://octodex.github.com/images/jetpacktocat.png" srcset="/img/loading.gif" lazyload class="rounded mx-auto d-block mt-5" style="width:150px; height:150px;">
+    </div>
+  </div>
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

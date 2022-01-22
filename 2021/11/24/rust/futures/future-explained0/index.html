@@ -1,0 +1,535 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="mem::swap(Rust, 🦀 )">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="generator（生成器）是 Rust 中 async&#x2F;await 的基础，state machine 又是生成器的基础。 和闭包类似，不同的编译器会给 generator 生成不同的语义。但有一点是约定俗成的，也就是生成器最大的特点：程序的执行流程可以在生成器和调用者之间来回切换。 当我们需要暂时从生成器中返回的时候，可以使用 yield 关键字，当调用者希望再次进入生成器的时候，就调用 re">
+<meta property="og:type" content="article">
+<meta property="og:title" content="future explained(0)">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2021/11/24/rust/futures/future-explained0/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="generator（生成器）是 Rust 中 async&#x2F;await 的基础，state machine 又是生成器的基础。 和闭包类似，不同的编译器会给 generator 生成不同的语义。但有一点是约定俗成的，也就是生成器最大的特点：程序的执行流程可以在生成器和调用者之间来回切换。 当我们需要暂时从生成器中返回的时候，可以使用 yield 关键字，当调用者希望再次进入生成器的时候，就调用 re">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-11-24T06:01:29.000Z">
+<meta property="article:modified_time" content="2022-01-22T14:22:35.449Z">
+<meta property="article:author" content="mem::swap(Rust, 🦀 )">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>future explained(0) - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"hsqstephenzhang.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>mem::swap</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-user-fill"></i>
+                Links
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="future explained(0)">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-11-24 14:01" pubdate>
+        November 24, 2021 pm
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      8.7k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      73 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">future explained(0)</h1>
+            
+            <div class="markdown-body">
+              <p>generator（生成器）是 Rust 中 async/await 的基础，state machine 又是生成器的基础。</p>
+<p>和闭包类似，不同的编译器会给 generator 生成不同的语义。但有一点是约定俗成的，也就是生成器最大的特点：程序的执行流程可以在生成器和调用者之间来回切换。</p>
+<p>当我们需要暂时从生成器中返回的时候，可以使用 yield 关键字，当调用者希望再次进入生成器的时候，就调用 resume 方法，这时程序就从上次 yield 返回的那个点之后继续执行，还能获取到上下文信息，就好像能够按下了暂停按钮，又按下了继续按钮，程序执行完全没有感知。</p>
+<p>其实不仅仅是 Rust，LLVM 作为一个广泛使用的后端，也支持了 yield 语法（因此 c++ 最新版本也可以实现 stackless 协程了）。接下来我们就分别探究一下二者实现的思路，以求对于 async/await 有一个更加深入的认识。</p>
+<h2 id="1-LLVM-实现"><a href="#1-LLVM-实现" class="headerlink" title="1. LLVM 实现"></a>1. LLVM 实现</h2><p>首先来看 LLVM 支持的方式：通过 <code>generator + yield</code> 两个关键字，可以将原先的一个普通函数，改写为生成器。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><br><span class="hljs-function">generator <span class="hljs-keyword">int</span> <span class="hljs-title">foo</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    yield <span class="hljs-number">1</span>;<br>    yield <span class="hljs-number">2</span>;<br>    yield <span class="hljs-number">3</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    foreach (<span class="hljs-keyword">int</span> i in <span class="hljs-built_in">foo</span>())<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Value: %d\n&quot;</span>, i);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>我们希望的执行流是：</p>
+<ol>
+<li>下一次重新执行该 generator，可以从上一次 yield 点开始执行</li>
+<li>可以保存栈的上下文</li>
+</ol>
+<p>可以想象，我们需要保存很多<strong>状态</strong>，比如必须要 yield 的位置，这样才能在 resume 的时候执行正确位置的代码。Where? What?</p>
+<ol>
+<li><p>我们肯定不会将状态保存在<strong>函数栈帧</strong>中，因为一旦函数返回，该栈帧中的所有局部变量都失效了。也就是说，必须要将上下文（context）保存在函数外的某个结构体内（static 局部变量也不行，因为如果重复调用就炸了）。</p>
+</li>
+<li><p>接下来考虑，需要保存什么样的状态，才能保证对于执行流和上下文没有感知？</p>
+<ul>
+<li>为了从 yield 下一条指令开始执行，肯定需要保存该指令的地址；</li>
+<li>为了保证栈帧中的局部变量不会失效，一定要将其保存存在调用栈之外的某个结构中（其实就是闭包）</li>
+</ul>
+</li>
+</ol>
+<p>实际上 LLVM 正是这样做的，通过 context 保存下一次 resume 需要跳转执行的位置，以及调用栈中的局部变量。每次调用这个 generator，都需要从外部传入相应的 context 上下文变量，将某些局部变量的读写都映射为针对 context 中相应字段的读写。</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs arduino">Tips:<br>  上下文变量还需要一个特殊的 setup 函数来处理，每一个 generator 都唯一对应 context，从而保证状态的确定性。<br></code></pre></td></tr></table></figure>
+
+<p>来简单看一下 LLVM 生成的 IR，围绕着 context 这个最关键的<strong>Generator 状态</strong>展开，关键位置都做了标记。</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><code class="hljs llvm">// 上下文（状态）<br><span class="hljs-variable">%foo_context</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">type</span> &#123;<br>    <span class="hljs-type">i8</span>*<span class="hljs-punctuation">,</span>      <span class="hljs-comment">; 0: block (pc 指针位置)    </span><br>    <span class="hljs-type">i32</span>       <span class="hljs-comment">; 1: value (result) </span><br>&#125;<br><br>// foo 初始化，必须在调用 foo 之前设置<br><span class="hljs-keyword">define</span> void <span class="hljs-title">@foo_setup</span>(<span class="hljs-variable">%foo_context</span>* <span class="hljs-variable">%context</span>) <span class="hljs-keyword">nounwind</span> &#123;<br>    <span class="hljs-comment">; set up &#x27;block&#x27;</span><br>    <span class="hljs-variable">%1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">getelementptr</span> <span class="hljs-variable">%foo_context</span>* <span class="hljs-variable">%context</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">0</span><br>    <span class="hljs-keyword">store</span> <span class="hljs-type">i8</span>* <span class="hljs-keyword">blockaddress</span>(<span class="hljs-title">@foo_yield</span><span class="hljs-punctuation">,</span> <span class="hljs-variable">%.yield1</span>)<span class="hljs-punctuation">,</span> <span class="hljs-type">i8</span>** <span class="hljs-variable">%1</span><br><br>    <span class="hljs-keyword">ret</span> void<br>&#125;<br><br><span class="hljs-comment">; The boolean returned indicates if a result was available or not.</span><br><span class="hljs-comment">; Once no more results are available, the caller is expected to not call</span><br><span class="hljs-comment">; the iterator again.</span><br><span class="hljs-keyword">define</span> <span class="hljs-type">i1</span> <span class="hljs-title">@foo_yield</span>(<span class="hljs-variable">%foo_context</span>* <span class="hljs-variable">%context</span>) <span class="hljs-keyword">nounwind</span> &#123;<br>    <span class="hljs-comment">; 将 context.state 中的值作为下标，跳转到对应的位置</span><br>    <span class="hljs-variable">%1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">getelementptr</span> <span class="hljs-variable">%foo_context</span>* <span class="hljs-variable">%context</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">0</span><br>    <span class="hljs-variable">%2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">load</span> <span class="hljs-type">i8</span>** <span class="hljs-variable">%1</span><br>    <span class="hljs-keyword">indirectbr</span> <span class="hljs-type">i8</span>* <span class="hljs-variable">%2</span><span class="hljs-punctuation">,</span> [ label <span class="hljs-variable">%.yield1</span><span class="hljs-punctuation">,</span> label <span class="hljs-variable">%.yield2</span><span class="hljs-punctuation">,</span> label <span class="hljs-variable">%.yield3</span><span class="hljs-punctuation">,</span> label <span class="hljs-variable">%.done</span> ]<br><br>.yield<span class="hljs-number">1</span>:<br>    <span class="hljs-comment">; 将返回值保存在 foo_context.result 中 </span><br>    <span class="hljs-variable">%3</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">getelementptr</span> <span class="hljs-variable">%foo_context</span>* <span class="hljs-variable">%context</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">1</span><br>    <span class="hljs-keyword">store</span> <span class="hljs-type">i32</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span>* <span class="hljs-variable">%3</span><br><br>    <span class="hljs-comment">; 将 &#x27;block&#x27; 块的 index 保存在 foo_context.state 中 </span><br>    <span class="hljs-comment">; make &#x27;block&#x27; point to next block to execute</span><br>    <span class="hljs-variable">%4</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">getelementptr</span> <span class="hljs-variable">%foo_context</span>* <span class="hljs-variable">%context</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">0</span><br>    <span class="hljs-keyword">store</span> <span class="hljs-type">i8</span>* <span class="hljs-keyword">blockaddress</span>(<span class="hljs-title">@foo_yield</span><span class="hljs-punctuation">,</span> <span class="hljs-variable">%.yield2</span>)<span class="hljs-punctuation">,</span> <span class="hljs-type">i8</span>** <span class="hljs-variable">%4</span><br><br>    <span class="hljs-comment">; 返回</span><br>    <span class="hljs-keyword">ret</span> <span class="hljs-type">i1</span> <span class="hljs-number">1</span><br><br>.yield<span class="hljs-number">2</span>:<br>    <span class="hljs-comment">; 将返回值保存在 foo_context.result 中 </span><br>    <span class="hljs-variable">%5</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">getelementptr</span> <span class="hljs-variable">%foo_context</span>* <span class="hljs-variable">%context</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">1</span><br>    <span class="hljs-keyword">store</span> <span class="hljs-type">i32</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span>* <span class="hljs-variable">%5</span><br><br>    <span class="hljs-comment">; 将 &#x27;block&#x27; 块的 index 保存在 foo_context.state 中 </span><br>    <span class="hljs-variable">%6</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">getelementptr</span> <span class="hljs-variable">%foo_context</span>* <span class="hljs-variable">%context</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">0</span><br>    <span class="hljs-keyword">store</span> <span class="hljs-type">i8</span>* <span class="hljs-keyword">blockaddress</span>(<span class="hljs-title">@foo_yield</span><span class="hljs-punctuation">,</span> <span class="hljs-variable">%.yield3</span>)<span class="hljs-punctuation">,</span> <span class="hljs-type">i8</span>** <span class="hljs-variable">%6</span><br><br>    <span class="hljs-comment">; 返回</span><br>    <span class="hljs-keyword">ret</span> <span class="hljs-type">i1</span> <span class="hljs-number">1</span><br><br>.yield<span class="hljs-number">3</span>:<br>    <span class="hljs-comment">; 将返回值保存在 foo_context.result 中 </span><br>    <span class="hljs-variable">%7</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">getelementptr</span> <span class="hljs-variable">%foo_context</span>* <span class="hljs-variable">%context</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">1</span><br>    <span class="hljs-keyword">store</span> <span class="hljs-type">i32</span> <span class="hljs-number">3</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span>* <span class="hljs-variable">%7</span><br><br>    <span class="hljs-comment">; 将 &#x27;block&#x27; 块的 index 保存在 foo_context.state 中 </span><br>    <span class="hljs-variable">%8</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">getelementptr</span> <span class="hljs-variable">%foo_context</span>* <span class="hljs-variable">%context</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-type">i32</span> <span class="hljs-number">0</span><br>    <span class="hljs-keyword">store</span> <span class="hljs-type">i8</span>* <span class="hljs-keyword">blockaddress</span>(<span class="hljs-title">@foo_yield</span><span class="hljs-punctuation">,</span> <span class="hljs-variable">%.done</span>)<span class="hljs-punctuation">,</span> <span class="hljs-type">i8</span>** <span class="hljs-variable">%8</span><br><br>    <span class="hljs-comment">; 返回</span><br>    <span class="hljs-keyword">ret</span> <span class="hljs-type">i1</span> <span class="hljs-number">1</span><br><br>    <span class="hljs-comment">; 结束，返回默认值 0</span><br>.done:<br>    <span class="hljs-keyword">ret</span> <span class="hljs-type">i1</span> <span class="hljs-number">0</span><br>&#125;<br><br><span class="hljs-keyword">define</span> void <span class="hljs-title">@main</span>() <span class="hljs-keyword">nounwind</span> &#123;<br>    <span class="hljs-comment">; 为 generator 分配 context 空间</span><br>    <span class="hljs-variable">%context</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">alloca</span> <span class="hljs-variable">%foo_context</span><br>    <span class="hljs-keyword">call</span> void <span class="hljs-title">@foo_setup</span>(<span class="hljs-variable">%foo_context</span>* <span class="hljs-variable">%context</span>)<br>    <span class="hljs-keyword">br</span> label <span class="hljs-variable">%.head</span><br><br>.head:<br>    <span class="hljs-comment">; 每次调用，都需要传入 context 参数</span><br>    <span class="hljs-comment">; foreach (int i in foo())</span><br>    <span class="hljs-variable">%1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">call</span> <span class="hljs-type">i1</span> <span class="hljs-title">@foo_yield</span>(<span class="hljs-variable">%foo_context</span>* <span class="hljs-variable">%context</span>)<br><br>    <span class="hljs-comment">; 省略 ...</span><br><br>.<span class="hljs-keyword">tail</span>:<br>    <span class="hljs-keyword">ret</span> void<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上面的 generator 中，实际上没有保存什么局部变量，但是如果 generator 中存在跨越 yield 的局部变量，就需要将这些内容保存到 context 的某个字段中，这里不过多演示。</p>
+<h2 id="2-Rust-实现"><a href="#2-Rust-实现" class="headerlink" title="2. Rust 实现"></a>2. Rust 实现</h2><p>虽然 Rust 底层依赖于 LLVM，LLVM 也提供了 generator 的能力，但 Rust 单独实现了一套类似的 generator。实际上 generator 也不算太难，简单来说，等同于一个闭包，只不过这个闭包不是一次性执行完成，而是分为多个阶段，每一个阶段都会对应一个状态，状态之间会进行转移。That’s all！</p>
+<p>下面主要会借助 Generator 和 Yield，探讨一下<strong>目前</strong> async/await 实现的底层原理。</p>
+<h3 id="2-1-Yield-amp-Generator"><a href="#2-1-Yield-amp-Generator" class="headerlink" title="2.1 Yield &amp; Generator"></a>2.1 Yield &amp; Generator</h3><p>首先来看一个 yield 关键字的 demo。</p>
+<p>由于迭代器是一个实验性质的特性，因此要打开 <code>generators,generator_trait</code> 这两个 feature。 在我们的代码中，可以通过 yield + 闭包来声明 Generator。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-meta">#![feature(generators, generator_trait)]</span><br><br><span class="hljs-keyword">use</span> std::ops::&#123;Generator, GeneratorState&#125;;<br><span class="hljs-keyword">use</span> std::pin::Pin;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>  <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> g = || &#123;<br>    <span class="hljs-keyword">yield</span> <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;foo&quot;</span><br>  &#125;;<br><br>  <span class="hljs-built_in">assert_eq!</span>(Pin::new(&amp;<span class="hljs-keyword">mut</span> g).resume(()), GeneratorState::Yielded(<span class="hljs-number">1</span>));<br>  <span class="hljs-built_in">assert_eq!</span>(Pin::new(&amp;<span class="hljs-keyword">mut</span> g).resume(()), GeneratorState::Complete(<span class="hljs-string">&quot;foo&quot;</span>));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>之所以用闭包实现，按照 LLVM 的实现机制以及上面的一小段简介，不难推断出原因：没错，需要保存上下文状态信息！那么，现在最重要的问题就是，这个上下文究竟是怎么保存的？编译器在背后究竟做了什么<strong>黑魔法</strong>？</p>
+<p>就像 <code>Future</code> 的核心是 <code>Future trait</code>，<code>Generator</code> 的核心是 <code>Generator trait</code>，我们先来看一下这几个 trait 的定义。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-meta">#[derive(Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Debug, Hash)]</span><br><span class="hljs-meta">#[lang = <span class="hljs-meta-string">&quot;generator_state&quot;</span>]</span><br><span class="hljs-keyword">pub</span> <span class="hljs-class"><span class="hljs-keyword">enum</span> <span class="hljs-title">GeneratorState</span></span>&lt;Y, R&gt; &#123;<br>    Yielded(Y),<br>    Complete(R),<br>&#125;<br><br><span class="hljs-meta">#[lang = <span class="hljs-meta-string">&quot;generator&quot;</span>]</span><br><span class="hljs-meta">#[fundamental]</span><br><span class="hljs-keyword">pub</span> <span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Generator</span></span>&lt;R = ()&gt; &#123;<br>    <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Yield</span></span>;<br>    <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Return</span></span>;<br>    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">resume</span></span>(<span class="hljs-keyword">self</span>: Pin&lt;&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">Self</span>&gt;, arg: R) -&gt; GeneratorState&lt;Self::Yield, Self::Return&gt;;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>简单和 <code>Future trait</code> 进行一下对比:</p>
+<ol>
+<li>Future只有一个类型参数 Output，表示最终返回的结果，Poll 其实就相当于 Option；Generator 有两个类型参数 Yield 和 Return，可以在返回零次或多次 Yield 后最终返回Return，GeneratorState 其实就相当于 Result;</li>
+<li>Future 的 poll 中有一个额外参数 ctx，一般是用来注册回调的；Generator 的 resume 中有一个额外参数 arg，也就是每次进入的时候都可以传一个参数，默认为 <code>()</code>，我理解是赋予了这个 Generator 扩展的能力。</li>
+</ol>
+<p><code>Generator trait</code> 在 99% 的情况下，不需要我们手动实现，而是编译器帮助我们生成：</p>
+<p>参照 LLVM 的实现机制，对程序做控制流分析，将整个 generator 视为一个状态机，根据 <code>yield, return</code> 这两个关键字划分为多个子代码块。在 LLVM 中，实际上是通过一个指针保存了每次 resume 需要跳转的位置，但有一个更加优雅的方式：<strong>enum + match</strong>。</p>
+<p>用一个 enum 保存每一个代码块执行中的状态，每次 yield 或者 return 之前，会将这段子代码块中的所有指令<strong>全部</strong>执行完成，然后修改 enum 中保存的状态，也就是<strong>状态转移</strong>，以及上下文中的局部变量，也都被捕获进来。</p>
+<p>每一次 resume，其实就是需要匹配 enum 中的状态，去执行对应部分的代码，最后修改状态，是状态转移，直到返回 Complete。</p>
+<p>按照这种思路，可以将上面 main 函数的闭包，翻译为下面的结构。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-meta">#![feature(arbitrary_self_types, generators, generator_trait)]</span><br><br><span class="hljs-keyword">use</span> std::ops::&#123;Generator, GeneratorState&#125;;<br><span class="hljs-keyword">use</span> std::pin::Pin;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> ret = <span class="hljs-string">&quot;foo&quot;</span>;<br>    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> generator = &#123;<br>        <span class="hljs-class"><span class="hljs-keyword">enum</span> <span class="hljs-title">__Generator</span></span> &#123;<br>            Start(&amp;<span class="hljs-symbol">&#x27;static</span> <span class="hljs-built_in">str</span>),<br>            Yield1(&amp;<span class="hljs-symbol">&#x27;static</span> <span class="hljs-built_in">str</span>),<br>            Done,<br>        &#125;<br><br>        <span class="hljs-keyword">impl</span> Generator <span class="hljs-keyword">for</span> __Generator &#123;<br>            <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Yield</span></span> = <span class="hljs-built_in">i32</span>;<br>            <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Return</span></span> = &amp;<span class="hljs-symbol">&#x27;static</span> <span class="hljs-built_in">str</span>;<br><br>            <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">resume</span></span>(<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>: Pin&lt;&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">Self</span>&gt;, resume: ()) -&gt; GeneratorState&lt;<span class="hljs-built_in">i32</span>, &amp;<span class="hljs-symbol">&#x27;static</span> <span class="hljs-built_in">str</span>&gt; &#123;<br>                <span class="hljs-keyword">use</span> std::mem;<br>                <span class="hljs-keyword">match</span> mem::replace(&amp;<span class="hljs-keyword">mut</span> *<span class="hljs-keyword">self</span>, __Generator::Done) &#123;<br>                    __Generator::Start(s) =&gt; &#123;<br>                        *<span class="hljs-keyword">self</span> = __Generator::Yield1(s);<br>                        GeneratorState::Yielded(<span class="hljs-number">1</span>)<br>                    &#125;<br><br>                    __Generator::Yield1(s) =&gt; &#123;<br>                        *<span class="hljs-keyword">self</span> = __Generator::Done;<br>                        GeneratorState::Complete(s)<br>                    &#125;<br><br>                    __Generator::Done =&gt; &#123;<br>                        <span class="hljs-built_in">panic!</span>(<span class="hljs-string">&quot;generator resumed after completion&quot;</span>)<br>                    &#125;<br>                &#125;<br>            &#125;<br>        &#125;<br><br>        __Generator::Start(ret)<br>    &#125;;<br><br>    Pin::new(&amp;<span class="hljs-keyword">mut</span> generator).resume(());<br>    Pin::new(&amp;<span class="hljs-keyword">mut</span> generator).resume(());<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>enum __Generator</code>   就是生成的匿名结构，编译器会为其实现  Generate trait，就是上面分析所说的状态机核心逻辑。</p>
+<p>总的来说，就是通过 <strong>闭包 + 状态机</strong>，实现了整个 Generator。</p>
+<p>有了 Generator 的基础，再去看 async/await 的实现，就会轻松不少。我们只需要去关心，究竟是如何将 async/await 转换成闭包，并且用 <strong>状态匹配 + 状态转移</strong> 的方式去驱动执行。</p>
+<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs vbnet"><span class="hljs-symbol">Tips:</span><br>  需要提示一点，generator 在 Rust 中仍然是实验性的功能，只不过目前的 <span class="hljs-keyword">async</span>/<span class="hljs-built_in">await</span> 底层是借助了这一点来实现，未来不保证会不会修  改为别的方案，因为自引用结构的确有一些 annoying<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-2-HIR-amp-MIR"><a href="#2-2-HIR-amp-MIR" class="headerlink" title="2.2 HIR &amp; MIR"></a>2.2 HIR &amp; MIR</h3><p>Rust 针对 async/await 的处理，主要分为 HIR 和 MIR 两个阶段。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">Tips:<br>    Rust 面向 LLVM 编程，但是 rustc 编译器也做了非常多的优化，将其划分为 HIR，MIR <br>    <br>    1. HIR. 全称是 <span class="hljs-string">&quot;high-level (H) intermediate representation (IR)&quot;</span>，可以将其理解为 AST 的另一中表示方式，主要是将语法糖  做了转换。<br><br>    2. MIR. The <span class="hljs-string">&quot;mid-level (M) intermediate representation (IR)&quot;</span>。HIR 的简化版本，将高级的表达形式，转换成更加低级的结   构。rust 中的生命周期在这里会被抹除。<br><br>    3. LIR. Rust 中相当于 LLVM-IR。<span class="hljs-string">&quot;low-level (L) intermediate representation (IR)&quot;</span> 是一种非常接近机器码的表示方式，会  对 MIR 做进一步的精简。<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-1-HIR"><a href="#2-2-1-HIR" class="headerlink" title="2.2.1 HIR"></a>2.2.1 HIR</h4><p>在 HIR 中，其实是针对 <code>async fn test(f: F) where F:Future &#123; f.await &#125;</code> 做了脱糖处理。</p>
+<p>比如，在 HIR 的表达式解析模块中，会将 async 代码块构造为一个实现了 future trait 的 generator：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs rust">std::future::from_generator(<span class="hljs-keyword">static</span> <span class="hljs-keyword">move</span>? |_task_context| -&gt; &lt;ret_ty&gt; &#123;<br>    &lt;body&gt;<br>&#125;)<br></code></pre></td></tr></table></figure>
+
+<p>会将 <code>&lt;expr&gt;.await</code> desugar 变为一个 <code>loop + match</code>。如果返回 Pending，下一句将会执行 <code>yield</code>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">match</span> &lt;expr&gt; &#123;<br>    <span class="hljs-keyword">mut</span> pinned =&gt; <span class="hljs-keyword">loop</span> &#123;<br>        <span class="hljs-keyword">match</span> <span class="hljs-keyword">unsafe</span> &#123; ::std::future::Future::poll(<br>            &lt;::std::pin::Pin&gt;::new_unchecked(&amp;<span class="hljs-keyword">mut</span> pinned),<br>            ::std::future::get_context(task_context),<br>        ) &#125; &#123;<br>            ::std::task::Poll::Ready(result) =&gt; <span class="hljs-keyword">break</span> result,<br>            ::std::task::Poll::Pending =&gt; &#123;&#125;<br>        &#125;<br>        task_context = <span class="hljs-keyword">yield</span> ();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>也就是说，会将 async 代码块翻译为 <code>from_generator</code> 生成的匿名结构体，这个结构体由编译器实现 Future trait。</p>
+<p>你可能会好奇，GeneratorState 和 Poll 并<strong>不兼容</strong>啊，前者返回 GeneratorState，后者返回 Poll，这是为什么呢？别担心，在 GeFuture::poll 函数中，特别做了处理：</p>
+<p>GenFuture 包装了一个 Generator 的时候，GenFuture::poll 其实会调用内部的 generator 的 resume 方法，返回的 Yield 对应 Pending，Complete 对应 Ready。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">GenFuture</span></span>&lt;T: Generator&lt;Yield = ()&gt;&gt;(T);<br><br><span class="hljs-keyword">impl</span>&lt;T: Generator&lt;Yield = ()&gt;&gt; !Unpin <span class="hljs-keyword">for</span> GenFuture&lt;T&gt; &#123;&#125;<br><br><span class="hljs-meta">#[unstable(feature = <span class="hljs-meta-string">&quot;gen_future&quot;</span>, issue = <span class="hljs-meta-string">&quot;50547&quot;</span>)]</span><br><span class="hljs-keyword">impl</span>&lt;T: Generator&lt;Yield = ()&gt;&gt; Future <span class="hljs-keyword">for</span> GenFuture&lt;T&gt; &#123;<br>    <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Output</span></span> = T::Return;<br>    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">poll</span></span>(<span class="hljs-keyword">self</span>: Pin&lt;&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">Self</span>&gt;, cx: &amp;<span class="hljs-keyword">mut</span> Context&lt;<span class="hljs-symbol">&#x27;_</span>&gt;) -&gt; Poll&lt;Self::Output&gt; &#123;<br>        <span class="hljs-comment">// Safe because we&#x27;re !Unpin + !Drop mapping to a ?Unpin value</span><br>        <span class="hljs-keyword">let</span> gen = <span class="hljs-keyword">unsafe</span> &#123; Pin::map_unchecked_mut(<span class="hljs-keyword">self</span>, |s| &amp;<span class="hljs-keyword">mut</span> s.<span class="hljs-number">0</span>) &#125;;<br>        set_task_context(cx, || <span class="hljs-keyword">match</span> gen.resume() &#123;<br>            GeneratorState::Yielded(()) =&gt; Poll::Pending,<br>            GeneratorState::Complete(x) =&gt; Poll::Ready(x),<br>        &#125;)<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">from_generator</span></span>&lt;T: Generator&lt;Yield = ()&gt;&gt;(x: T) -&gt; <span class="hljs-keyword">impl</span> Future&lt;Output = T::Return&gt; &#123;<br>    GenFuture(x)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这一部分源码在 <a target="_blank" rel="noopener" href="https://github.com/rust-lang/rust/blob/master/compiler/rustc_ast_lowering/src/expr.rs">rust expr code</a>，<a target="_blank" rel="noopener" href="https://doc.bccnsoft.com/docs/rust-1.36.0-docs-html/src/std/future.rs.html#20-22">GenFuture code</a> 中可以找到，</p>
+<p>到这一步为止，HIR 对于 async 代码块的处理就完成了，接下来是最重要的 MIR 处理。</p>
+<h4 id="2-2-2-MIR"><a href="#2-2-2-MIR" class="headerlink" title="2.2.2 MIR"></a>2.2.2 MIR</h4><p>MIR 中有一个 <a target="_blank" rel="noopener" href="https://github.com/rust-lang/rust/blob/master/compiler/rustc_mir_transform/src/generator.rs">transform</a> 模块专门做了这件事情。</p>
+<p>其实主要的处理逻辑我们已经看过了，就是将 yield 转换成匿名 enum，并插入多个 yield point即可。这里并不过多展开。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/rust/">rust</a>
+                    
+                      <a class="hover-with-bg" href="/categories/rust/async/">async</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/11/24/rust/futures/future-explained1/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">future explained(1)</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/11/23/linux/tracing/index/">
+                        <span class="hidden-mobile">linux tracing</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+  <div class="col-lg-7 mx-auto nopadding-x-md">
+    <div class="container custom post-custom mx-auto">
+      <img src="https://octodex.github.com/images/jetpacktocat.png" srcset="/img/loading.gif" lazyload class="rounded mx-auto d-block mt-5" style="width:150px; height:150px;">
+    </div>
+  </div>
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

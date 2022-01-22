@@ -203,15 +203,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/09/linux-tracing/perf/" target="_self">
-          how perf works
+        <a href="/2022/01/09/linux/tracing/tracepoint/" target="_self">
+          tracepoint
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/09/linux-tracing/perf/" target="_self">
+        <a href="/2022/01/09/linux/tracing/tracepoint/" target="_self">
           
-          perf1. perf 是什么perf  这个工具大家可能都用过，非常强大，但是也不免让人好奇，底层是如何实现的呢？ 官方的定义为：Perf 是访问 processor monitor unit (PMU) 以及记录和展示 software events（例如页面错误）的接口。 它支持系统范围、线程级别和 KVM 虚拟化的各种监控。 但这种解释还是无法让人完全理解，别着急，听我慢慢道来。 首先明确
+          1. TraceEvent 是什么要搞明白 TraceEvent，首先要去了解一下 Tracepoint。 1.1 tracepointTracepoint 是内核中一种探测的机制。放置在代码中的 tracepoint（跟踪点）提供了一个钩子来调用您可以在运行时提供的函数（probe）。 tracepoint 可以是 “on”（开启）或 “off”（关闭）。 当跟踪点关闭时，它没有任何影响，除了添
         </a>
       </p>
 
@@ -228,7 +228,9 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/trace/">trace</a>
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/trace/">trace</a>
             
           </div>
         
@@ -243,15 +245,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/09/linux-tracing/tracepoint/" target="_self">
-          tracepoint
+        <a href="/2022/01/09/linux/tracing/perf/" target="_self">
+          how perf works
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/09/linux-tracing/tracepoint/" target="_self">
+        <a href="/2022/01/09/linux/tracing/perf/" target="_self">
           
-          TraceEvent1. TraceEvent 是什么要搞明白 TraceEvent，首先要去了解一下 Tracepoint。 1.1 tracepointTracepoint 是内核中一种探测的机制。放置在代码中的 tracepoint（跟踪点）提供了一个钩子来调用您可以在运行时提供的函数（probe）。 tracepoint 可以是 “on”（开启）或 “off”（关闭）。 当跟踪点关闭时，它
+          1. perf 是什么perf  这个工具大家可能都用过，非常强大，但是也不免让人好奇，底层是如何实现的呢？ 官方的定义为：Perf 是访问 processor monitor unit (PMU) 以及记录和展示 software events（例如页面错误）的接口。 它支持系统范围、线程级别和 KVM 虚拟化的各种监控。 但这种解释还是无法让人完全理解，别着急，听我慢慢道来。 首先明确一点：p
         </a>
       </p>
 
@@ -268,7 +270,9 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/trace/">trace</a>
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/trace/">trace</a>
             
           </div>
         

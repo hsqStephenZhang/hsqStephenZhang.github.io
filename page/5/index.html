@@ -269,135 +269,141 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/11/24/rust/future-explained0/" target="_self">
-          future explained(0)
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/11/24/rust/future-explained0/" target="_self">
-          
-          Future explained(0)  – state machine 原理generator（生成器）是 Rust 中 async&#x2F;await 的基础，state machine 又是生成器的基础。 和闭包类似，不同的编译器会给 generator 生成不同的语义。但有一点是约定俗成的，也就是生成器最大的特点：程序的执行流程可以在生成器和调用者之间来回切换。 当我们需要暂时从生成器中返回的时候
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-11-24 14:01" pubdate>
-              2021-11-24
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/rust-future/">rust future</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/11/24/rust/future-explained1/" target="_self">
-          future explained(1)
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/11/24/rust/future-explained1/" target="_self">
-          
-          Future explained (1)  –  Future, executor, reactor在上一篇文章中，我们深入分析了 async&#x2F;await 状态机的底层实现，接下我们就可以进一步探究，Rust 中的 Future ，以及为什么会出现 自引用结构。 1. Future 是什么在浏览本节之前，希望你可以大致了解一下 Future 设计思想的演进过程，比如 javascript 中的 P
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-11-24 14:01" pubdate>
-              2021-11-24
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/rust-future/">rust future</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/11/24/rust/future-explained2/" target="_self">
-          future explained(2)
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/11/24/rust/future-explained2/" target="_self">
-          
-          Future explained(2)  – self referential前面提到了，future 其实分为 Non-Leaf-Future 和 Leaf-Future，前者由 async&#x2F;await 生成，后者由开发者手动对接系统 Io。 那么为什么会出现 self referential 的问题呢？ 其实主要的原因出现在 async&#x2F;await 生成的 Non-Leaf-Future 上！
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-11-24 14:01" pubdate>
-              2021-11-24
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/rust-future/">rust future</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/11/24/rust/future-explained3/" target="_self">
+        <a href="/2021/11/24/rust/futures/future-explained3/" target="_self">
           future explained(3)
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/11/24/rust/future-explained3/" target="_self">
+        <a href="/2021/11/24/rust/futures/future-explained3/" target="_self">
           
-          future explained(3)  – Pin 心路历程withoutboats 是 Rust 异步的主要负责人，他在一次分享中详细描述了 Pin 的演变过程和背后的心路历程 一. Future 模式引入在 Rust 之前的很多语言，绝大多数选择了回调机制实现的异步逻辑，比如C语言中的 libevent，再还有 nodejs 中的 callback。首先在 Rust 中，你很难写出 node
+          withoutboats 是 Rust 异步的主要负责人，他在一次分享中详细描述了 Pin 的演变过程和背后的心路历程 1. Future 模式引入在 Rust 之前的很多语言，绝大多数选择了回调机制实现的异步逻辑，比如C语言中的 libevent，再还有 nodejs 中的 callback。首先在 Rust 中，你很难写出 nodejs 那种回调模式的异步代码，下面是一小段典型的 nodejs
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-11-24 14:04" pubdate>
+              2021-11-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/rust/">rust</a>
+            
+              <a href="/categories/rust/async/">async</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/11/24/rust/futures/future-explained2/" target="_self">
+          future explained(2)
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/11/24/rust/futures/future-explained2/" target="_self">
+          
+          前面提到了，future 其实分为 Non-Leaf-Future 和 Leaf-Future，前者由 async&#x2F;await 生成，后者由开发者手动对接系统 Io。 那么为什么会出现 self referential 的问题呢？ 其实主要的原因出现在 async&#x2F;await 生成的 Non-Leaf-Future 上！ 试想下面的这段代码 1234async fn test()&amp;#123;
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-11-24 14:03" pubdate>
+              2021-11-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/rust/">rust</a>
+            
+              <a href="/categories/rust/async/">async</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/11/24/rust/futures/future-explained1/" target="_self">
+          future explained(1)
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/11/24/rust/futures/future-explained1/" target="_self">
+          
+          在Post not found: rust&#x2F;future-explained0 上一篇文章中，我们深入分析了 async&#x2F;await 状态机的底层实现，接下我们就可以进一步探究，Rust 中的 Future ，以及为什么会出现 自引用结构。 1. Future 是什么在浏览本节之前，希望你可以大致了解一下 Future 设计思想的演进过程，比如 javascript 中的 Promise 那么 R
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-11-24 14:02" pubdate>
+              2021-11-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/rust/">rust</a>
+            
+              <a href="/categories/rust/async/">async</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/11/24/rust/futures/future-explained0/" target="_self">
+          future explained(0)
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/11/24/rust/futures/future-explained0/" target="_self">
+          
+          generator（生成器）是 Rust 中 async&#x2F;await 的基础，state machine 又是生成器的基础。 和闭包类似，不同的编译器会给 generator 生成不同的语义。但有一点是约定俗成的，也就是生成器最大的特点：程序的执行流程可以在生成器和调用者之间来回切换。 当我们需要暂时从生成器中返回的时候，可以使用 yield 关键字，当调用者希望再次进入生成器的时候，就调用 re
         </a>
       </p>
 
@@ -414,7 +420,9 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/rust-future/">rust future</a>
+              <a href="/categories/rust/">rust</a>
+            
+              <a href="/categories/rust/async/">async</a>
             
           </div>
         
@@ -429,13 +437,13 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/11/23/linux-tracing/index/" target="_self">
+        <a href="/2021/11/23/linux/tracing/index/" target="_self">
           linux tracing
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/11/23/linux-tracing/index/" target="_self">
+        <a href="/2021/11/23/linux/tracing/index/" target="_self">
           
           1. SummerizeLinux 中的 tracing 机制非常丰富，比如最火热的 ebpf，还有老牌的 perf，systemtap，kprobe，tracepoint，uprobe，usdt，bcc，ftrace，这些花样繁多的手段，其实都可以完成一定程度上的 tracing 功能，但是也给我们带来了幸福的烦恼：选择困难！ 看上去每一种方式都可以解决一定的问题，他们之间还有很多功能重叠的地方
         </a>
@@ -450,6 +458,15 @@
             </time>
           </div>
         
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/trace/">trace</a>
+            
+          </div>
         
         
       </div>

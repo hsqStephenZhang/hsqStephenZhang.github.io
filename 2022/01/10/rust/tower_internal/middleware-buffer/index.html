@@ -1,0 +1,491 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="mem::swap(Rust, 🦀 )">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="不知道大家有没有发现，Tower Service trait 中，要求 ready + call 都接收一个 &amp;mut self，这也就意味着，我们无法将其很好地扩展到多线程上！ 你可能会觉得，针对每一个 service，调用一下 service.clone()，再传入不就好了吗？但假如一个 Service 包装了很多中间件，clone 的开销也是不可小觑的。 Tower 提供了这样一个中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2.5 middleware-buffer">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2022/01/10/rust/tower_internal/middleware-buffer/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="不知道大家有没有发现，Tower Service trait 中，要求 ready + call 都接收一个 &amp;mut self，这也就意味着，我们无法将其很好地扩展到多线程上！ 你可能会觉得，针对每一个 service，调用一下 service.clone()，再传入不就好了吗？但假如一个 Service 包装了很多中间件，clone 的开销也是不可小觑的。 Tower 提供了这样一个中">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-01-10T05:47:40.000Z">
+<meta property="article:modified_time" content="2022-01-22T14:32:51.448Z">
+<meta property="article:author" content="mem::swap(Rust, 🦀 )">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>2.5 middleware-buffer - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"hsqstephenzhang.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>mem::swap</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-user-fill"></i>
+                Links
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="2.5 middleware-buffer">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-01-10 13:47" pubdate>
+        January 10, 2022 pm
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.7k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      40 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">2.5 middleware-buffer</h1>
+            
+            <div class="markdown-body">
+              <p>不知道大家有没有发现，Tower Service trait 中，要求 <code>ready + call</code> 都接收一个 <code>&amp;mut self</code>，这也就意味着，我们无法将其很好地扩展到多线程上！</p>
+<p>你可能会觉得，针对每一个 service，调用一下 <code>service.clone()</code>，再传入不就好了吗？但假如一个 Service 包装了很多中间件，clone 的开销也是不可小觑的。</p>
+<p>Tower 提供了这样一个中间件：将一个 <code>multiproducer, single consumer channel</code> 和某个服务绑定，客户端可以通过任意 Clone 得到的 Buffer Service 句柄发送请求，由 <code>single consumer</code>，也就是 Worker 依次处理请求，为我们探测内层 Service 的状态，等到，同时将 Response 通过某种方式发送回请求者。</p>
+<h2 id="1-channel-semaphore-模型"><a href="#1-channel-semaphore-模型" class="headerlink" title="1. channel + semaphore 模型"></a>1. channel + semaphore 模型</h2><p>进一步分析 Buffer 的定义：需要一个 mspc channel 来存放所有的请求，有多个 service 句柄可以发送请求，单个 worker 处理请求，但同时我们又希望对于该 channel 容量加以控制，更专业的术语叫做 <code>backpressure</code>，即需要根据<strong>有限的服务处理能力</strong>限制请求数量。<br>不难想到很多异步 runtime 都提供的 bounded mspc channel 非常适合描述这种模型，并且 tokio 等 runtime 都已经提供了完善的实现，可不幸的是，<code>Tokio bounded mspc channel</code> 并没有提供 polling-based 的接口，因此，我们不得不自己造一个 bounded mspc channel 的轮子。</p>
+<p>幸运的是，我们也不是从零起步，完全可以借助已有的一些设施：<code>unbounded channel + semaphore</code><br>Semaphore 这个之前已经在 <a href="./middleware-concurrency.md">ConcurrencyLimit</a> 中使用过的数据结构，没错，又是将服务处理能力抽象为 Semaphore 的计数，每次需要向 Semaphore 获取许可 permit，才能接着往下进行，并且当请求处理结束之后，需要将许可返还给 Semaphore，这样才能循环利用。<br>有了 Semaphore，就可以对 unbounded channel 容量做出限制，正好符合我们的需求。</p>
+<p>因此 Buffer 定义了下面的结构：</p>
+<ol>
+<li>tx 是 mpsc channel 的发送端</li>
+<li>semaphore 是所有 service 句柄共享的信号量</li>
+<li>permit 是当前 service 获取的服务调用许可</li>
+<li>handle 是对于服务内部错误的处理</li>
+</ol>
+<figure class="highlight rust"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><pre><code class="hljs rust"><span class="hljs-meta">#[derive(Debug)]</span><br><span class="hljs-keyword">pub</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Buffer</span></span>&lt;T, Request&gt;<br><span class="hljs-keyword">where</span><br>    T: Service&lt;Request&gt;,<br>&#123;<br>    tx: mpsc::UnboundedSender&lt;Message&lt;Request, T::Future&gt;&gt;,<br>    semaphore: PollSemaphore,<br>    permit: <span class="hljs-built_in">Option</span>&lt;OwnedSemaphorePermit&gt;,<br>    handle: Handle,<br>&#125;<br><br><span class="hljs-meta">#[derive(Debug)]</span><br><span class="hljs-keyword">pub</span>(<span class="hljs-keyword">crate</span>) <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Handle</span></span> &#123;<br>    inner: Arc&lt;Mutex&lt;<span class="hljs-built_in">Option</span>&lt;ServiceError&gt;&gt;&gt;,<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Buffer 保存了 channel 的发送端，每一个 clone 出来的 buffer，都可以发送请求，与此同时还需要有一个对应的接收端，从 channel 中不断取出请求，这样才能驱动 <code>producer-consumer</code> 模型运转，不难想象我们其实在 Buffer::new 中处理了这件事</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">impl</span>&lt;T, Request&gt; Buffer&lt;T, Request&gt;<br><span class="hljs-keyword">where</span><br>    T: Service&lt;Request&gt;,<br>    T::Error: <span class="hljs-built_in">Into</span>&lt;crate::BoxError&gt;,<br>&#123;<br>    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">new</span></span>(service: T, bound: <span class="hljs-built_in">usize</span>) -&gt; <span class="hljs-keyword">Self</span><br>    <span class="hljs-keyword">where</span><br>        T: <span class="hljs-built_in">Send</span> + <span class="hljs-symbol">&#x27;static</span>,<br>        T::Future: <span class="hljs-built_in">Send</span>,<br>        T::Error: <span class="hljs-built_in">Send</span> + <span class="hljs-built_in">Sync</span>,<br>        Request: <span class="hljs-built_in">Send</span> + <span class="hljs-symbol">&#x27;static</span>,<br>    &#123;<br>        <span class="hljs-keyword">let</span> (service, worker) = Self::pair(service, bound);<br>        tokio::spawn(worker);<br>        service<br>    &#125;<br><br>    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">pair</span></span>(service: T, bound: <span class="hljs-built_in">usize</span>) -&gt; (Buffer&lt;T, Request&gt;, Worker&lt;T, Request&gt;)<br>    <span class="hljs-keyword">where</span><br>        T: <span class="hljs-built_in">Send</span> + <span class="hljs-symbol">&#x27;static</span>,<br>        T::Error: <span class="hljs-built_in">Send</span> + <span class="hljs-built_in">Sync</span>,<br>        Request: <span class="hljs-built_in">Send</span> + <span class="hljs-symbol">&#x27;static</span>,<br>    &#123;<br>        <span class="hljs-keyword">let</span> (tx, rx) = mpsc::unbounded_channel();<br>        <span class="hljs-keyword">let</span> semaphore = Arc::new(Semaphore::new(bound));<br>        <span class="hljs-keyword">let</span> (handle, worker) = Worker::new(service, rx, &amp;semaphore);<br>        <span class="hljs-keyword">let</span> buffer = Buffer &#123;<br>            tx,<br>            handle,<br>            semaphore: PollSemaphore::new(semaphore),<br>            permit: <span class="hljs-literal">None</span>,<br>        &#125;;<br>        (buffer, worker)<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">get_worker_error</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; crate::BoxError &#123;<br>        <span class="hljs-keyword">self</span>.handle.get_error_on_closed()<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="2-总结"><a href="#2-总结" class="headerlink" title="2. 总结"></a>2. 总结</h2><p>在 Buffer 这个中间件中，我们不仅学习到 mspc 的请求处理模式还需要注意一个坑</p>
+<p>如果我们定义了下面的中间件，简单地将内部的服务包装一层，返回一个 Box::pin 类型的 Future，看上去一切 Ok，但是，当内层服务包含了 Buffer 的时候，会出现一个巨大的问题！</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">impl</span>&lt;S&gt; Service&lt;hyper::Request&lt;Body&gt;&gt; <span class="hljs-keyword">for</span> MyMiddleware&lt;S&gt;<br><span class="hljs-keyword">where</span><br>    S: Service&lt;hyper::Request&lt;Body&gt;, Response = hyper::Response&lt;BoxBody&gt;&gt; + <span class="hljs-built_in">Clone</span> + <span class="hljs-built_in">Send</span> + <span class="hljs-symbol">&#x27;static</span>,<br>    S::Future: <span class="hljs-built_in">Send</span> + <span class="hljs-symbol">&#x27;static</span>,<br>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Response</span></span> = S::Response;<br>    <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Error</span></span> = S::Error;<br>    <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Future</span></span> = futures::future::BoxFuture&lt;<span class="hljs-symbol">&#x27;static</span>, <span class="hljs-built_in">Result</span>&lt;Self::Response, Self::Error&gt;&gt;;<br><br>    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">poll_ready</span></span>(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>, cx: &amp;<span class="hljs-keyword">mut</span> Context&lt;<span class="hljs-symbol">&#x27;_</span>&gt;) -&gt; Poll&lt;<span class="hljs-built_in">Result</span>&lt;(), Self::Error&gt;&gt; &#123;<br>        <span class="hljs-keyword">self</span>.inner.poll_ready(cx)<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">call</span></span>(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>, req: hyper::Request&lt;Body&gt;) -&gt; Self::Future &#123;<br>        <span class="hljs-keyword">let</span> inner = <span class="hljs-keyword">self</span>.inner.clone();<br>        <span class="hljs-built_in">Box</span>::pin(<span class="hljs-keyword">async</span> <span class="hljs-keyword">move</span> &#123;<br>            <span class="hljs-keyword">let</span> response = inner.call(req).<span class="hljs-keyword">await</span>?;<br>            <span class="hljs-literal">Ok</span>(response)<br>        &#125;)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>具体什么问题呢？经过试验，出现了这个错误信息：<br><code>panicked at &#39;buffer full; poll_ready must be called first&#39;</code></p>
+<p>what？我们的调用方式明明是 <code>svc.ready().await.unwrap().call(req).await;</code>，按道理已经调用过 <code>poll_ready()</code> 了<br>进一步查看 Buffer 的代码中，是这样确保 poll_ready 和 call 之间的调用次序的：在 poll_ready 中获取 permit，在 call 中取出 permit，如果 call 中取出的 permit 为 None，说明错误调用了 poll_ready 和call，问题的关键在于 <strong>permit</strong>。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-comment">// poll_ready:</span><br><span class="hljs-keyword">let</span> permit =<br>    ready!(<span class="hljs-keyword">self</span>.semaphore.poll_acquire(cx)).ok_or_else(|| <span class="hljs-keyword">self</span>.get_worker_error())?;<br><br><span class="hljs-comment">// call:</span><br><span class="hljs-keyword">let</span> _permit = <span class="hljs-keyword">self</span><br>    .permit<br>    .take()<br>    .expect(<span class="hljs-string">&quot;buffer full; poll_ready must be called first&quot;</span>);<br></code></pre></td></tr></table></figure>
+
+<p>定位到这一点，接下来的问题就很好找了，在 MyMiddleware::call 中，实际上 Clone 得到的服务，里面已经没有 permit 了，或者说，每当一个 Buffer Clone 出去，该 clone 的服务都无 permit，这一点通过源码也很容易定位，其注释也强调了这一点：Clone 得到的 service，必须要 poll_ready 返回 Ready 才能调用。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">impl</span>&lt;T, Request&gt; <span class="hljs-built_in">Clone</span> <span class="hljs-keyword">for</span> Buffer&lt;T, Request&gt;<br><span class="hljs-keyword">where</span><br>    T: Service&lt;Request&gt;,<br>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">clone</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; <span class="hljs-keyword">Self</span> &#123;<br>        <span class="hljs-keyword">Self</span> &#123;<br>            tx: <span class="hljs-keyword">self</span>.tx.clone(),<br>            handle: <span class="hljs-keyword">self</span>.handle.clone(),<br>            semaphore: <span class="hljs-keyword">self</span>.semaphore.clone(),<br>            <span class="hljs-comment">// The new clone hasn&#x27;t acquired a permit yet. It will when it&#x27;s</span><br>            <span class="hljs-comment">// next polled ready.</span><br>            permit: <span class="hljs-literal">None</span>,<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>我们解决的办法很简单，因为只有已经 ready 的服务才能调用，所以，我们 Clone 得到一个未 ready 的服务，然后将其和当前服务置换，这样闭包捕获的 inner 就是已经获取了 Semaphore permit 的服务了，再调用就不会有问题。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">call</span></span>(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>, req: hyper::Request&lt;Body&gt;) -&gt; Self::Future &#123;<br>    <span class="hljs-keyword">let</span> clone = <span class="hljs-keyword">self</span>.inner.clone();<br>    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> inner = std::mem::replace(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>.inner, clone);<br><br>    <span class="hljs-built_in">Box</span>::pin(<span class="hljs-keyword">async</span> <span class="hljs-keyword">move</span> &#123;<br>        <span class="hljs-comment">// Do extra async work here...</span><br>        <span class="hljs-keyword">let</span> response = inner.call(req).<span class="hljs-keyword">await</span>?;<br><br>        <span class="hljs-literal">Ok</span>(response)<br>    &#125;)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/rust/">rust</a>
+                    
+                      <a class="hover-with-bg" href="/categories/rust/tower/">tower</a>
+                    
+                      <a class="hover-with-bg" href="/categories/rust/tower/middlewares/">middlewares</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/01/18/linux/initcall/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Linux initcall 机制</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/01/10/rust/tower_internal/middleware-concurrency/">
+                        <span class="hidden-mobile">2.4 tower-concurrency limit</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+  <div class="col-lg-7 mx-auto nopadding-x-md">
+    <div class="container custom post-custom mx-auto">
+      <img src="https://octodex.github.com/images/jetpacktocat.png" srcset="/img/loading.gif" lazyload class="rounded mx-auto d-block mt-5" style="width:150px; height:150px;">
+    </div>
+  </div>
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
