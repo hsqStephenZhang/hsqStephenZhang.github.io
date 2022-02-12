@@ -19,12 +19,12 @@
     <meta name="description" content="1. WSL2 安装1.1 安装和启动 wsl首先使用管理员权限(windows + R)打开 powershell&#x2F;cmd&#x2F;windows terminal，输入下面的指令，也就是打开 windows subsystem for linux 的功能 123dism.exe &#x2F;online &#x2F;enable-feature &#x2F;featurename:Microsoft-Windows-Subsyst">
 <meta property="og:type" content="article">
 <meta property="og:title" content="wsl 开发环境配置">
-<meta property="og:url" content="https://hsqstephenzhang.github.io/2021/12/25/programming/wsl%20configuration/index.html">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2022/02/12/toss/wsl%20configuration/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="1. WSL2 安装1.1 安装和启动 wsl首先使用管理员权限(windows + R)打开 powershell&#x2F;cmd&#x2F;windows terminal，输入下面的指令，也就是打开 windows subsystem for linux 的功能 123dism.exe &#x2F;online &#x2F;enable-feature &#x2F;featurename:Microsoft-Windows-Subsyst">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2021-12-25T07:59:16.204Z">
-<meta property="article:modified_time" content="2021-12-25T13:07:57.807Z">
+<meta property="article:published_time" content="2022-02-12T02:47:45.000Z">
+<meta property="article:modified_time" content="2022-02-12T02:52:30.732Z">
 <meta property="article:author" content="mem::swap(Rust, 🦀 )">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -197,8 +197,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-12-25 15:59" pubdate>
-        December 25, 2021 pm
+      <time datetime="2022-02-12 10:47" pubdate>
+        February 12, 2022 am
       </time>
     </span>
   
@@ -208,7 +208,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      undefined 字
+      4.4k 字
     </span>
   
 
@@ -217,7 +217,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      NaN 分钟
+      37 分钟
     </span>
   
 
@@ -250,7 +250,7 @@
             
             <div class="markdown-body">
               <h2 id="1-WSL2-安装"><a href="#1-WSL2-安装" class="headerlink" title="1. WSL2 安装"></a>1. WSL2 安装</h2><h3 id="1-1-安装和启动-wsl"><a href="#1-1-安装和启动-wsl" class="headerlink" title="1.1 安装和启动 wsl"></a>1.1 安装和启动 wsl</h3><p>首先使用管理员权限(windows + R)打开 powershell/cmd/windows terminal，输入下面的指令，也就是打开 <code>windows subsystem for linux</code> 的功能</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dism.exe /online /<span class="built_in">enable-feature</span> /featurename:Microsoft<span class="literal">-Windows</span><span class="literal">-Subsystem</span><span class="literal">-Linux</span> /all /norestart</span><br><span class="line">dism.exe /online /<span class="built_in">enable-feature</span> /featurename:VirtualMachinePlatform /all /norestart</span><br><span class="line">wsl -<span class="literal">-set</span><span class="literal">-default</span><span class="literal">-version</span> <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><pre><code class="hljs powershell">dism.exe /online /<span class="hljs-built_in">enable-feature</span> /featurename:Microsoft<span class="hljs-literal">-Windows</span><span class="hljs-literal">-Subsystem</span><span class="hljs-literal">-Linux</span> /all /norestart<br>dism.exe /online /<span class="hljs-built_in">enable-feature</span> /featurename:VirtualMachinePlatform /all /norestart<br>wsl -<span class="hljs-literal">-set</span><span class="hljs-literal">-default</span><span class="hljs-literal">-version</span> <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
 
 <p>重启电脑，这一步就完成了</p>
 <h3 id="1-2-安装-Linux-发行版"><a href="#1-2-安装-Linux-发行版" class="headerlink" title="1.2 安装 Linux 发行版"></a>1.2 安装 Linux 发行版</h3><p>这一步骤也极其简单：在 <code>Microsoft Store</code> 中下载 ubuntu 或者 kali 发行版，就可以打开使用了。</p>
@@ -262,65 +262,77 @@
 <li>启动 Arch 程序，可以通过 Windows Terminal（因为此时已经注册到系统当中了），也可以双击刚刚的 Arch 程序打开命令行窗口</li>
 </ol>
 <p>注意，如果你已经安装了 Ubuntu 等别的发型版，会出现多个 Wsl 系统，虽然它们可以共存，但有一个会默认打开，可以通过 powershell 中的 <code>wslconfig</code> 命令修改默认版本，（如果使用 vscode wsl 连接，需要将 Arch 设置为默认的 wsl，因为该扩展暂时不支持 arch 的识别`</p>
-<h2 id="2-Arch-Linux-配置"><a href="#2-Arch-Linux-配置" class="headerlink" title="2. Arch Linux 配置"></a>2. Arch Linux 配置</h2><h3 id="2-1-导入密钥"><a href="#2-1-导入密钥" class="headerlink" title="2.1 导入密钥"></a>2.1 导入密钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pacman-key --init &amp;&amp; pacman-key --populate archlinux &amp;&amp; pacman-key --refresh-keys</span><br></pre></td></tr></table></figure>
+<h2 id="2-Arch-Linux-配置"><a href="#2-Arch-Linux-配置" class="headerlink" title="2. Arch Linux 配置"></a>2. Arch Linux 配置</h2><h3 id="2-1-导入密钥"><a href="#2-1-导入密钥" class="headerlink" title="2.1 导入密钥"></a>2.1 导入密钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pacman-key --init &amp;&amp; pacman-key --populate archlinux &amp;&amp; pacman-key --refresh-keys<br></code></pre></td></tr></table></figure>
 
-<h3 id="2-2-更新软件源"><a href="#2-2-更新软件源" class="headerlink" title="2.2 更新软件源"></a>2.2 更新软件源</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch&#x27;</span> &gt;&gt; /etc/pacman.d/mirrorlist</span><br><span class="line">pacman -Syy</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-更新软件源"><a href="#2-2-更新软件源" class="headerlink" title="2.2 更新软件源"></a>2.2 更新软件源</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch&#x27;</span> &gt;&gt; /etc/pacman.d/mirrorlist<br>pacman -Syy<br></code></pre></td></tr></table></figure>
 
-<h3 id="2-3-安装常用开发软件"><a href="#2-3-安装常用开发软件" class="headerlink" title="2.3 安装常用开发软件"></a>2.3 安装常用开发软件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pacman -yS openssh zsh <span class="built_in">which</span> wget curl git aria2 bison flex texinfo gperf libtool patchutils bc zlib expat vi vim neovim rsync fd exa ripgrep tree cloc man python2 <span class="comment"># 基本软件</span></span><br><span class="line">pacman -yS clang llvm gdb clang-format cmake make ccls <span class="comment"># 编译必备</span></span><br><span class="line">pacman -yS ltrace libelf libbcc strace pahole bpftrace perf netmap trace-cmd liburing base-devel devtools <span class="comment"># 开发必备</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-3-安装常用开发软件"><a href="#2-3-安装常用开发软件" class="headerlink" title="2.3 安装常用开发软件"></a>2.3 安装常用开发软件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">pacman -yS openssh zsh <span class="hljs-built_in">which</span> wget curl git aria2 bison flex texinfo gperf libtool patchutils bc zlib expat vi vim neovim rsync fd exa ripgrep tree cloc man python2 <span class="hljs-comment"># 基本软件</span><br>pacman -yS clang llvm gdb clang-format cmake make ccls <span class="hljs-comment"># 编译必备</span><br>pacman -yS ltrace libelf libbcc strace pahole bpftrace perf netmap trace-cmd liburing base-devel devtools <span class="hljs-comment"># 开发必备</span><br></code></pre></td></tr></table></figure>
 
 <h3 id="2-4-zsh-配置"><a href="#2-4-zsh-配置" class="headerlink" title="2.4 zsh 配置"></a>2.4 zsh 配置</h3><p>首先将默认 shell 修改为 zsh</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chsh -s `<span class="built_in">which</span> zsh` <span class="comment"># 上一步已经安装了 zsh &amp; which </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">chsh -s `<span class="hljs-built_in">which</span> zsh` <span class="hljs-comment"># 上一步已经安装了 zsh &amp; which </span><br></code></pre></td></tr></table></figure>
 
 <p>下载 <code>oh-my-zsh</code>（若这一步中无法连接 github，可以使用 hub.fastgit.org 等国内镜像作为替代）</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh</span><br><span class="line">cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh<br>cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc<br></code></pre></td></tr></table></figure>
 
 <p></br></br></p>
 <p>配置 zsh 插件</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/paulirish/git-open.git <span class="variable">$ZSH_CUSTOM</span>/plugins/git-open</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-syntax-highlighting.git <span class="variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span>/plugins/zsh-syntax-highlighting</span><br><span class="line">git <span class="built_in">clone</span> git://github.com/zsh-users/zsh-autosuggestions <span class="variable">$ZSH_CUSTOM</span>/plugins/zsh-autosuggestions</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/paulirish/git-open.git <span class="hljs-variable">$ZSH_CUSTOM</span>/plugins/git-open<br>git <span class="hljs-built_in">clone</span> https://github.com/zsh-users/zsh-syntax-highlighting.git <span class="hljs-variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span>/plugins/zsh-syntax-highlighting<br>git <span class="hljs-built_in">clone</span> git://github.com/zsh-users/zsh-autosuggestions <span class="hljs-variable">$ZSH_CUSTOM</span>/plugins/zsh-autosuggestions<br></code></pre></td></tr></table></figure>
 
-<p>配置 <code>~/.zshrc</code> 中的 <code>plugins</code> 配置为 <code>plugins=(其他的插件 git-open zsh-autosuggestions zsh-autosuggestions z extract python)</code>（可以自己参考 <code>~/.oh-my-zsh/plugin</code> 中的插件目录，自行取舍）</p>
+<p>配置 <code>~/.zshrc</code> 中的 <code>plugins</code> 配置为 <code>plugins=(其他的插件 git-open zsh-autosuggestions zsh-autosuggestions z extract python)</code>（可以参考 <code>~/.oh-my-zsh/plugin</code> 中的插件目录，自行取舍）</p>
 <p></br></br></p>
 <p>配置 zsh 主题</p>
 <p>查看 <a target="_blank" rel="noopener" href="https://github.com/ohmyzsh/ohmyzsh/wiki/Themes">github wiki</a>，找到属于你自己的主题，之后在 <code>~/.zshrc</code> 中修改 <code>ZSH_THEME=&#39;xxx&#39;</code> 中的主题名称。</p>
 <p></br></br></p>
 <p>配置 zsh alias</p>
 <p>在 <code>~/.zshrc</code> 中配置下面信息（个人习惯），当然你也可以根据个人喜好配置属于自己的快捷键，或者你可以采用 oh-my-zsh 已经配置好的 <strong>zsh alias</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">alias</span> ls=exa</span><br><span class="line"><span class="built_in">alias</span> clo=<span class="string">&quot;git clone &quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">alias</span> ls=exa <span class="hljs-comment"># 需要安装 exa</span><br><span class="hljs-built_in">alias</span> clo=<span class="hljs-string">&quot;git clone &quot;</span><br><span class="hljs-built_in">alias</span> rm=trash   <span class="hljs-comment"># 需要安装 trash-cli</span><br></code></pre></td></tr></table></figure>
 
 <h3 id="2-5-python-配置"><a href="#2-5-python-配置" class="headerlink" title="2.5 python 配置"></a>2.5 python 配置</h3><p>安装 pip3/pip2:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl https://bootstrap.pypa.io/get-pip.py -o get-pip3.py <span class="comment"># get pip3</span></span><br><span class="line">python3 get-pip3.py</span><br><span class="line">pip config <span class="built_in">set</span> global.index-url https://pypi.tuna.tsinghua.edu.cn/simple <span class="comment"># set pip source</span></span><br><span class="line">curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip2.py <span class="comment"># get pip2 </span></span><br><span class="line">sudo python2 get-pip2.py</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl https://bootstrap.pypa.io/get-pip.py -o get-pip3.py <span class="hljs-comment"># get pip3</span><br>python3 get-pip3.py<br>pip config <span class="hljs-built_in">set</span> global.index-url https://pypi.tuna.tsinghua.edu.cn/simple <span class="hljs-comment"># set pip source</span><br>curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip2.py <span class="hljs-comment"># get pip2 </span><br>sudo python2 get-pip2.py<br></code></pre></td></tr></table></figure>
 
 <h3 id="2-6-nvim-vim-配置"><a href="#2-6-nvim-vim-配置" class="headerlink" title="2.6 nvim(vim) 配置"></a>2.6 nvim(vim) 配置</h3><p>通过 curl 下载 <code>vim-plug</code> 这个插件管理工具（这里使用了国内的源，你也可以自己找合适的源，建议通过 hub.fastgit.org/gitclone.com/github.com.cnpmjs.org 这几个网站查找）</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -fLo ~/.vim/<span class="built_in">autoload</span>/plug.vim --create-dirs \</span><br><span class="line">    https://ghproxy.fsou.cc/https://github.com/junegunn/vim-plug/blob/master/plug.vim</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl -fLo ~/.vim/<span class="hljs-built_in">autoload</span>/plug.vim --create-dirs \<br>    https://ghproxy.fsou.cc/https://github.com/junegunn/vim-plug/blob/master/plug.vim<br></code></pre></td></tr></table></figure>
 
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/hsqStephenZhang/neovim-config.git ~/.config/nvim</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/hsqStephenZhang/neovim-config.git ~/.config/nvim<br></code></pre></td></tr></table></figure>
 
-<p>接着打开 nvim，命令模式下输入 <code>:PlugInstall</code>，完成插件的安装</p>
-<h3 id="2-7-Rust-配置"><a href="#2-7-Rust-配置" class="headerlink" title="2.7 Rust 配置"></a>2.7 Rust 配置</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --proto <span class="string">&#x27;=https&#x27;</span> --tlsv1.2 -sSf https://sh.rustup.rs | sh</span><br></pre></td></tr></table></figure>
+<p>接着修改 <code>~/.config/nvim/init.vim</code> 并自行修改配置文件中的一些选项，比如插件设置，快捷键设置</p>
+<p>打开 nvim，命令模式下输入 <code>:PlugInstall</code>，完成插件的安装</p>
+<h3 id="2-7-Rust-配置"><a href="#2-7-Rust-配置" class="headerlink" title="2.7 Rust 配置"></a>2.7 Rust 配置</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl --proto <span class="hljs-string">&#x27;=https&#x27;</span> --tlsv1.2 -sSf https://sh.rustup.rs | sh<br></code></pre></td></tr></table></figure>
 
 <p>然后选择 custom 安装，将默认 rust 发行版修改为 nightly，其余的按照 default 选项安装即可，</p>
 <p>配置cargo 国内源，修改/创建 <code>~/.cargo/config</code> 为下面的内容：</p>
-<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[source.crates-io]</span></span><br><span class="line"><span class="attr">registry</span> = <span class="string">&quot;https://github.com/rust-lang/crates.io-index&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 替换成你偏好的镜像源</span></span><br><span class="line"><span class="attr">replace-with</span> = <span class="string">&#x27;ustc&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 清华大学</span></span><br><span class="line"><span class="section">[source.tuna]</span></span><br><span class="line"><span class="attr">registry</span> = <span class="string">&quot;https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 中国科学技术大学</span></span><br><span class="line"><span class="section">[source.ustc]</span></span><br><span class="line"><span class="attr">registry</span> = <span class="string">&quot;git://mirrors.ustc.edu.cn/crates.io-index&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 上海交通大学</span></span><br><span class="line"><span class="section">[source.sjtu]</span></span><br><span class="line"><span class="attr">registry</span> = <span class="string">&quot;https://mirrors.sjtug.sjtu.edu.cn/git/crates.io-index&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># rustcc社区</span></span><br><span class="line"><span class="section">[source.rustcc]</span></span><br><span class="line"><span class="attr">registry</span> = <span class="string">&quot;git://crates.rustcc.cn/crates.io-index&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs toml"><span class="hljs-section">[source.crates-io]</span><br><span class="hljs-attr">registry</span> = <span class="hljs-string">&quot;https://github.com/rust-lang/crates.io-index&quot;</span><br><br><span class="hljs-comment"># 替换成你偏好的镜像源</span><br><span class="hljs-attr">replace-with</span> = <span class="hljs-string">&#x27;ustc&#x27;</span><br><br><span class="hljs-comment"># 清华大学</span><br><span class="hljs-section">[source.tuna]</span><br><span class="hljs-attr">registry</span> = <span class="hljs-string">&quot;https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git&quot;</span><br><br><span class="hljs-comment"># 中国科学技术大学</span><br><span class="hljs-section">[source.ustc]</span><br><span class="hljs-attr">registry</span> = <span class="hljs-string">&quot;git://mirrors.ustc.edu.cn/crates.io-index&quot;</span><br><br><span class="hljs-comment"># 上海交通大学</span><br><span class="hljs-section">[source.sjtu]</span><br><span class="hljs-attr">registry</span> = <span class="hljs-string">&quot;https://mirrors.sjtug.sjtu.edu.cn/git/crates.io-index&quot;</span><br><br><span class="hljs-comment"># rustcc社区</span><br><span class="hljs-section">[source.rustcc]</span><br><span class="hljs-attr">registry</span> = <span class="hljs-string">&quot;git://crates.rustcc.cn/crates.io-index&quot;</span><br></code></pre></td></tr></table></figure>
 
 <h3 id="2-8-git-配置"><a href="#2-8-git-配置" class="headerlink" title="2.8 git 配置"></a>2.8 git 配置</h3><p>配置用户名和邮箱</p>
-<p>修改配置文件 <code>~/.gitconfig</code>，或者通过 <code>git config --global</code> 来设置 email,name 等属性，甚至可以设置 git 镜像网站，用来加速项目下载，比如在 <code>~/.gitconfig</code> 添加下面这条配置</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[url <span class="string">&quot;https://hub.fastgit.org&quot;</span>]</span><br><span class="line">    insteadOf = https://github.com</span><br></pre></td></tr></table></figure>
+<p>修改配置文件 <code>~/.gitconfig</code>，或者通过 <code>git config --global</code> 来设置 email,name 等属性，甚至可以设置 git 镜像网站，用来加速项目下载，比如在 <code>~/.gitconfig</code> 添加下面这条配置，可以加速国内 clone 速度</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">[url <span class="hljs-string">&quot;https://hub.fastgit.org&quot;</span>]<br>    insteadOf = https://github.com<br></code></pre></td></tr></table></figure>
 
 <p></br></br></p>
 <p>配置 ssh 密钥</p>
 <p>通过下面这条命令，创建 ssh 的密钥，并且上传到 github，gitee，gitlab 等 git 托管网站中<br><code>ssh-keygen -t rsa -m PEM -b 4096 -C &quot;email&quot;</code></p>
 <p>如果取的名字比较特殊（因为 git 会默认查找一些特殊命名的密钥文件），需要在 <code>~/.ssh/config</code> 当中指明，针对某一个 host，到底用的是哪个配置文件</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Host github.com</span><br><span class="line">  HostName github.com</span><br><span class="line">  IdentityFile ~/.ssh/id_rsa_xxx</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">Host github.com<br>  HostName github.com<br>  IdentityFile ~/.ssh/id_rsa_xxx<br></code></pre></td></tr></table></figure>
 
 <h2 id="3-WSL-管理"><a href="#3-WSL-管理" class="headerlink" title="3. WSL 管理"></a>3. WSL 管理</h2><p>如果是单个 WSL，还算比较容易管理，但如果存在多个 WSL 实例，这时候就要用到 wslconfig 这个命令来管理所有的 Linux subsystems</p>
 <p>详细信息可以参考 <a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/wsl/wsl-config">docs</a> <a target="_blank" rel="noopener" href="https://dowww.spencerwoo.com/4-advanced/4-3-wslconfig.html">小白版 docs</a></p>
-<p>由于我在安装 arch linux 之前，还安装了 ubuntu 20.04，因此后者是默认的 WSL，也就用到了下面的命令修改：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wslconfig /list <span class="comment"># 确认名称叫 &#x27;Arch&#x27;</span></span><br><span class="line">wslconfig /s Arch <span class="comment"># 设置默认发行版本</span></span><br></pre></td></tr></table></figure>
+<p>由于我在安装 arch linux 之前，还安装了 ubuntu 20.04，因此后者是默认的 WSL，也就用到了下面的命令修改默认的发行版本（vscode wsl 插件都可以识别）：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs powershell">wslconfig /list <span class="hljs-comment"># 确认名称叫 &#x27;Arch&#x27;</span><br>wslconfig /s Arch <span class="hljs-comment"># 设置默认发行版本</span><br></code></pre></td></tr></table></figure>
 
             </div>
             <hr>
             <div>
               <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/">linux</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/arch/">arch</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/arch/configuration/">configuration</a>
+                    
+                  </div>
                 
                 
               </div>
@@ -336,9 +348,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2021/12/26/movies/Stranger%20Things/">
+                      <a href="/2022/02/12/linux/execve/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Strange Things</span>
+                        <span class="hidden-mobile">do_execve 源码解析</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -346,8 +358,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2021/12/24/network/network%20system/">
-                        <span class="hidden-mobile">network system</span>
+                      <a href="/2022/02/10/linux/syscall/vdso/">
+                        <span class="hidden-mobile">Linux vDSO 机制</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

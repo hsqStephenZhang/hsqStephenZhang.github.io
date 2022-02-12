@@ -203,6 +203,94 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/01/10/rust/tower_internal/middleware-concurrency/" target="_self">
+          2.4 tower-concurrency limit
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/10/rust/tower_internal/middleware-concurrency/" target="_self">
+          
+          Concurrency 翻译过来是 并发，Concurrency Limit 也就是 并发控制，其核心限制条件是：同一时刻最多接收 n 个请求，和 RateLimit 有一定的相似之处，内层似乎都要使用一个计数器计数，但是具体如何实现，又有很大的不同。 1. 并发控制模型可以将对于请求的响应能力看成是一种资源，资源的数量是有限的，先到先得，那得不到的请求就应该置之不理吗？当然不是，得不到的可以排队
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-10 13:47" pubdate>
+              2022-01-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/rust/">rust</a>
+            
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/middlewares/">middlewares</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/10/rust/tower_internal/middleware-core/" target="_self">
+          1.3 tower 中间件模型
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/10/rust/tower_internal/middleware-core/" target="_self">
+          
+          1. 洋葱圈模型主流的中间件，大多提供了下面这种洋葱圈模型，方便用户在一个调用中插入自定义逻辑预处理（pre-handle）及后处理（post-handle），配合handler实现一个完整的请求处理生命周期。 比较形象的图示： 上面这种表示比较抽象，进一步结合实际中间件中的 pre_handler 和 post_handler，可以表示为下面的结构：  2. 深入中间件如果深入中间件，就会发现，
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-10 13:47" pubdate>
+              2022-01-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/rust/">rust</a>
+            
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/basic/">basic</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/01/10/rust/tower_internal/middleware-custom/" target="_self">
           2.1 middleware custom
         </a>
@@ -520,90 +608,6 @@
         <a href="/2022/01/09/linux/tracing/ftrace/" target="_self">
           
           先说一个非常重要的参考资料，也就是 ftrace 作者本人的 pdf：ftrace kernel hook 接下来，主要跟着作者的思路，融入自己的一些思考，给大家解读一下 ftrace 究竟做了什么？ 1. 什么是 ftraceftrace，顾名思义，就是 function trace，针对函数级别的追踪调试机制。 我们平时是如何使用这个强大功能的呢？ 1.1 如何使用 ftrace可以通过 tr
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-09 13:47" pubdate>
-              2022-01-09
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/trace/">trace</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/09/linux/tracing/int3/" target="_self">
-          int3 黑魔法
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/09/linux/tracing/int3/" target="_self">
-          
-          发现和 tracing 有关的好多内容，脱离了 int3 都无法很好的展开。要么需要额外写很多内容，要么是不够详细，所以想在这里单独说明一下 int3 的黑魔法。 1. 程序执行视角众所周知，可执行程序，在 CPU 看来，只是很多的指令罢了，对于不同的指令，CPU 会有不同的反应，如果学习过汇编，可能会了解 mov add sub mul push pop call 这些最常见的指令，但是 CPU
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-09 13:47" pubdate>
-              2022-01-09
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/trace/">trace</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/09/linux/tracing/kprobe/" target="_self">
-          kprobe
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/09/linux/tracing/kprobe/" target="_self">
-          
-          1. kprobe 是什么Kprobe是一种内核调测手段，它可以动态地跟踪内核的行为、收集debug信息和性能信息。 可以跟踪内核几乎所有的代码地址。这点非常神奇啊，几乎所有的代码，Wow，究竟如何办到这一点呢？我们可以从 debugger 角度出发，探究一下这个问题。 众所周知，debugger 是依赖于 ptrace 这个系统调用，ptrace 赋予了程序调试别的进程的能力，这一点是如何办到的
         </a>
       </p>
 

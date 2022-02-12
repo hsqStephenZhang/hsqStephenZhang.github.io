@@ -203,6 +203,92 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/02/12/linux/execve/" target="_self">
+          do_execve 源码解析
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/12/linux/execve/" target="_self">
+          
+          大家都知道，Linux 下面的可执行文件格式为 elf ，全称是 executable linkable format，中文名为“可执行可链接文件”，这种文件是以二进制的方式存储的，我们也可以将其称为二进制对象（binary object）。 以 gcc 为例，最终需要将很多 ‘.c’ 文件编译为一个 elf 格式的可执行文件，最终才能在 Linux 上运行，那么问题来了，Linux 是如何识别
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-12 10:47" pubdate>
+              2022-02-12
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/execve/">execve</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/02/12/toss/wsl%20configuration/" target="_self">
+          wsl 开发环境配置
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/12/toss/wsl%20configuration/" target="_self">
+          
+          1. WSL2 安装1.1 安装和启动 wsl首先使用管理员权限(windows + R)打开 powershell&#x2F;cmd&#x2F;windows terminal，输入下面的指令，也就是打开 windows subsystem for linux 的功能 123dism.exe &#x2F;online &#x2F;enable-feature &#x2F;featurename:Microsoft-Windows-Subsyst
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-12 10:47" pubdate>
+              2022-02-12
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/arch/">arch</a>
+            
+              <a href="/categories/linux/arch/configuration/">configuration</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/02/10/linux/syscall/vdso/" target="_self">
           Linux vDSO 机制
         </a>
@@ -507,86 +593,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2022-01-21 10:54" pubdate>
               2022-01-21
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/21/linux/locks-spinlock/" target="_self">
-          Locks1-Spinlock
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/21/linux/locks-spinlock/" target="_self">
-          
-          
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-21 10:54" pubdate>
-              2022-01-21
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/20/linux/kbuild/" target="_self">
-          Kbuild
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/20/linux/kbuild/" target="_self">
-          
-          1. 什么是 kbuildLinux 是一个单体内核，也就意味着整个内核运行在同一个地址空间中，这当然有很多性能上的好处，也同时带来了一个挑战，必须要在编译期间选择想要的特性。 同时，Linux 不是一个纯粹的单体内核（monolithic kernel），因为它可以在运行时使用可加载的内核模块（loadable kernel modules）进行扩展。要加载模块，内核必须包含模块中使用的所有内核
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-20 23:26" pubdate>
-              2022-01-20
             </time>
           </div>
         
