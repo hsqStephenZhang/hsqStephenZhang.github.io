@@ -203,6 +203,50 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/01/10/rust/tower_internal/middleware-custom/" target="_self">
+          2.1 middleware custom
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/10/rust/tower_internal/middleware-custom/" target="_self">
+          
+          先来回顾一下 Tower 当中的中间件模型： 通过 Service Trait 定义服务功能，通过 Layer Trait 搭建骨架，并通过 Stack 将所有的中间件粘合起来。并且， Service 和 Layer 通常是一一对应的关系。 本节就来带着大家动手实现实现一个日志中间件。 1. 日志中间件实现以一个最简单的 Echo 业务 + 最简单的中间件 Log 为例，大致分为几个模块：  核心
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-10 13:47" pubdate>
+              2022-01-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/rust/">rust</a>
+            
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/middlewares/">middlewares</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/01/10/rust/tower_internal/middleware-rate/" target="_self">
           2.2 tower-rate limit
         </a>
@@ -560,48 +604,6 @@
         <a href="/2022/01/09/linux/tracing/kprobe/" target="_self">
           
           1. kprobe 是什么Kprobe是一种内核调测手段，它可以动态地跟踪内核的行为、收集debug信息和性能信息。 可以跟踪内核几乎所有的代码地址。这点非常神奇啊，几乎所有的代码，Wow，究竟如何办到这一点呢？我们可以从 debugger 角度出发，探究一下这个问题。 众所周知，debugger 是依赖于 ptrace 这个系统调用，ptrace 赋予了程序调试别的进程的能力，这一点是如何办到的
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-09 13:47" pubdate>
-              2022-01-09
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/trace/">trace</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/09/linux/tracing/notify_chain/" target="_self">
-          notify chain
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/09/linux/tracing/notify_chain/" target="_self">
-          
-          Linux 中广泛采用了事件通知机制，即 注册 + 回调，notify chain 就是很典型的例子。 1. notify chain 是什么首先要明白，notify chain 是什么？ 将其比作 发布-订阅模式，可能更加容易理解： 某个读者订阅了某个杂志，当杂志发版之后，就会收到对应的通知；一旦不再想看这个杂志，取消订阅即可。 Linux 中为了及时相应某一些到来的事件，采取了通知链机制，可以
         </a>
       </p>
 

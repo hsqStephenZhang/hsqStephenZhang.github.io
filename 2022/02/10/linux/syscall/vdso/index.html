@@ -1,0 +1,495 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="mem::swap(Rust, 🦀 )">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1. 什么是 vDSO众所周知，操作系统为我们管理硬件资源，并以系统调用的方式对用户进程提供 API，但是 syscall 很慢，涉及陷入内核以及上下文切换。对于少量频繁调用的系统调用（比如获取当期系统时间）来说，是否可以某种安全的方式开放到用户空间，让用户直接访问而不需要经过 syscall 呢？ vDSO 就是用来解决这个问题的。 vDSO 全程为 virtual dynamic shared">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux vDSO 机制">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2022/02/10/linux/syscall/vdso/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. 什么是 vDSO众所周知，操作系统为我们管理硬件资源，并以系统调用的方式对用户进程提供 API，但是 syscall 很慢，涉及陷入内核以及上下文切换。对于少量频繁调用的系统调用（比如获取当期系统时间）来说，是否可以某种安全的方式开放到用户空间，让用户直接访问而不需要经过 syscall 呢？ vDSO 就是用来解决这个问题的。 vDSO 全程为 virtual dynamic shared">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-02-10T06:52:45.000Z">
+<meta property="article:modified_time" content="2022-02-11T06:52:01.504Z">
+<meta property="article:author" content="mem::swap(Rust, 🦀 )">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>Linux vDSO 机制 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"hsqstephenzhang.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>mem::swap</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-user-fill"></i>
+                Links
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Linux vDSO 机制">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-02-10 14:52" pubdate>
+        February 10, 2022 pm
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.8k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      32 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Linux vDSO 机制</h1>
+            
+            <div class="markdown-body">
+              <h2 id="1-什么是-vDSO"><a href="#1-什么是-vDSO" class="headerlink" title="1. 什么是 vDSO"></a>1. 什么是 vDSO</h2><p>众所周知，操作系统为我们管理硬件资源，并以系统调用的方式对用户进程提供 API，但是 syscall 很慢，涉及陷入内核以及上下文切换。对于少量频繁调用的系统调用（比如获取当期系统时间）来说，是否可以某种安全的方式开放到用户空间，让用户直接访问而不需要经过 syscall 呢？</p>
+<p>vDSO 就是用来解决这个问题的。</p>
+<p>vDSO 全程为 <code>virtual dynamic shared object</code>，<code>dynamic shared object</code> 这个名词大家应该有所耳闻，就是 Linux 下的动态库的全称，而 <strong>virtual</strong> 表明，这个动态库是通过某种手段虚拟出来的，并不真正存在于 Linux 文件系统中。</p>
+<p>要验证这点也很简单，只需要通过 ldd 命令，查看一些可执行文件所依赖的动态库即可，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><pre><code class="hljs text">$ldd /bin/ls   <br>    linux-vdso.so.1 (0x00007ffe4e4ce000)<br>    libcap.so.2 =&gt; /usr/lib/libcap.so.2 (0x00007f7bf818e000)<br>    libc.so.6 =&gt; /usr/lib/libc.so.6 (0x00007f7bf7fc2000)<br>    /lib64/ld-linux-x86-64.so.2 =&gt; /usr/lib64/ld-linux-x86-64.so.2 (0x00007f7bf81e8000)<br></code></pre></td></tr></table></figure>
+
+<p>可以明显看出，在ls 这个可执行文件依赖的动态库列表中，除了 <code>linux-vdso.so.1</code> 都有明确的路径</p>
+<p>同时还可以通过 proc 文件系统中进程的内存映射（memory map）情况来映射这一点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs text">$cat /proc/1/maps<br>....<br>7fd37e90f000-7fd37e911000 rw-p 0002f000 103:02 13244335                  /usr/lib/ld-2.33.so<br>7ffc2f7ce000-7ffc2f7ef000 rw-p 00000000 00:00 0                          [stack]<br>7ffc2f7f7000-7ffc2f7fb000 r--p 00000000 00:00 0                          [vvar]<br>7ffc2f7fb000-7ffc2f7fd000 r-xp 00000000 00:00 0                          [vdso]<br>ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0                  [vsyscall]<br></code></pre></td></tr></table></figure>
+
+<p>可以看出，vDSO 确实是以共享库的形式存在于每一个进程当中的</p>
+<p>通过 vDSO，进程访问一些系统提供的 API，就可以直接在自己的地址空间访问，而不需要进行<code>用户-内核态</code>的状态切换了</p>
+<h2 id="2-vDSO-实现原理"><a href="#2-vDSO-实现原理" class="headerlink" title="2. vDSO 实现原理"></a>2. vDSO 实现原理</h2><p><code>linux-vdso.so.1</code> 既然不是一个实实在在的文件，那其中的内容就应该直接保存在内存中，Linux 使用 vdso_image 来表示</p>
+<h3 id="2-1-vDSO-image"><a href="#2-1-vDSO-image" class="headerlink" title="2.1 vDSO image"></a>2.1 vDSO image</h3><p>在 <code>arch/x86/entyr/vdso/vdso-image-64.c</code> 文件中，定义了下面的 vdso_image</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">static</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> raw_data[<span class="hljs-number">8192</span>] __ro_after_init __aligned(PAGE_SIZE) = &#123;<br>    <span class="hljs-number">0x7F</span>, <span class="hljs-number">0x45</span>, <span class="hljs-number">0x4C</span>, <span class="hljs-number">0x46</span>, <span class="hljs-number">0x02</span>, <span class="hljs-number">0x01</span>, <span class="hljs-number">0x01</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <br>    <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x03</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x3E</span>, <span class="hljs-number">0x00</span>, <br>    ...<br>&#125;;<br><br><span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">vdso_image</span> <span class="hljs-title">vdso_image_64</span> =</span> &#123;<br>    .data = raw_data,<br>    .size = <span class="hljs-number">8192</span>,<br>    .alt = <span class="hljs-number">3013</span>,<br>    .alt_len = <span class="hljs-number">91</span>,<br>    .sym_vvar_start = <span class="hljs-number">-16384</span>,<br>    .sym_vvar_page = <span class="hljs-number">-16384</span>,<br>    .sym_pvclock_page = <span class="hljs-number">-12288</span>,<br>    .sym_hvclock_page = <span class="hljs-number">-8192</span>,<br>    .sym_timens_page = <span class="hljs-number">-4096</span>,<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p><code>vdso_image.raw_data</code> 对应的就是 vDSO 提供的所有系统调用的二进制指令，一共有 8192 字节，相当于下面的结构: <code>static struct page *pages[2];</code></p>
+<p><code>vdso_iamge_64</code> 自然需要保存到全局变量中才能发挥作用，这就涉及接下来要提到的 vDSO init</p>
+<h3 id="2-2-vDSO-init"><a href="#2-2-vDSO-init" class="headerlink" title="2.2 vDSO init"></a>2.2 vDSO init</h3><p>vDSO 通过 <code>init_vdso</code> 来初始化，通过条件编译对 32/64 bit 的 image 进行选择。同时也需要通过 <code>subsys_initcall(init_vdso);</code> 将 <code>init_vdso</code> 放到 initcall 列表中。</p>
+<p><code>init_vdso_image</code> 这里不过多介绍，主要是用来优化指令，毕竟 vdso_image 中提供的二进制指令是手动放在一个数组中的，还有相当大的优化空间</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> __init <span class="hljs-title">init_vdso</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span></span><br><span class="hljs-function"></span>&#123;<br>    BUILD_BUG_ON(VDSO_CLOCKMODE_MAX &gt;= <span class="hljs-number">32</span>);<br><br>    init_vdso_image(&amp;vdso_image_64);<br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> CONFIG_X86_X32_ABI</span><br>    init_vdso_image(&amp;vdso_image_x32);<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br>subsys_initcall(init_vdso);<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-3-vDSO-和-可执行程序"><a href="#2-3-vDSO-和-可执行程序" class="headerlink" title="2.3 vDSO 和 可执行程序"></a>2.3 vDSO 和 可执行程序</h3><p>如果你对 Linux 可执行程序的 <code>加载-执行</code>机制有所研究，就知道对于 elf 格式的可执行程序而言，最终调用了 <code>load_elf_binary</code> 这个回调函数，在这个函数中，会根据 elf 文件头中的描述，设置好新进程的各个段，并将 elf 文件中的内容拷贝到相应位置。</p>
+<p>为什么好端端的，要提到可执行程序加载呢？这是因为，在系统初始化完成之后，vdso_image 已经设置完毕，只需要在每次加载二进制可执行程序的时候，分配一块内存空间，将 vdso_image 加载到该位置即可</p>
+<p>这就是 <code>arch_setup_additional_pages</code> 所要完成的任务了</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">arch_setup_additional_pages</span><span class="hljs-params">(struct linux_binprm *bprm, <span class="hljs-keyword">int</span> uses_interp)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (!vdso64_enabled)<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br><br>    <span class="hljs-keyword">return</span> map_vdso_randomized(&amp;vdso_image_64);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>map_vdso_randomized</code> 会通过 stack protect 机制，选择一个随机的加载地址，并调用 <code>map_vdso</code> 完成 mapping 工作，该函数内容较多，这里不赘述</p>
+<p>最终，vDSO 会向用户提供四个 syscall</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs text">__vdso_clock_gettime<br>__vdso_getcpu<br>__vdso_gettimeofday<br>__vdso_time<br></code></pre></td></tr></table></figure>
+
+<p>你还别不信，可以自行验证一下：</p>
+<ol>
+<li><p><code>cat /proc/1/maps</code> 找到 <code>[vdso]</code> 对应的内存位置</p>
+</li>
+<li><p>通过 dd dump 内存，<code>dd if=/proc/1/mem of=/tmp/linux-vdso.so skip=140728627781632 ibs=1 count=4096</code>，其中 skip 的值为 vdso 的内存起始地址，count 为这块内存的大小</p>
+</li>
+<li><p>objdump 查看 <code>linux-vdso.so</code> 中所有符号 <code>objdump -T /tmp/linux-vdso.so</code>，最终结果如下</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs text">linux-vdso.so:     file format elf64-x86-64<br><br>DYNAMIC SYMBOL TABLE:<br>0000000000000740  w   DF .text  000000000000015d  LINUX_2.6   clock_gettime<br>0000000000000600 g    DF .text  0000000000000127  LINUX_2.6   __vdso_gettimeofday<br>00000000000008a0  w   DF .text  0000000000000044  LINUX_2.6   clock_getres<br>00000000000008a0 g    DF .text  0000000000000044  LINUX_2.6   __vdso_clock_getres<br>0000000000000600  w   DF .text  0000000000000127  LINUX_2.6   gettimeofday<br>0000000000000730 g    DF .text  0000000000000010  LINUX_2.6   __vdso_time<br>0000000000000730  w   DF .text  0000000000000010  LINUX_2.6   time<br>0000000000000740 g    DF .text  000000000000015d  LINUX_2.6   __vdso_clock_gettime<br>0000000000000000 g    DO *ABS*  0000000000000000  LINUX_2.6   LINUX_2.6<br>00000000000008f0 g    DF .text  0000000000000025  LINUX_2.6   __vdso_getcpu<br>00000000000008f0  w   DF .text  0000000000000025  LINUX_2.6   getcpu<br></code></pre></td></tr></table></figure></li>
+</ol>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/">linux</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/vsyscall/">vsyscall</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/vsyscall/vDSO/">vDSO</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/01/22/life/breakup/">
+                        <span class="hidden-mobile">Breaakup</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+  <div class="col-lg-7 mx-auto nopadding-x-md">
+    <div class="container custom post-custom mx-auto">
+      <img src="https://octodex.github.com/images/jetpacktocat.png" srcset="/img/loading.gif" lazyload class="rounded mx-auto d-block mt-5" style="width:150px; height:150px;">
+    </div>
+  </div>
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

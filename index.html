@@ -203,6 +203,50 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/02/10/linux/syscall/vdso/" target="_self">
+          Linux vDSO 机制
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/10/linux/syscall/vdso/" target="_self">
+          
+          1. 什么是 vDSO众所周知，操作系统为我们管理硬件资源，并以系统调用的方式对用户进程提供 API，但是 syscall 很慢，涉及陷入内核以及上下文切换。对于少量频繁调用的系统调用（比如获取当期系统时间）来说，是否可以某种安全的方式开放到用户空间，让用户直接访问而不需要经过 syscall 呢？ vDSO 就是用来解决这个问题的。 vDSO 全程为 virtual dynamic shared
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-10 14:52" pubdate>
+              2022-02-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/vsyscall/">vsyscall</a>
+            
+              <a href="/categories/linux/vsyscall/vDSO/">vDSO</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/01/22/life/breakup/" target="_self">
           Breaakup
         </a>
@@ -543,46 +587,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2022-01-20 23:26" pubdate>
               2022-01-20
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/19/linux/mount/" target="_self">
-          Mount
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/19/linux/mount/" target="_self">
-          
-          1. 什么是 mount一个文件系统创建之后，并无法直接使用，相当于完成了注册，但是还未登录，对于文件系统来说，登录的这个步骤就是 mount。 一般来说，如果有一个磁盘设备，比如将一个 ext2 格式的移动硬盘(假设分配的设备名为 &#x2F;dev&#x2F;sdb1)插到了 Linux 主机上，若系统没有给我们自动挂载，就需要我们手动输入 mount 命令来挂载，如： mount -t ext2 &#x2F;dev&#x2F;sd
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-19 23:26" pubdate>
-              2022-01-19
             </time>
           </div>
         

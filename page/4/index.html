@@ -203,6 +203,48 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/01/09/linux/tracing/notify_chain/" target="_self">
+          notify chain
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/09/linux/tracing/notify_chain/" target="_self">
+          
+          Linux 中广泛采用了事件通知机制，即 注册 + 回调，notify chain 就是很典型的例子。 1. notify chain 是什么首先要明白，notify chain 是什么？ 将其比作 发布-订阅模式，可能更加容易理解： 某个读者订阅了某个杂志，当杂志发版之后，就会收到对应的通知；一旦不再想看这个杂志，取消订阅即可。 Linux 中为了及时相应某一些到来的事件，采取了通知链机制，可以
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-09 13:47" pubdate>
+              2022-01-09
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/trace/">trace</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/01/09/linux/tracing/tracepoint/" target="_self">
           tracepoint
         </a>
@@ -295,7 +337,7 @@
       <p class="index-excerpt">
         <a href="/2022/01/09/programming/do_exec/" target="_self">
           
-          大家都知道，Linux 下面的可执行文件格式为 Elf，全程是 executable linkable format，中文称为“可执行可链接文件”，这种文件，是以二进制的方式存储的，我们也可以将其成为二级制对象（binary object）。 以 gcc 为例，最终需要将很多 ‘.c’ 文件编译为一个 Elf 格式的可执行文件，最终才能在 Linux 上运行，那么问题来了，Linux 是如何识别
+          大家都知道，Linux 下面的可执行文件格式为 elf ，全称是 executable linkable format，中文名为“可执行可链接文件”，这种文件是以二进制的方式存储的，我们也可以将其称为二进制对象（binary object）。 以 gcc 为例，最终需要将很多 ‘.c’ 文件编译为一个 elf 格式的可执行文件，最终才能在 Linux 上运行，那么问题来了，Linux 是如何识别
         </a>
       </p>
 
@@ -494,39 +536,6 @@
         <a href="/2021/12/24/network/zero%20copy/" target="_self">
           
           Zero copy in Linux1. 传统 IO为了更好的理解零拷贝解决的问题，我们首先了解一下传统 I&#x2F;O 方式存在的问题： 在 Linux 系统中，传统的访问方式是通过 write() 和 read() 两个系统调用实现的，通过 read() 函数读取文件到到缓存区中，然后通过 write() 方法把缓存中的数据输出到网络端口： 12read(file_fd, tmp_buf, len);
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-12-24 18:35" pubdate>
-              2021-12-24
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/12/24/network/tls/" target="_self">
-          tls
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/12/24/network/tls/" target="_self">
-          
-          TLS1. TLS 是什么我们需要在网络中实现安全通信，最直接的思路是，将内容通过某种手段加密，再通过某种手段解密。 这个手段可以有两种：  非对称加密。比如 RSA，ECC 算法，加解密过程是不可逆的，可以方便地对于数据进行签名&#x2F;验证，但是计算速度慢 对称加密。计算速度快，加密强度大，但关键是，加解密用的是相同的密钥，需要通过安全的手段传输密钥才行。  我们最终肯定还是希望可以使用性能更好的对称
         </a>
       </p>
 
