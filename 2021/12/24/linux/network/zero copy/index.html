@@ -16,20 +16,20 @@
   <meta name="author" content="mem::swap(Rust, 🦀 )">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Linux network system1. 层级架构众所周知，网络是一个非常复杂的分层架构，按照标准的 OSI 7层模型，可以分为：  应用层 表示层 会话层 传输层 网络层 数据链路层 物理层  但这仅仅是规范，具体实现的时候，大多采取了简化的措施，比如，Linux 中的网络协议栈，就是简化之后的模型，大致可以分为：  用户层 TCP&#x2F;UDP 传输层 IP 网络层 网络层 驱动设备层  2.">
+    <meta name="description" content="1. 传统 IO为了更好的理解零拷贝解决的问题，我们首先了解一下传统 I&#x2F;O 方式存在的问题： 在 Linux 系统中，传统的访问方式是通过 write() 和 read() 两个系统调用实现的，通过 read() 函数读取文件到到缓存区中，然后通过 write() 方法把缓存中的数据输出到网络端口： 12read(file_fd, tmp_buf, len);write(socket_fd, t">
 <meta property="og:type" content="article">
-<meta property="og:title" content="network system">
-<meta property="og:url" content="https://hsqstephenzhang.github.io/2021/12/24/network/network%20system/index.html">
+<meta property="og:title" content="zero copy">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2021/12/24/linux/network/zero%20copy/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="Linux network system1. 层级架构众所周知，网络是一个非常复杂的分层架构，按照标准的 OSI 7层模型，可以分为：  应用层 表示层 会话层 传输层 网络层 数据链路层 物理层  但这仅仅是规范，具体实现的时候，大多采取了简化的措施，比如，Linux 中的网络协议栈，就是简化之后的模型，大致可以分为：  用户层 TCP&#x2F;UDP 传输层 IP 网络层 网络层 驱动设备层  2.">
+<meta property="og:description" content="1. 传统 IO为了更好的理解零拷贝解决的问题，我们首先了解一下传统 I&#x2F;O 方式存在的问题： 在 Linux 系统中，传统的访问方式是通过 write() 和 read() 两个系统调用实现的，通过 read() 函数读取文件到到缓存区中，然后通过 write() 方法把缓存中的数据输出到网络端口： 12read(file_fd, tmp_buf, len);write(socket_fd, t">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-12-24T10:35:35.615Z">
-<meta property="article:modified_time" content="2021-12-24T10:35:35.615Z">
+<meta property="article:modified_time" content="2022-02-13T05:34:45.759Z">
 <meta property="article:author" content="mem::swap(Rust, 🦀 )">
 <meta name="twitter:card" content="summary_large_image">
   
   
-  <title>network system - Hexo</title>
+  <title>zero copy - Hexo</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -187,7 +187,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="network system">
+            <span class="h2" id="subtitle" title="zero copy">
               
             </span>
 
@@ -208,7 +208,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      undefined 字
+      576 字
     </span>
   
 
@@ -217,7 +217,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      NaN 分钟
+      5 分钟
     </span>
   
 
@@ -246,32 +246,21 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">network system</h1>
+            <h1 style="display: none">zero copy</h1>
             
             <div class="markdown-body">
-              <h1 id="Linux-network-system"><a href="#Linux-network-system" class="headerlink" title="Linux network system"></a>Linux network system</h1><h2 id="1-层级架构"><a href="#1-层级架构" class="headerlink" title="1. 层级架构"></a>1. 层级架构</h2><p>众所周知，网络是一个非常复杂的分层架构，按照标准的 OSI 7层模型，可以分为：</p>
-<ol>
-<li>应用层</li>
-<li>表示层</li>
-<li>会话层</li>
-<li>传输层</li>
-<li>网络层</li>
-<li>数据链路层</li>
-<li>物理层</li>
-</ol>
-<p>但这仅仅是规范，具体实现的时候，大多采取了简化的措施，比如，Linux 中的网络协议栈，就是简化之后的模型，大致可以分为：</p>
-<ol>
-<li>用户层</li>
-<li>TCP/UDP 传输层</li>
-<li>IP 网络层</li>
-<li>网络层</li>
-<li>驱动设备层</li>
-</ol>
-<h2 id="2-详述"><a href="#2-详述" class="headerlink" title="2. 详述"></a>2. 详述</h2><h3 id="2-1-系统调用层"><a href="#2-1-系统调用层" class="headerlink" title="2.1 系统调用层"></a>2.1 系统调用层</h3><p>用户层的任务想必大家都很清楚了，比如 http，http2，ssh，各种各样的用户层协议，在用户程序中执行。那么，具体这些协议是如何接触到更 low-level 的一些层级呢？诶，这里就不得不提 <strong>系统调用层</strong> 了。</p>
-<p>操作系统和用户程序之间通过系统调用进行通信，对于网络数据包，自然也是如此。但是，如此纷繁复杂的协议类型，用户空间中各种千奇百怪的实现机制，操作系统都需要关心吗？</p>
-<p>事实上，Linux 为用户提供了一个优雅统一的接口：socket。我们可以将其称为系统调用层。这一层主要的任务是屏蔽各种底层的协议，对用户提供一个统一的接口。简单来说，不管在用户层使用什么样的协议，都是通过 socket 这个结构表示，只是对应到不同的协议，会有不同的具体行为，大致的处理路径还是相似的。</p>
-<h2 id="2-网络协议层"><a href="#2-网络协议层" class="headerlink" title="2. 网络协议层"></a>2. 网络协议层</h2><p>为了简单起见，</p>
+              <h2 id="1-传统-IO"><a href="#1-传统-IO" class="headerlink" title="1. 传统 IO"></a>1. 传统 IO</h2><p>为了更好的理解零拷贝解决的问题，我们首先了解一下传统 I/O 方式存在的问题：</p>
+<p>在 Linux 系统中，传统的访问方式是通过 write() 和 read() 两个系统调用实现的，通过 read() 函数读取文件到到缓存区中，然后通过 write() 方法把缓存中的数据输出到网络端口：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><pre><code class="hljs c">read(file_fd, tmp_buf, len);<br>write(socket_fd, tmp_buf, len);<br></code></pre></td></tr></table></figure>
 
+<p>整个过程中，涉及到了 2 次系统调用，2 次内核态和用户态之间的数据拷贝，2 次内核态和 DMA 之间的数据拷贝，代价非常大， 有没有什么方式可以尽量减少这些开销呢？</p>
+<p>有下面几个思路：</p>
+<ol>
+<li>减少系统调用。也就是说，我尽可能一次性将要完成的 IO 操作，告诉内核，这样就不需要频繁地进行上下文切换</li>
+<li>直接从磁盘拷贝文件到 DMA。如果我们可以将所要进行的 IO 操作描述清楚，比如需要将某个文件通过某个 socket 发送出去，就没有必要先将文件读取到用户空间，再拷贝到内核中，来完成剩下的操作；相反，我们可以直接在内核态读取文件内容，并且拷贝到 DMA 中。</li>
+</ol>
+<p>简要概括：Context switch is expensive, copy is expensive,  copy directly in kernel !</p>
+<h2 id="2-零拷贝"><a href="#2-零拷贝" class="headerlink" title="2. 零拷贝"></a>2. 零拷贝</h2><h3 id="2-1-direct-IO"><a href="#2-1-direct-IO" class="headerlink" title="2.1 direct IO"></a>2.1 direct IO</h3><h3 id="2-2-mmap-write"><a href="#2-2-mmap-write" class="headerlink" title="2.2 mmap + write"></a>2.2 mmap + write</h3><h3 id="2-3-sendfile"><a href="#2-3-sendfile" class="headerlink" title="2.3 sendfile"></a>2.3 sendfile</h3><h3 id="2-4-splice"><a href="#2-4-splice" class="headerlink" title="2.4 splice"></a>2.4 splice</h3><h3 id="2-5-sockmap"><a href="#2-5-sockmap" class="headerlink" title="2.5 sockmap"></a>2.5 sockmap</h3>
             </div>
             <hr>
             <div>
@@ -291,9 +280,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2021/12/26/movies/Stranger%20Things/">
+                      <a href="/2021/12/24/linux/network/tls/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Strange Things</span>
+                        <span class="hidden-mobile">TLS</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -301,8 +290,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2021/12/24/network/zero%20copy/">
-                        <span class="hidden-mobile">zero copy</span>
+                      <a href="/2021/11/24/rust/futures/future-explained3/">
+                        <span class="hidden-mobile">future explained(3)</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

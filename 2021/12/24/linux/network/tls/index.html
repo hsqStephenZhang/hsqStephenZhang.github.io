@@ -16,22 +16,22 @@
   <meta name="author" content="mem::swap(Rust, 🦀 )">
   <meta name="keywords" content="">
   
-    <meta name="description" content="TLS1. TLS 是什么我们需要在网络中实现安全通信，最直接的思路是，将内容通过某种手段加密，再通过某种手段解密。 这个手段可以有两种：  非对称加密。比如 RSA，ECC 算法，加解密过程是不可逆的，可以方便地对于数据进行签名&#x2F;验证，但是计算速度慢 对称加密。计算速度快，加密强度大，但关键是，加解密用的是相同的密钥，需要通过安全的手段传输密钥才行。  我们最终肯定还是希望可以使用性能更好的对称">
+    <meta name="description" content="1. TLS 是什么我们需要在网络中实现安全通信，最直接的思路是，将内容通过某种手段加密，再通过某种手段解密。 这个手段可以有两种：  非对称加密。比如 RSA，ECC 算法，加解密过程是不可逆的，可以方便地对于数据进行签名&#x2F;验证，但是计算速度慢 对称加密。计算速度快，加密强度大，但关键是，加解密用的是相同的密钥，需要通过安全的手段传输密钥才行。  我们最终肯定还是希望可以使用性能更好的对称加密，">
 <meta property="og:type" content="article">
-<meta property="og:title" content="tls">
-<meta property="og:url" content="https://hsqstephenzhang.github.io/2021/12/24/network/tls/index.html">
+<meta property="og:title" content="TLS">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2021/12/24/linux/network/tls/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="TLS1. TLS 是什么我们需要在网络中实现安全通信，最直接的思路是，将内容通过某种手段加密，再通过某种手段解密。 这个手段可以有两种：  非对称加密。比如 RSA，ECC 算法，加解密过程是不可逆的，可以方便地对于数据进行签名&#x2F;验证，但是计算速度慢 对称加密。计算速度快，加密强度大，但关键是，加解密用的是相同的密钥，需要通过安全的手段传输密钥才行。  我们最终肯定还是希望可以使用性能更好的对称">
+<meta property="og:description" content="1. TLS 是什么我们需要在网络中实现安全通信，最直接的思路是，将内容通过某种手段加密，再通过某种手段解密。 这个手段可以有两种：  非对称加密。比如 RSA，ECC 算法，加解密过程是不可逆的，可以方便地对于数据进行签名&#x2F;验证，但是计算速度慢 对称加密。计算速度快，加密强度大，但关键是，加解密用的是相同的密钥，需要通过安全的手段传输密钥才行。  我们最终肯定还是希望可以使用性能更好的对称加密，">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://segmentfault.com/img/bVbCCMD">
 <meta property="article:published_time" content="2021-12-24T10:35:35.615Z">
-<meta property="article:modified_time" content="2021-12-24T10:35:35.615Z">
+<meta property="article:modified_time" content="2022-02-13T05:35:59.329Z">
 <meta property="article:author" content="mem::swap(Rust, 🦀 )">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://segmentfault.com/img/bVbCCMD">
   
   
-  <title>tls - Hexo</title>
+  <title>TLS - Hexo</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -189,7 +189,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="tls">
+            <span class="h2" id="subtitle" title="TLS">
               
             </span>
 
@@ -210,7 +210,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      undefined 字
+      3k 字
     </span>
   
 
@@ -219,7 +219,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      NaN 分钟
+      26 分钟
     </span>
   
 
@@ -248,10 +248,10 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">tls</h1>
+            <h1 style="display: none">TLS</h1>
             
             <div class="markdown-body">
-              <h1 id="TLS"><a href="#TLS" class="headerlink" title="TLS"></a>TLS</h1><h2 id="1-TLS-是什么"><a href="#1-TLS-是什么" class="headerlink" title="1. TLS 是什么"></a>1. TLS 是什么</h2><p>我们需要在网络中实现安全通信，最直接的思路是，将内容通过某种手段加密，再通过某种手段解密。</p>
+              <h2 id="1-TLS-是什么"><a href="#1-TLS-是什么" class="headerlink" title="1. TLS 是什么"></a>1. TLS 是什么</h2><p>我们需要在网络中实现安全通信，最直接的思路是，将内容通过某种手段加密，再通过某种手段解密。</p>
 <p>这个手段可以有两种：</p>
 <ol>
 <li>非对称加密。比如 RSA，ECC 算法，加解密过程是不可逆的，可以方便地对于数据进行签名/验证，但是计算速度慢</li>
@@ -267,18 +267,12 @@
 </ol>
 <p>这两者都利用了非对称加密当中，<strong>只有同时拥有公钥和私钥，才能进行解密</strong> 这个先决条件，互为逆过程。</p>
 <p>上面这两种方式中，都有一个很关键的问题：<strong>公钥的安全传输！</strong> 试想一下，如果公钥和私钥同时被他人截获并替换，那我们的信息就完全暴露在攻击者面前了。非对称加密又是建立在成功获取公钥的基础上，这两者的冲突似乎无法很好地解决！</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Tips:</span><br><span class="line">		其实几乎所有的加密，都会建立在某些已经确定的信任链基础上，然后才能慢慢扩展。</span><br></pre></td></tr></table></figure>
-
-
+<figure class="highlight plaintext"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><pre><code class="hljs text">Tips:<br>  其实几乎所有的加密，都会建立在某些已经确定的信任链基础上，然后才能慢慢扩展。<br></code></pre></td></tr></table></figure>
 
 <p>为了解决这个问题，引入了根证书的概念。所谓根证书，是最最权威的机构颁发的认证，内置在操作系统当中，因此不会因为网络上的传输而无法验明真伪。而需要加密认证的网站，需要将自己的公钥上传，交给根证书认证机构，用该机构的密钥进行加密，作为 Certificate 颁发给网站申请者。</p>
 <p>有访客访问网站的时候，会将这个 Certificate 下载到本地，并且根据系统内置的根证书链，对其内容验明真伪，如果为真，解密之后就可以获取到其中包含的网站公钥。</p>
 <p>上面所说的 Certificate，就是真正的证书，目前几乎遵守 X.509 格式，内容大致如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">版本号</span><br><span class="line">序列号</span><br><span class="line">签名算法</span><br><span class="line">颁发者</span><br><span class="line">证书有效期</span><br><span class="line">  开始日期</span><br><span class="line">  终止日期</span><br><span class="line">主题</span><br><span class="line">主题公钥信息</span><br><span class="line">  公钥算法</span><br><span class="line">  主体公钥</span><br><span class="line">颁发者唯一身份信息（可选）</span><br><span class="line">主题唯一身份信息（可选）</span><br><span class="line">扩展信息（可选）</span><br><span class="line">签名</span><br></pre></td></tr></table></figure>
-
-
-
-
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs text">版本号<br>序列号<br>签名算法<br>颁发者<br>证书有效期<br>  开始日期<br>  终止日期<br>主题<br>主题公钥信息<br>  公钥算法<br>  主体公钥<br>颁发者唯一身份信息（可选）<br>主题唯一身份信息（可选）<br>扩展信息（可选）<br>签名<br></code></pre></td></tr></table></figure>
 
 <h2 id="2-TLS-证书"><a href="#2-TLS-证书" class="headerlink" title="2. TLS 证书"></a>2. TLS 证书</h2><p>SSL/TLS  有多种文件格式，主要的文件有：PEM, DER, PFX, JKS, KDB, CER, KEY, CRT, CSR，同时也会设计到几个协议，如 CRL, OCSP, SCEP  等，下面主要针对常用的文件格式和协议进行解释</p>
 <h3 id="2-1-introduction"><a href="#2-1-introduction" class="headerlink" title="2.1 introduction"></a>2.1 introduction</h3><p>其实上面的证书类型，笼统来说叫做类型，细分起来，区别还是很大的，可以大致划分为：</p>
@@ -289,7 +283,7 @@
 <h3 id="2-2-编码格式"><a href="#2-2-编码格式" class="headerlink" title="2.2 编码格式"></a>2.2 编码格式</h3><p>编码格式可以分为 PEM 和 DER 两种，</p>
 <ol>
 <li><p>PEM（private enhanced mail）</p>
-<p>​    Openssl 默认使用 PEM 格式（文本）来存放各种信息，这是 openssl 默认的存放方式，一般 PEM 文件包含一下信息：</p>
+<p>​ Openssl 默认使用 PEM 格式（文本）来存放各种信息，这是 openssl 默认的存放方式，一般 PEM 文件包含一下信息：</p>
 <ul>
 <li>内容类型。表示本文件存放的是什么内容的信息，以 <code>-----BEGIN XXX-----</code> 开始，以 <code>-----END XXX-----</code> 结束，XXX 可以是 <code>PRIVATE KEY</code> ，也可以是 <code>CERTIFICATE</code>，分别表示这是一个私钥还是公钥。</li>
 <li>头部信息。表示数据加密处理的方式，一般等同于加密算法+初始化向量。</li>
@@ -297,7 +291,7 @@
 </ul>
 </li>
 <li><p>DER（distinguished encoding rules）</p>
-<p>​     使用二进制格式进行存储，对人类不友好。</p>
+<p>​  使用二进制格式进行存储，对人类不友好。</p>
 </li>
 </ol>
 <p>两种编码可以互相进行转换：</p>
@@ -316,7 +310,7 @@
 </ol>
 <p>总结一下，CRT/CET 表示证书，Key 表示密钥（公钥/私钥），它们都可以表示为 PEM 和 DER 两种格式。很多时候人们并不会按照文件内容来添加后缀，有时候会很困惑，所以最好还是在文本编辑器中打开，然后自行查看。</p>
 <h2 id="3-TLS-建立加密通信过程"><a href="#3-TLS-建立加密通信过程" class="headerlink" title="3. TLS 建立加密通信过程"></a>3. TLS 建立加密通信过程</h2><p>下面这个图片借鉴自网络，我觉得非常清晰，所以就直接粘贴了。</p>
-<p><img src="https://segmentfault.com/img/bVbCCMD" srcset="/img/loading.gif" lazyload alt="SSL : TLS 握手过程" loading="lazy"></p>
+<p><img src="https://segmentfault.com/img/bVbCCMD" srcset="/img/loading.gif" lazyload alt="SSL : TLS 握手过程"></p>
 <p>TLS 握手的详细过程：</p>
 <ol>
 <li>“client hello” 消息：客户端通过发送 “client hello” 消息向服务器发起握手请求，该消息包含了客户端所支持的 TLS 版本和密码组合以供服务器进行选择，还有一个 “client random” 随机字符串。</li>
@@ -359,9 +353,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2021/12/24/network/zero%20copy/">
+                      <a href="/2021/12/24/riscv/instruction-set/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">zero copy</span>
+                        <span class="hidden-mobile">RISC-V -- instruction set</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -369,8 +363,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2021/12/24/riscv/instruction-set/">
-                        <span class="hidden-mobile">RISC-V -- instruction set</span>
+                      <a href="/2021/12/24/linux/network/zero%20copy/">
+                        <span class="hidden-mobile">zero copy</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

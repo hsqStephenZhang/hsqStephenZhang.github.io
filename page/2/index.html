@@ -203,6 +203,126 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/01/21/linux/locks-rcu/" target="_self">
+          Locks5-RCU
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/21/linux/locks-rcu/" target="_self">
+          
+          
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-21 10:54" pubdate>
+              2022-01-21
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/21/linux/locks-seqlock/" target="_self">
+          Locks4-SeqLock
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/21/linux/locks-seqlock/" target="_self">
+          
+          
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-21 10:54" pubdate>
+              2022-01-21
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/21/linux/locks-semaphore/" target="_self">
+          Locks2-Semaphore
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/21/linux/locks-semaphore/" target="_self">
+          
+          
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-21 10:54" pubdate>
+              2022-01-21
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/01/21/linux/locks-spinlock/" target="_self">
           Locks1-Spinlock
         </a>
@@ -469,132 +589,6 @@
             <i class="iconfont icon-category"></i>
             
               <a href="/categories/hardware/">hardware</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/19/hardware/pcie/" target="_self">
-          PCIE
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/19/hardware/pcie/" target="_self">
-          
-          1. South bridge在解释 PCIE 之前，有必要先来解释一下 South bridge，cpu，主板之间的一些概念。 大家都知道，计算机中所有的数据都需要交给 CPU 处理才能发挥作用（不完全对），但那么多的设备，难道都需要和 CPU 交互吗？ 当然不行，那样不仅极大地加重了 CPU 的负担（无论是制造还是运行），对于主板的布线也是一大考验，那有什么解决方案呢？ 其实，这里可以分级的思
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-19 13:17" pubdate>
-              2022-01-19
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/hardware/">hardware</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/18/linux/initcall/" target="_self">
-          Linux initcall 机制
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/18/linux/initcall/" target="_self">
-          
-          1. initcall 设计思想linux 对驱动程序提供静态编译进内核和动态加载两种方式，当我们试图将一个驱动程序编译进内核时，开发者通常提供一个xxx_init() 函数接口，以启动这个驱动程序同时提供某些服务。 那么，根据常识来说，这个 xxx_init() 函数肯定是要在系统启动的某个时候被调用，才能启动这个驱动程序。 最简单直观地做法就是：开发者试图添加一个驱动程序时，在内核启动 ini
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-18 13:47" pubdate>
-              2022-01-18
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/basic/">basic</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/10/rust/tower_internal/middleware-buffer/" target="_self">
-          2.5 middleware-buffer
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/10/rust/tower_internal/middleware-buffer/" target="_self">
-          
-          不知道大家有没有发现，Tower Service trait 中，要求 ready + call 都接收一个 &amp;mut self，这也就意味着，我们无法将其很好地扩展到多线程上！ 你可能会觉得，针对每一个 service，调用一下 service.clone()，再传入不就好了吗？但假如一个 Service 包装了很多中间件，clone 的开销也是不可小觑的。 Tower 提供了这样一个中
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-10 13:47" pubdate>
-              2022-01-10
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/rust/">rust</a>
-            
-              <a href="/categories/rust/tower/">tower</a>
-            
-              <a href="/categories/rust/tower/middlewares/">middlewares</a>
             
           </div>
         
