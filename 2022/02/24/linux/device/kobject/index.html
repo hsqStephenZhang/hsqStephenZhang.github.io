@@ -1,0 +1,499 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="mem::swap(Rust, 🦀 )">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1. kobject 是什么在 Linux 设备驱动框架 一文中，我们提到了 Linux 设备驱动是以 Device，Bus，Driver，Class 这几种结构为核心，从而方便管理。 由于设备与设备，设备与总线之间有非常明显的拓扑关系（设备接在总线上，设备也会有依赖关系），因此，可以通过树状结构进行管理，而 kobject 就是这种管理方式的核心，同时辅助以 kset&#x2F;ktype，构成了设备框架">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kobject">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2022/02/24/linux/device/kobject/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. kobject 是什么在 Linux 设备驱动框架 一文中，我们提到了 Linux 设备驱动是以 Device，Bus，Driver，Class 这几种结构为核心，从而方便管理。 由于设备与设备，设备与总线之间有非常明显的拓扑关系（设备接在总线上，设备也会有依赖关系），因此，可以通过树状结构进行管理，而 kobject 就是这种管理方式的核心，同时辅助以 kset&#x2F;ktype，构成了设备框架">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-02-24T09:12:45.000Z">
+<meta property="article:modified_time" content="2022-02-24T13:22:40.515Z">
+<meta property="article:author" content="mem::swap(Rust, 🦀 )">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>kobject - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"hsqstephenzhang.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>mem::swap</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-user-fill"></i>
+                Links
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="kobject">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-02-24 17:12" pubdate>
+        February 24, 2022 pm
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.1k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      18 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">kobject</h1>
+            
+            <div class="markdown-body">
+              <h2 id="1-kobject-是什么"><a href="#1-kobject-是什么" class="headerlink" title="1. kobject 是什么"></a>1. kobject 是什么</h2><p>在 <a href="/2022/02/24/linux/device/index/" title="Linux 设备驱动框架">Linux 设备驱动框架</a> 一文中，我们提到了 Linux 设备驱动是以 Device，Bus，Driver，Class 这几种结构为核心，从而方便管理。</p>
+<p>由于设备与设备，设备与总线之间有非常明显的拓扑关系（设备接在总线上，设备也会有依赖关系），因此，可以通过树状结构进行管理，而 kobject 就是这种管理方式的核心，同时辅助以 kset/ktype，构成了设备框架的基石。</p>
+<h2 id="2-kobject-internal"><a href="#2-kobject-internal" class="headerlink" title="2. kobject internal"></a>2. kobject internal</h2><h3 id="2-1-数据结构"><a href="#2-1-数据结构" class="headerlink" title="2.1 数据结构"></a>2.1 数据结构</h3><figure class="highlight c"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobject</span> &#123;</span><br>	<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span>		*name;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span>	<span class="hljs-title">entry</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobject</span>		*<span class="hljs-title">parent</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kset</span>		*<span class="hljs-title">kset</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobj_type</span>	*<span class="hljs-title">ktype</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kernfs_node</span>	*<span class="hljs-title">sd</span>;</span> <span class="hljs-comment">/* sysfs directory entry */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kref</span>		<span class="hljs-title">kref</span>;</span><br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> state_initialized:<span class="hljs-number">1</span>;<br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> state_in_sysfs:<span class="hljs-number">1</span>;<br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> state_add_uevent_sent:<span class="hljs-number">1</span>;<br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> state_remove_uevent_sent:<span class="hljs-number">1</span>;<br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> uevent_suppress:<span class="hljs-number">1</span>;<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>关键字段的含义：</p>
+<ul>
+<li>name：设备名</li>
+<li>parent：指向父对象的指针，</li>
+<li>kset：该 kobject 所属的集合</li>
+<li>ktype：kobject 的类型</li>
+<li>sd：文件系统的目录项</li>
+<li>kref：引用计数</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kset</span> &#123;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">list</span>;</span><br>	<span class="hljs-keyword">spinlock_t</span> list_lock;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobject</span> <span class="hljs-title">kobj</span>;</span><br>	<span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kset_uevent_ops</span> *<span class="hljs-title">uevent_ops</span>;</span><br>&#125; __randomize_layout;<br></code></pre></td></tr></table></figure>
+
+<p>关键字段含义：</p>
+<ul>
+<li>list：所包含的 kobject 链表</li>
+<li>kobj：该 kset 也是一个特殊的 kobject</li>
+<li>uevent_ops：用于处理 uevent 的操作</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobj_type</span> &#123;</span><br>	<span class="hljs-keyword">void</span> (*release)(struct kobject *kobj);<br>	<span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sysfs_ops</span> *<span class="hljs-title">sysfs_ops</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute</span> **<span class="hljs-title">default_attrs</span>;</span>	<span class="hljs-comment">/* use default_groups instead */</span><br>	<span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute_group</span> **<span class="hljs-title">default_groups</span>;</span><br>	<span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobj_ns_type_operations</span> *(*<span class="hljs-title">child_ns_type</span>)(<span class="hljs-keyword">struct</span> <span class="hljs-title">kobject</span> *<span class="hljs-title">kobj</span>);</span><br>	<span class="hljs-keyword">const</span> <span class="hljs-keyword">void</span> *(*<span class="hljs-keyword">namespace</span>)(struct kobject *kobj);<br>	<span class="hljs-keyword">void</span> (*get_ownership)(struct kobject *kobj, <span class="hljs-keyword">kuid_t</span> *uid, <span class="hljs-keyword">kgid_t</span> *gid);<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>关键字段含义：</p>
+<ul>
+<li>release：释放 kobject 时，调用该函数，相当于析构函数</li>
+<li>sysfs_ops：处理 sysfs 的 show/store 操作，对应文件系统的 read/write</li>
+<li>attribute：在 sysfs 中暴露给用户的 driver 属性，可以对 driver 进行控制</li>
+</ul>
+<h3 id="2-2-kobject-amp-amp-kset"><a href="#2-2-kobject-amp-amp-kset" class="headerlink" title="2.2 kobject &amp;&amp; kset"></a>2.2 kobject &amp;&amp; kset</h3><h4 id="2-2-1-kobject-和-kset-关联与区别"><a href="#2-2-1-kobject-和-kset-关联与区别" class="headerlink" title="2.2.1 kobject 和 kset 关联与区别"></a>2.2.1 kobject 和 kset 关联与区别</h4><p>kobject 本身并不单独使用，而是内嵌在别的结构体中。如果用面向对象的思想来理解，那么 kobject 相当于<strong>基类</strong>，包含了 kobject 的结构体则是<strong>子类</strong>。kset 就是一个典型的子类型。</p>
+<p>正因为 kobject 这种<strong>可嵌入</strong>的特点，可以很容易将各种数据结构按照树状结构组织起来，通过 <code>contrainer_of</code> 可以快速获取到包含 kobject 特定结构，因此，包含了 kobject 的 high-level 数据结构也有着和 kobject 类似的功能（子类继承了父类）。</p>
+<p>前面说到，kobject 对应 sysfs 中的一个文件/目录，而 kset 作用与此类似，只不过有一个限定条件：如果需要在sysfs的目录中包含多个子目录，那需要将它定义成一个 kset，其余情况均使用 kobject 表示。</p>
+<h4 id="2-2-2-kobject-和-kset-的使用"><a href="#2-2-2-kobject-和-kset-的使用" class="headerlink" title="2.2.2 kobject 和 kset 的使用"></a>2.2.2 kobject 和 kset 的使用</h4><p>因为 kobject 和 kset 仅仅作为一个结构体嵌入到别的复杂结构中，充当树状结构的骨架，所以其操作也比较简单：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs text"><br>kobject_init_and_add --------<br>                            |<br>                        kobject_add ---- kobject_add_varg ---- kobject_add_internal<br>                            |                                           |<br>kobject_create_and_add ------                                           |<br>                                                                        |<br>                                                                        |<br>kset_create_and_add ------ kset_create                                  |<br>                      ---- kset_register --------------------------------<br></code></pre></td></tr></table></figure>
+
+<p>主要代码都是分配结构体，初始化各个字段，构建拓扑关系（设置 kset-&gt;list 和 kobject-&gt;parent）</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/">linux</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/driver/">driver</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/driver/kobject/">kobject</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/driver/kobject/kset/">kset</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/02/24/linux/device/platform_driver/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">platform device driver</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02/24/linux/device/index/">
+                        <span class="hidden-mobile">linux driver framework</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+  <div class="col-lg-7 mx-auto nopadding-x-md">
+    <div class="container custom post-custom mx-auto">
+      <img src="https://octodex.github.com/images/jetpacktocat.png" srcset="/img/loading.gif" lazyload class="rounded mx-auto d-block mt-5" style="width:150px; height:150px;">
+    </div>
+  </div>
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

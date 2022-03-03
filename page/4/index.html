@@ -203,15 +203,257 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/10/rust/tower_internal/tower-issues/" target="_self">
-          3.1 tower 不足之处
+        <a href="/2022/01/19/linux/proc_fs/" target="_self">
+          Proc Fs
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/10/rust/tower_internal/tower-issues/" target="_self">
+        <a href="/2022/01/19/linux/proc_fs/" target="_self">
           
-          这一部分，主要是探讨 Tower 中的一些不足之处，主要参考我实习期间使用 Tower 之后的一些体验以及和同事的讨论。 1. 问题1.1 call是否应该使用 Pin&lt;&amp;mut Self&gt; ？关于这个问题，已经有了一些github 讨论。但是到目前为止，Tower 官方还是决定采用一个普通的 &amp;mut self，这意味着 Service 必须是Unpin。 这个问题的
+          1. procfs 是什么众所周知，文件系统是 Linux 的骨架，proc 文件系统就是其中一个展示程序运行状态的虚拟文件系统。 如果你查看 &#x2F;proc 目录下的内容，会发现，除了一堆数字命名的文件夹，还有很多杂七杂八的文件，比如 kallsyms cpuinfo meminfo，这些文件也都是系统的一些信息，比如 kallsyms 可以展示当前 vmlinux 的所有符号，cpuinfo 展示
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-19 16:49" pubdate>
+              2022-01-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/19/linux/trace_fs/" target="_self">
+          Trace Fs
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/19/linux/trace_fs/" target="_self">
+          
+          
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-19 16:49" pubdate>
+              2022-01-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/19/linux/seq_file/" target="_self">
+          Seq File
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/19/linux/seq_file/" target="_self">
+          
+          Seq File 在 Linux 中很常见，因此这里稍微整理一下，也分享一下我的理解。 由于 procfs 的默认操作函数只使用一页的缓存，在处理较大的proc文件时就有点麻烦，并且在输出一系列结构体中的数据时也比较不灵活，因此内核开发者们抽象出了seq_file（Sequence file：序列文件）接口。 提供了一套简单的函数来解决以上 procfs 编程时存在的问题，使得编程更加容易。 同时
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-19 16:49" pubdate>
+              2022-01-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/19/hardware/LCD%20vs%20OLED/" target="_self">
+          LCD vs OLED
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/19/hardware/LCD%20vs%20OLED/" target="_self">
+          
+          1. LCD 原理LCD 的发光，简要概括为：所有像素点对应一个背光层，负责发光，每个像素点最外层对应一个彩色滤光片，由中间层的正负极电路来控制液晶层的偏角，从而控制 RGB 三种颜色的混合比例。 2. OLED 原理OLED 全程为 Organic Light-Emitting Diode，即有机发光二极管 OLED 是一种特殊设计的自发光二极管，通过正负极电路，控制夹在中间的发光二极管发光。通
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-19 13:17" pubdate>
+              2022-01-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/hardware/">hardware</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/19/hardware/pcie/" target="_self">
+          PCIE
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/19/hardware/pcie/" target="_self">
+          
+          1. South bridge在解释 PCIE 之前，有必要先来解释一下 South bridge，cpu，主板之间的一些概念。 大家都知道，计算机中所有的数据都需要交给 CPU 处理才能发挥作用（不完全对），但那么多的设备，难道都需要和 CPU 交互吗？ 当然不行，那样不仅极大地加重了 CPU 的负担（无论是制造还是运行），对于主板的布线也是一大考验，那有什么解决方案呢？ 其实，这里可以分级的思
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-19 13:17" pubdate>
+              2022-01-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/hardware/">hardware</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/18/linux/initcall/" target="_self">
+          Linux initcall 机制
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/18/linux/initcall/" target="_self">
+          
+          1. initcall 设计思想linux 对驱动程序提供静态编译进内核和动态加载两种方式，当我们试图将一个驱动程序编译进内核时，开发者通常提供一个xxx_init() 函数接口，以启动这个驱动程序同时提供某些服务。 那么，根据常识来说，这个 xxx_init() 函数肯定是要在系统启动的某个时候被调用，才能启动这个驱动程序。 最简单直观地做法就是：开发者试图添加一个驱动程序时，在内核启动 ini
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-18 13:47" pubdate>
+              2022-01-18
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/basic/">basic</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/10/rust/tower_internal/middleware-buffer/" target="_self">
+          2.5 middleware-buffer
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/10/rust/tower_internal/middleware-buffer/" target="_self">
+          
+          不知道大家有没有发现，Tower Service trait 中，要求 ready + call 都接收一个 &amp;mut self，这也就意味着，我们无法将其很好地扩展到多线程上！ 你可能会觉得，针对每一个 service，调用一下 service.clone()，再传入不就好了吗？但假如一个 Service 包装了很多中间件，clone 的开销也是不可小觑的。 Tower 提供了这样一个中
         </a>
       </p>
 
@@ -232,7 +474,7 @@
             
               <a href="/categories/rust/tower/">tower</a>
             
-              <a href="/categories/rust/tower/more/">more</a>
+              <a href="/categories/rust/tower/middlewares/">middlewares</a>
             
           </div>
         
@@ -247,15 +489,59 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/10/rust/tower_internal/tower-service/" target="_self">
-          1.2 tower service 设计心路历程
+        <a href="/2022/01/10/rust/tower_internal/middleware-concurrency/" target="_self">
+          2.4 tower-concurrency limit
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/10/rust/tower_internal/tower-service/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/middleware-concurrency/" target="_self">
           
-          Tower Service 设计思路 -by tokio
+          Concurrency 翻译过来是 并发，Concurrency Limit 也就是 并发控制，其核心限制条件是：同一时刻最多接收 n 个请求，和 RateLimit 有一定的相似之处，内层似乎都要使用一个计数器计数，但是具体如何实现，又有很大的不同。 1. 并发控制模型可以将对于请求的响应能力看成是一种资源，资源的数量是有限的，先到先得，那得不到的请求就应该置之不理吗？当然不是，得不到的可以排队
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-10 13:47" pubdate>
+              2022-01-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/rust/">rust</a>
+            
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/middlewares/">middlewares</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/10/rust/tower_internal/middleware-core/" target="_self">
+          1.3 tower 中间件模型
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/10/rust/tower_internal/middleware-core/" target="_self">
+          
+          1. 洋葱圈模型主流的中间件，大多提供了下面这种洋葱圈模型，方便用户在一个调用中插入自定义逻辑预处理（pre-handle）及后处理（post-handle），配合handler实现一个完整的请求处理生命周期。 比较形象的图示： 上面这种表示比较抽象，进一步结合实际中间件中的 pre_handler 和 post_handler，可以表示为下面的结构：  2. 深入中间件如果深入中间件，就会发现，
         </a>
       </p>
 
@@ -291,15 +577,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/09/linux/tracing/ftrace/" target="_self">
-          ftrace
+        <a href="/2022/01/10/rust/tower_internal/middleware-custom/" target="_self">
+          2.1 middleware custom
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/09/linux/tracing/ftrace/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/middleware-custom/" target="_self">
           
-          先说一个非常重要的参考资料，也就是 ftrace 作者本人的 pdf：ftrace kernel hook 接下来，主要跟着作者的思路，融入自己的一些思考，给大家解读一下 ftrace 究竟做了什么？ 1. 什么是 ftraceftrace，顾名思义，就是 function trace，针对函数级别的追踪调试机制。 我们平时是如何使用这个强大功能的呢？ 1.1 如何使用 ftrace可以通过 tr
+          先来回顾一下 Tower 当中的中间件模型： 通过 Service Trait 定义服务功能，通过 Layer Trait 搭建骨架，并通过 Stack 将所有的中间件粘合起来。并且， Service 和 Layer 通常是一一对应的关系。 本节就来带着大家动手实现实现一个日志中间件。 1. 日志中间件实现以一个最简单的 Echo 业务 + 最简单的中间件 Log 为例，大致分为几个模块：  核心
         </a>
       </p>
 
@@ -307,8 +593,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-09 13:47" pubdate>
-              2022-01-09
+            <time datetime="2022-01-10 13:47" pubdate>
+              2022-01-10
             </time>
           </div>
         
@@ -316,287 +602,13 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/linux/">linux</a>
+              <a href="/categories/rust/">rust</a>
             
-              <a href="/categories/linux/trace/">trace</a>
+              <a href="/categories/rust/tower/">tower</a>
             
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/09/linux/tracing/int3/" target="_self">
-          int3 黑魔法
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/09/linux/tracing/int3/" target="_self">
-          
-          发现和 tracing 有关的好多内容，脱离了 int3 都无法很好的展开。要么需要额外写很多内容，要么是不够详细，所以想在这里单独说明一下 int3 的黑魔法。 1. 程序执行视角众所周知，可执行程序，在 CPU 看来，只是很多的指令罢了，对于不同的指令，CPU 会有不同的反应，如果学习过汇编，可能会了解 mov add sub mul push pop call 这些最常见的指令，但是 CPU
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-09 13:47" pubdate>
-              2022-01-09
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/trace/">trace</a>
+              <a href="/categories/rust/tower/middlewares/">middlewares</a>
             
           </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/09/linux/tracing/kprobe/" target="_self">
-          kprobe
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/09/linux/tracing/kprobe/" target="_self">
-          
-          1. kprobe 是什么Kprobe是一种内核调测手段，它可以动态地跟踪内核的行为、收集debug信息和性能信息。 可以跟踪内核几乎所有的代码地址。这点非常神奇啊，几乎所有的代码，Wow，究竟如何办到这一点呢？我们可以从 debugger 角度出发，探究一下这个问题。 众所周知，debugger 是依赖于 ptrace 这个系统调用，ptrace 赋予了程序调试别的进程的能力，这一点是如何办到的
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-09 13:47" pubdate>
-              2022-01-09
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/trace/">trace</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/09/linux/tracing/notify_chain/" target="_self">
-          notify chain
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/09/linux/tracing/notify_chain/" target="_self">
-          
-          Linux 中广泛采用了事件通知机制，即 注册 + 回调，notify chain 就是很典型的例子。 1. notify chain 是什么首先要明白，notify chain 是什么？ 将其比作 发布-订阅模式，可能更加容易理解： 某个读者订阅了某个杂志，当杂志发版之后，就会收到对应的通知；一旦不再想看这个杂志，取消订阅即可。 Linux 中为了及时相应某一些到来的事件，采取了通知链机制，可以
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-09 13:47" pubdate>
-              2022-01-09
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/trace/">trace</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/09/linux/tracing/tracepoint/" target="_self">
-          tracepoint
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/09/linux/tracing/tracepoint/" target="_self">
-          
-          1. TraceEvent 是什么要搞明白 TraceEvent，首先要去了解一下 Tracepoint。 1.1 tracepointTracepoint 是内核中一种探测的机制。放置在代码中的 tracepoint（跟踪点）提供了一个钩子来调用您可以在运行时提供的函数（probe）。 tracepoint 可以是 “on”（开启）或 “off”（关闭）。 当跟踪点关闭时，它没有任何影响，除了添
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-09 13:47" pubdate>
-              2022-01-09
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/trace/">trace</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/09/linux/tracing/perf/" target="_self">
-          how perf works
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/09/linux/tracing/perf/" target="_self">
-          
-          1. perf 是什么perf  这个工具大家可能都用过，非常强大，但是也不免让人好奇，底层是如何实现的呢？ 官方的定义为：Perf 是访问 processor monitor unit (PMU) 以及记录和展示 software events（例如页面错误）的接口。 它支持系统范围、线程级别和 KVM 虚拟化的各种监控。 但这种解释还是无法让人完全理解，别着急，听我慢慢道来。 首先明确一点：p
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-09 13:47" pubdate>
-              2022-01-09
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/trace/">trace</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/12/26/movies/%E5%B0%8F%E5%A6%87%E4%BA%BA/" target="_self">
-          小妇人
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/12/26/movies/%E5%B0%8F%E5%A6%87%E4%BA%BA/" target="_self">
-          
-          再次感谢 @越哥说电影 第一次看小妇人，是在合肥，和最爱的唯唯一起，她就靠在我的肩上，边看边跟我说悄悄话，真美好啊！这部电影质量也很好，总之是一次很不错的回忆。记得同时上映的还有别的电影，她唯独选了这个，现在看来，却有其用意。 什么用意呢？经历了这么多，感觉她和剧中女主-乔，有很多的相似之处：她们都渴望美好的爱情，但是又希望通过自己的能力去实现自身价值，不愿意依附男生，如果说乔是旧时代的独立女性，
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-12-26 09:42" pubdate>
-              2021-12-26
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/12/26/movies/%E7%94%B7%E4%BA%BA%E5%9B%9B%E5%8D%81/" target="_self">
-          男人四十
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/12/26/movies/%E7%94%B7%E4%BA%BA%E5%9B%9B%E5%8D%81/" target="_self">
-          
-          越哥说电影，真的是一个宝藏！在我最需要情感开导的时候，我看到了这样一部电影的影评，真的是沉浸其中，对 npy 分手的决定有了更多的理解。 看完了影评之后，我决定还是去看一下原片，才能更加深切地感受其中的细节。
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-12-26 08:55" pubdate>
-              2021-12-26
-            </time>
-          </div>
-        
         
         
       </div>
@@ -607,7 +619,7 @@
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/page/3/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/#board">5</a><a class="extend next" rel="next" href="/page/5/#board"><i class="iconfont icon-arrowright"></i></a>
+      <a class="extend prev" rel="prev" href="/page/3/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/#board">5</a><a class="page-number" href="/page/6/#board">6</a><a class="page-number" href="/page/7/#board">7</a><a class="extend next" rel="next" href="/page/5/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 

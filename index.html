@@ -203,15 +203,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/02/15/linux/network/bridge/" target="_self">
-          bridge
+        <a href="/2022/03/03/life/why%20we%20sleep/" target="_self">
+          why we sleep
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/02/15/linux/network/bridge/" target="_self">
+        <a href="/2022/03/03/life/why%20we%20sleep/" target="_self">
           
-          1. 什么是 bridgebridge 是 Linux 虚拟出来的一种设备，类似于交换机，可以将系统中多个网络设备连接起来。 换句话说，从一个网络设备中发送的数据包，会转发&#x2F;广播到连接在 bridge 的其余设备上 2. bridge internal2.1 操控 bridge 设备在 br_init 这个初始化函数中，将 br_ioctl_hook 设置为了 br_ioctl_deviceles
+          1. 前言睡眠占据了人一生中三分之一的时间，没有一分钟的睡眠是在浪费时间 2. 博主观点2.1 睡眠的危害可能要超出你的想象：不要再熬夜刷手机看电视啦！视频链接 2.1.1 人为什么到点要睡觉两个因素在主导我们的睡眠，调节我们的习惯：生物钟 + 腺苷（化学物质） 所谓生物钟，其实真的对应人脑中的一个结构：视交叉上核（视觉神经会先形成一个交叉，再与视觉皮层相连，而上核值的就是在这个交叉的上方的一个脑
         </a>
       </p>
 
@@ -219,263 +219,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2022-02-15 09:56" pubdate>
-              2022-02-15
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/network/">network</a>
-            
-              <a href="/categories/linux/network/docker/">docker</a>
-            
-              <a href="/categories/linux/network/docker/bridge/">bridge</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/02/13/linux/network/veth/" target="_self">
-          veth
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/02/13/linux/network/veth/" target="_self">
-          
-          veth 是什么veth ，又名虚拟网络设备对，主要是用于解决不同网络命名空间之间的通信。 说起网络名称空间（network namespace），大家应该都不陌生，这是 Linux 用来隔离容器网络环境的一项技术，主要隔离的资源有：  iptables  路由规则表 网络设备列表  虽然不同 namespace 之间是隔离的，但也有办法让它们之间完成通信，veth 就是其中的一种比较常见的解决方
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-02-13 13:37" pubdate>
-              2022-02-13
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/network/">network</a>
-            
-              <a href="/categories/linux/network/namespace/">namespace</a>
-            
-              <a href="/categories/linux/network/namespace/veth/">veth</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/02/13/linux/network/network_system/" target="_self">
-          
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/02/13/linux/network/network_system/" target="_self">
-          
-          
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-02-13 13:35" pubdate>
-              2022-02-13
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/02/12/linux/execve/" target="_self">
-          do_execve 源码解析
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/02/12/linux/execve/" target="_self">
-          
-          大家都知道，Linux 下面的可执行文件格式为 elf ，全称是 executable linkable format，中文名为“可执行可链接文件”，这种文件是以二进制的方式存储的，我们也可以将其称为二进制对象（binary object）。 以 gcc 为例，最终需要将很多 ‘.c’ 文件编译为一个 elf 格式的可执行文件，最终才能在 Linux 上运行，那么问题来了，Linux 是如何识别
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-02-12 10:47" pubdate>
-              2022-02-12
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/execve/">execve</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/02/12/toss/wsl%20configuration/" target="_self">
-          wsl 开发环境配置
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/02/12/toss/wsl%20configuration/" target="_self">
-          
-          1. WSL2 安装1.1 安装和启动 wsl首先使用管理员权限(windows + R)打开 powershell&#x2F;cmd&#x2F;windows terminal，输入下面的指令，也就是打开 windows subsystem for linux 的功能 123dism.exe &#x2F;online &#x2F;enable-feature &#x2F;featurename:Microsoft-Windows-Subsyst
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-02-12 10:47" pubdate>
-              2022-02-12
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/arch/">arch</a>
-            
-              <a href="/categories/linux/arch/configuration/">configuration</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/02/10/linux/syscall/vdso/" target="_self">
-          Linux vDSO 机制
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/02/10/linux/syscall/vdso/" target="_self">
-          
-          1. 什么是 vDSO众所周知，操作系统为我们管理硬件资源，并以系统调用的方式对用户进程提供 API，但是 syscall 很慢，涉及陷入内核以及上下文切换。对于少量频繁调用的系统调用（比如获取当期系统时间）来说，是否可以某种安全的方式开放到用户空间，让用户直接访问而不需要经过 syscall 呢？ vDSO 就是用来解决这个问题的。 vDSO 全程为 virtual dynamic shared
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-02-10 14:52" pubdate>
-              2022-02-10
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/vsyscall/">vsyscall</a>
-            
-              <a href="/categories/linux/vsyscall/vDSO/">vDSO</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/22/life/breakup/" target="_self">
-          Breaakup
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/22/life/breakup/" target="_self">
-          
-          我爱朱唯姝，比任何人都爱。 一个月前，我怎么也想不到，她会要和我分手，在那之后，颓废了好久，半个月没碰过代码，感觉人生黑暗到了极点。那段时间也不听歌，一门心思打王者，因为这是我和她约好，寒假会一起玩的游戏，即使我还很菜。 再之后是怨恨，明明对她那么好，她曾经对我也那么依恋，怎么就到为了个人发展要和我分手的地步了呢？还找各种解释，证明我俩不合适，连塔罗牌都搬出来了？于是乎，我听了好些致郁的歌，比如《
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-22 20:15" pubdate>
-              2022-01-22
+            <time datetime="2022-03-03 08:53" pubdate>
+              2022-03-03
             </time>
           </div>
         
@@ -485,45 +230,7 @@
             
               <a href="/categories/life/">life</a>
             
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/21/linux/gdt%20&amp;&amp;%20ldt/" target="_self">
-          GDT &amp;&amp; LDT
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/21/linux/gdt%20&amp;&amp;%20ldt/" target="_self">
-          
-          1. 什么是 GDT，什么是 LDT
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-21 17:09" pubdate>
-              2022-01-21
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
+              <a href="/categories/life/sleep/">sleep</a>
             
           </div>
         
@@ -538,15 +245,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/21/linux/apic/" target="_self">
-          x86 APIC
+        <a href="/2022/02/25/linux/device/char%20device/" target="_self">
+          char device driver
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/21/linux/apic/" target="_self">
+        <a href="/2022/02/25/linux/device/char%20device/" target="_self">
           
-          1. 什么是 APICAPIC 的全程是 Advanced Programmable Interrupt Controller，高级可编程中断控制器，我们今天主要讨论 x86 平台上的 APIC。 主要关注两点：  怎么高级了 什么是可编程  在这之前，首先认识一下 Interrupt 是什么 2. APIC details2.1 中断，陷阱，异常说起中断，大家经常将其和异常混淆，我觉得这里有必要
+          1. 什么是字符设备驱动Linux将设备分为三大类：字符设备、块设备和网络设备。字符设备是其中较为基础的一类，它的读写操作需要一个字节一个字节地进行，无法随机读取设备中的某一字节的数据。比较常见的字符设备有鼠标、键盘、串口等。 2. char device driver internal2.1 数据结构Linux 使用 cdev 结构体来表示一个字符设备 12345678struct cdev &amp;
         </a>
       </p>
 
@@ -554,8 +261,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-21 10:54" pubdate>
-              2022-01-21
+            <time datetime="2022-02-25 14:05" pubdate>
+              2022-02-25
             </time>
           </div>
         
@@ -565,7 +272,11 @@
             
               <a href="/categories/linux/">linux</a>
             
-              <a href="/categories/linux/interrupt/">interrupt</a>
+              <a href="/categories/linux/device/">device</a>
+            
+              <a href="/categories/linux/device/driver/">driver</a>
+            
+              <a href="/categories/linux/device/driver/char/">char</a>
             
           </div>
         
@@ -580,13 +291,13 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/01/21/linux/locks-mutex/" target="_self">
-          Locks3-Mutex
+        <a href="/2022/02/25/linux/network/unix%20socket/" target="_self">
+          
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2022/01/21/linux/locks-mutex/" target="_self">
+        <a href="/2022/02/25/linux/network/unix%20socket/" target="_self">
           
           
         </a>
@@ -596,8 +307,41 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-21 10:54" pubdate>
-              2022-01-21
+            <time datetime="2022-02-25 13:48" pubdate>
+              2022-02-25
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/02/25/linux/network/tcpdump/" target="_self">
+          tcpdump 原理
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/25/linux/network/tcpdump/" target="_self">
+          
+          1. tcpdump 简介tcpdump 类似于 wireshark，是常用的一款抓包工具，其是如何抓到内核态的网络包的呢？如果让你写一个抓包程序，你能完成吗？ 2. tcpdump internal2.1 tcpdump 抓包点首先要明确，tcpdump 抓包的入口在何处，这里先讨论收包这种情况： 从软中断到tcp&#x2F;ip协议栈的收包路径为 12345678net_rx_action    --&amp;
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-25 09:40" pubdate>
+              2022-02-25
             </time>
           </div>
         
@@ -606,6 +350,282 @@
             <i class="iconfont icon-category"></i>
             
               <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/network/">network</a>
+            
+              <a href="/categories/linux/network/tcpdump/">tcpdump</a>
+            
+              <a href="/categories/linux/network/tcpdump/af-packet/">af_packet</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/02/24/linux/device/platform_driver/" target="_self">
+          platform device driver
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/24/linux/device/platform_driver/" target="_self">
+          
+          1. 什么是平台设备驱动首先需要区分物理总线和驱动总线。  物理总线：芯片和功能外设之间传送信息的公共（专用）通信线路，包括了地址总线，数据总线，控制总线，传递的是电信号。 驱动总线：Linux 为设备驱动模型虚拟出来的总线，指定，执行设备与驱动的匹配规则，自动完成设备与驱动之间的匹配，执行驱动的初始化函数。  对于常见的 I2C，USB，PCI 等物理总线，Linux 都会为其自动创建驱动总线，
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-24 21:28" pubdate>
+              2022-02-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/device/">device</a>
+            
+              <a href="/categories/linux/device/driver/">driver</a>
+            
+              <a href="/categories/linux/device/driver/platform/">platform</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/02/24/linux/device/kobject/" target="_self">
+          kobject
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/24/linux/device/kobject/" target="_self">
+          
+          1. kobject 是什么在 Linux 设备驱动框架 一文中，我们提到了 Linux 设备驱动是以 Device，Bus，Driver，Class 这几种结构为核心，从而方便管理。 由于设备与设备，设备与总线之间有非常明显的拓扑关系（设备接在总线上，设备也会有依赖关系），因此，可以通过树状结构进行管理，而 kobject 就是这种管理方式的核心，同时辅助以 kset&#x2F;ktype，构成了设备框架
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-24 17:12" pubdate>
+              2022-02-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/driver/">driver</a>
+            
+              <a href="/categories/linux/driver/kobject/">kobject</a>
+            
+              <a href="/categories/linux/driver/kobject/kset/">kset</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/02/24/linux/device/index/" target="_self">
+          linux driver framework
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/24/linux/device/index/" target="_self">
+          
+          1. Linux 设备框架1.1 软件架构首先必须明确一点，驱动是 Linux 中最为复杂，也是代码量最为庞大的部分。并不是因为其架构多么匪夷所思，而是作为一个通用操作系统，Linux 必须要支持 30 多种体系下面的无数硬件设备，这种复杂度已经达到了 O(n*m) 的级别。 设想一下，如果由你为一个设备编写跨平台驱动，肯定想通过尽可能少的代码改动，完成各个平台的适配，这绝非易事。如果使用普通的
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-24 14:16" pubdate>
+              2022-02-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/driver/">driver</a>
+            
+              <a href="/categories/linux/driver/framework/">framework</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/02/23/linux/network/kernel%20&amp;&amp;%20nic%20&amp;&amp;%20napi/" target="_self">
+          kernel &amp;&amp; nic &amp;&amp; napic
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/23/linux/network/kernel%20&amp;&amp;%20nic%20&amp;&amp;%20napi/" target="_self">
+          
+          1. kernel 与 nic 交互接收数据帧的过程中，kernel 与网卡有两种交互方式：  中断（interrupt） 轮询（polling）  1.1 中断方式如果要保证低延迟（laytency）则可以考虑中断的方式，保证一有数据就通过硬件中断通知 CPU，然后中断处理函数读取数据包，存放到上层的输入队列，再通知内核 1.2 轮询方式采用 polling 的方式，定期检查网络设备中是否有数据
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-23 16:19" pubdate>
+              2022-02-23
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/network/">network</a>
+            
+              <a href="/categories/linux/network/napi/">napi</a>
+            
+              <a href="/categories/linux/network/napi/nic/">nic</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/02/23/linux/network/xdp/" target="_self">
+          xdp
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/23/linux/network/xdp/" target="_self">
+          
+          什么是 xdp
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-23 12:53" pubdate>
+              2022-02-23
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/network/">network</a>
+            
+              <a href="/categories/linux/network/xdp/">xdp</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/02/22/linux/network/traffic%20control/" target="_self">
+          traffic control
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/22/linux/network/traffic%20control/" target="_self">
+          
+          
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-22 21:16" pubdate>
+              2022-02-22
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/network/">network</a>
+            
+              <a href="/categories/linux/network/tc/">tc</a>
             
           </div>
         
@@ -618,7 +638,7 @@
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/#board">5</a><a class="extend next" rel="next" href="/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/#board">7</a><a class="extend next" rel="next" href="/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 

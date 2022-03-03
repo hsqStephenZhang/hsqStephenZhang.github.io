@@ -1,0 +1,557 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="mem::swap(Rust, 🦀 )">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1. netlink 简介1.1 netlink 是什么netlink 是一种 进程间通信（inter process communication IPC） 机制，为用户空间和内核空间进程之间（当然也可以是两个内核进程之间）提供了一种双向异步的通信方式。 netlink 依托成熟的 socket api 提供服务，增加了 AF_NETLINK 这个协议簇，依靠 sock_ops 对应的各种回调函数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="netlink">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2022/02/22/linux/network/netlink/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. netlink 简介1.1 netlink 是什么netlink 是一种 进程间通信（inter process communication IPC） 机制，为用户空间和内核空间进程之间（当然也可以是两个内核进程之间）提供了一种双向异步的通信方式。 netlink 依托成熟的 socket api 提供服务，增加了 AF_NETLINK 这个协议簇，依靠 sock_ops 对应的各种回调函数">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://hsqstephenzhang.github.io/images/netlink-api.png">
+<meta property="article:published_time" content="2022-02-22T02:12:45.000Z">
+<meta property="article:modified_time" content="2022-02-23T03:11:56.395Z">
+<meta property="article:author" content="mem::swap(Rust, 🦀 )">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://hsqstephenzhang.github.io/images/netlink-api.png">
+  
+  
+  <title>netlink - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"hsqstephenzhang.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>mem::swap</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-user-fill"></i>
+                Links
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="netlink">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-02-22 10:12" pubdate>
+        February 22, 2022 am
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      7.1k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      60 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">netlink</h1>
+            
+            <div class="markdown-body">
+              <h2 id="1-netlink-简介"><a href="#1-netlink-简介" class="headerlink" title="1. netlink 简介"></a>1. netlink 简介</h2><h3 id="1-1-netlink-是什么"><a href="#1-1-netlink-是什么" class="headerlink" title="1.1 netlink 是什么"></a>1.1 netlink 是什么</h3><p>netlink 是一种 进程间通信（inter process communication IPC） 机制，为用户空间和内核空间进程之间（当然也可以是两个内核进程之间）提供了一种双向异步的通信方式。</p>
+<p>netlink 依托成熟的 socket api 提供服务，增加了 AF_NETLINK 这个协议簇，依靠 sock_ops 对应的各种回调函数（sendmsg，recvmsg）来实现 netlink 的功能。</p>
+<h3 id="1-2-netlink-优点"><a href="#1-2-netlink-优点" class="headerlink" title="1.2 netlink 优点"></a>1.2 netlink 优点</h3><p>相比如其他的 IPC 方式，netlink 有下面几点优势：</p>
+<ol>
+<li>不需要通过 poll 操作来获取数据，像普通 socket 编程一样 recvmsg 即可，接口简单</li>
+<li>全双工异步通信</li>
+<li>netlink 支持广播和多播</li>
+</ol>
+<h3 id="1-3-netlink-示例"><a href="#1-3-netlink-示例" class="headerlink" title="1.3 netlink 示例"></a>1.3 netlink 示例</h3><p>前面说到，netlink 通过 socket 向用户提供操作接口，具体应该怎么用呢？下面是其工作示意图</p>
+<p><img src="/images/netlink-api.png" srcset="/img/loading.gif" lazyload alt="netlink api"></p>
+<h2 id="2-netlink-internal"><a href="#2-netlink-internal" class="headerlink" title="2. netlink internal"></a>2. netlink internal</h2><h3 id="2-1-netlink-api"><a href="#2-1-netlink-api" class="headerlink" title="2.1 netlink api"></a>2.1 netlink api</h3><p>前面说到，可以用 socket api 来操控 netlink，我们就从 <code>socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE)</code> 的几个参数入手</p>
+<ol>
+<li>AF_NETLINK，指定该 socket 的协议簇为 NETLINK，这样能通过 <code>netlink_family_ops.create</code> 回调函数创建 socket 的内部结构</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">net_proto_family</span> <span class="hljs-title">netlink_family_ops</span> =</span> &#123;<br>    .family = PF_NETLINK,<br>    .create = netlink_create,<br>    .owner    = THIS_MODULE,    <span class="hljs-comment">/* for consistency 8) */</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>SOCK_RAW，与主题无关，暂不讨论</li>
+<li>NRETLINK_ROUTE，指定 NETLINK 的类型，因为 NETLINK 在内核中被各个模块使用，所以需要通过这个字段区分究竟是哪个模块，而 netlink socket 相当于一个多路复用器，通过在内核中保存的一个针对不同 protocol 的 netlink_table，查表就能获取到对应的回调函数。</li>
+</ol>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">netlink_table</span> *<span class="hljs-title">nl_table</span> __<span class="hljs-title">read_mostly</span>;</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">netlink_create</span><span class="hljs-params">(struct net *net, struct socket *sock, <span class="hljs-keyword">int</span> protocol,</span></span><br><span class="hljs-params"><span class="hljs-function">              <span class="hljs-keyword">int</span> kern)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// 1. 查表</span><br>    netlink_lock_table();<br>    <span class="hljs-keyword">if</span> (nl_table[protocol].registered &amp;&amp;<br>        try_module_get(nl_table[protocol].<span class="hljs-keyword">module</span>))<br>        <span class="hljs-keyword">module</span> = nl_table[protocol].<span class="hljs-keyword">module</span>;<br>    <span class="hljs-keyword">else</span><br>        err = -EPROTONOSUPPORT;<br>    cb_mutex = nl_table[protocol].cb_mutex;<br>    bind = nl_table[protocol].bind;<br>    unbind = nl_table[protocol].unbind;<br>    netlink_unlock_table();<br><br>    <span class="hljs-comment">// 2. 赋值</span><br>    nlk = nlk_sk(sock-&gt;sk);<br>    nlk-&gt;<span class="hljs-keyword">module</span> = <span class="hljs-keyword">module</span>;<br>    nlk-&gt;netlink_bind = bind;<br>    nlk-&gt;netlink_unbind = unbind;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-2-netlink’s-protocols"><a href="#2-2-netlink’s-protocols" class="headerlink" title="2.2 netlink’s protocols"></a>2.2 netlink’s protocols</h3><p>下面来看一下 netlink 处理不同 protocol 的方式</p>
+<p>netlink 通过 <code>netlink_kernel_create</code> 来初始化一种 protocol，该函数接收三个参数：</p>
+<ol>
+<li>net：network namespace</li>
+<li>unit：也就是将 protocol 作为 netlink_table 的下标，</li>
+<li>cfg：配置选项，提供 input/bind/unbind 等回调函数，以及别的一些配置信息，保存到 nl_table 中</li>
+</ol>
+<p>也就是说，netlink 将 protocol 作为 nl_table 的下标，不同的 protocol 提供不同的 cfg 即可，这是一种典型的<strong>策略模式</strong>，下面分别是 NETLINK_ROUTE 和 NETLINK_KOBJECT_UEVENT 两种 protocol 对应的初始化函数，so easy</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> __net_init <span class="hljs-title">rtnetlink_net_init</span><span class="hljs-params">(struct net *net)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sock</span> *<span class="hljs-title">sk</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">netlink_kernel_cfg</span> <span class="hljs-title">cfg</span> =</span> &#123;<br>        .groups        = RTNLGRP_MAX,<br>        .input        = rtnetlink_rcv,<br>        .cb_mutex    = &amp;rtnl_mutex,<br>        .flags        = NL_CFG_F_NONROOT_RECV,<br>        .bind        = rtnetlink_bind,<br>    &#125;;<br><br>    sk = netlink_kernel_create(net, NETLINK_ROUTE, &amp;cfg);<br>    <span class="hljs-keyword">if</span> (!sk)<br>        <span class="hljs-keyword">return</span> -ENOMEM;<br>    net-&gt;rtnl = sk;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">uevent_net_init</span><span class="hljs-params">(struct net *net)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">uevent_sock</span> *<span class="hljs-title">ue_sk</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">netlink_kernel_cfg</span> <span class="hljs-title">cfg</span> =</span> &#123;<br>        .groups    = <span class="hljs-number">1</span>,<br>        .input = uevent_net_rcv,<br>        .flags    = NL_CFG_F_NONROOT_RECV<br>    &#125;;<br>    <span class="hljs-comment">// ...</span><br><br>    ue_sk-&gt;sk = netlink_kernel_create(net, NETLINK_KOBJECT_UEVENT, &amp;cfg);<br>    <br>    <span class="hljs-comment">// ...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-3-deeper-into-netlink’s-api"><a href="#2-3-deeper-into-netlink’s-api" class="headerlink" title="2.3 deeper into netlink’s api"></a>2.3 deeper into netlink’s api</h3><p>前面提到，通过 socket api 可以直接操作 netlink，那具体到每种操作，对应怎样的内核执行路径呢？下面来进行探究</p>
+<ol>
+<li>sendmsg 系统调用</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs text">___sys_sendmsg<br>    --&gt; sock_sendmsg<br>        --&gt; sock-&gt;ops-&gt;sendmsg(sock, msg, msg_data_left(msg)) = netlink_sendmsg<br>            --&gt; netlink_unicast <br>                --&gt; netlink_unicast_kernel<br>                    --&gt; nlk-&gt;netlink_rcv = cfg-&gt;input<br>                        --&gt; rtnetlink_rcv<br></code></pre></td></tr></table></figure>
+
+<p>sys_sendmsg 最终会调用到 <code>sock_ops-&gt;sendmsg</code>，从而触发 AF_NETLINK 对应的 <code>netlink_sendmsg</code> 回调函数。</p>
+<p>前面也说到，netlink 可以对应单播或者广播，这里以 unicast，也就是单播的执行路径为例，最终触发了 <code>cfg-&gt;input</code> 中传入的 rev 函数，对于 rtnetlink 而言，就会调用 <code>rtnetlink_rcv</code>。 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs text">rtnetlink_rcv<br>    --&gt; netlink_rcv_skb<br>        --&gt; rtnetlink_rcv_msg<br>            --&gt; rtnl_get_link(family, type)<br>                --&gt; netlink_dump_start(rtnl, skb, nlh, &amp;c)<br>                    --&gt; netlink_lookup<br>                    --&gt; netlink_dump<br>                        --&gt; alloc_skb<br>                        --&gt; skb_reserve<br>                        --&gt; netlink_skb_set_owner_r<br>                        --&gt; nlk-&gt;dump_done_errno = cb-&gt;dump(skb, cb) // 执行 rtnl_dump_ifinfo/rtnl_dump_all 回调函数<br>                        --&gt; __netlink_sendskb(sk, skb)<br>                            --&gt; netlink_deliver_tap(sock_net(sk), skb)<br>                            --&gt; skb_queue_tail(&amp;sk-&gt;sk_receive_queue, skb) //将skb加入到用户态 sock的 sk_receive_queue 队列<br>                            --&gt; sk-&gt;sk_data_ready(sk) = sock_def_readable // 唤醒 netlink_recvmsg 进行接收<br>                               --&gt;  wake_up_interruptible_sync_poll<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>recvmsg 系统调用</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs text">__sys_recvmmsg<br>    --&gt;___sys_recvmsg<br>        --&gt; sock-&gt;ops-&gt;recvmsg(socket, msg, msg_data_left(msg))<br>            --&gt; netlink_recvmsg<br>                --&gt; skb_recv_datagram<br>                    --&gt; __skb_recv_datagram<br>                        --&gt; __skb_try_recv_datagram or __skb_wait_for_more_packets<br>                            --&gt; __skb_try_recv_from_queue // 从 sk-&gt;sk_receive_queue 中取出 skb<br></code></pre></td></tr></table></figure>
+
+<p>在 rtnl_get_link 这一步，会根据传入的下标取出 <code>rtnl_msg_handlers</code> 数组中的 link，从而执行 <code>link-&gt;doit</code> 回调函数</p>
+<p>而该数组中的内容是系统初始化时就设置好的，在 <code>rtnetlink_init</code> 中，通过 <code>rtnl_register</code> 初始化了一系列操作对应的处理函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">void</span> __init <span class="hljs-title">rtnetlink_init</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (register_pernet_subsys(&amp;rtnetlink_net_ops))<br>        panic(<span class="hljs-string">&quot;rtnetlink_init: cannot initialize rtnetlink\n&quot;</span>);<br><br>    register_netdevice_notifier(&amp;rtnetlink_dev_notifier);<br><br>    rtnl_register(PF_UNSPEC, RTM_GETLINK, rtnl_getlink,<br>              rtnl_dump_ifinfo, <span class="hljs-number">0</span>);<br>    rtnl_register(PF_UNSPEC, RTM_SETLINK, rtnl_setlink, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);<br>    rtnl_register(PF_UNSPEC, RTM_NEWLINK, rtnl_newlink, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);<br>    rtnl_register(PF_UNSPEC, RTM_DELLINK, rtnl_dellink, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);<br><br>    rtnl_register(PF_UNSPEC, RTM_GETADDR, <span class="hljs-literal">NULL</span>, rtnl_dump_all, <span class="hljs-number">0</span>);<br>    rtnl_register(PF_UNSPEC, RTM_GETROUTE, <span class="hljs-literal">NULL</span>, rtnl_dump_all, <span class="hljs-number">0</span>);<br>    rtnl_register(PF_UNSPEC, RTM_GETNETCONF, <span class="hljs-literal">NULL</span>, rtnl_dump_all, <span class="hljs-number">0</span>);<br><br>    rtnl_register(PF_UNSPEC, RTM_NEWLINKPROP, rtnl_newlinkprop, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);<br>    rtnl_register(PF_UNSPEC, RTM_DELLINKPROP, rtnl_dellinkprop, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);<br><br>    rtnl_register(PF_BRIDGE, RTM_NEWNEIGH, rtnl_fdb_add, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);<br>    rtnl_register(PF_BRIDGE, RTM_DELNEIGH, rtnl_fdb_del, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);<br>    rtnl_register(PF_BRIDGE, RTM_GETNEIGH, rtnl_fdb_get, rtnl_fdb_dump, <span class="hljs-number">0</span>);<br><br>    rtnl_register(PF_BRIDGE, RTM_GETLINK, <span class="hljs-literal">NULL</span>, rtnl_bridge_getlink, <span class="hljs-number">0</span>);<br>    rtnl_register(PF_BRIDGE, RTM_DELLINK, rtnl_bridge_dellink, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);<br>    rtnl_register(PF_BRIDGE, RTM_SETLINK, rtnl_bridge_setlink, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);<br><br>    rtnl_register(PF_UNSPEC, RTM_GETSTATS, rtnl_stats_get, rtnl_stats_dump,<br>              <span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>rtnl_register</code> 函数原型为:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">rtnl_register</span><span class="hljs-params">(<span class="hljs-keyword">int</span> protocol, <span class="hljs-keyword">int</span> msgtype,</span></span><br><span class="hljs-params"><span class="hljs-function">           rtnl_doit_func doit, rtnl_dumpit_func dumpit,</span></span><br><span class="hljs-params"><span class="hljs-function">           <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> flags)</span></span>;<br></code></pre></td></tr></table></figure>
+
+<p>几个参数的含义分别为：</p>
+<ol>
+<li>protocol：具体的协议</li>
+<li>msgtype：消息类型，后面会提到</li>
+<li>doit：注册到 rtnl_msg_handlers 中的 link-&gt;doit</li>
+<li>dumpit：注册到 rtnl_msg_handlers 中的 link-&gt;dumpit</li>
+<li>flags：doit/dumpit 的参数</li>
+</ol>
+<p>rtnetlink 字面意思是 <code>route table netlink</code>，其实它包含的范围更大，邻居子系统也是通过 rtnetlink 暴露出去的，都可以从上面的 msgtype 参数可以看出来。</p>
+<p>这样解释还是有一些抽象，但其实 Linux 中一些网络相关的常用指令都是以 rtnetlink 为基础，就比如 <code>ip addr show</code></p>
+<p>这条指令，会显示所有网络设备的地址信息，背后就是调用了 msgtype 为 RTM_GETADDR 的 <code>rtnl_dump_all</code> ，通过 <a target="_blank" rel="noopener" href="https://github.com/brendangregg/perf-tools/blob/master/kernel/funcgraph">funcgraph</a> 可以查看详细的内核函数调用链，从而验证这一点。</p>
+<p>事实上，NETLINK_ROUTE 可以按照下面进行划分：</p>
+<ol>
+<li>LINK (network interfaces)</li>
+<li>ADDR (network addresses)</li>
+<li>ROUTE (network messages)</li>
+<li>NEIGH (neighbouring subsystem messages)</li>
+<li>RULE (policy rouing rules)</li>
+<li>QDISC (queueing disciplines)</li>
+<li>TCLASS (traffic classes)</li>
+<li>ACTIOn (packet action api)</li>
+<li>NEIGHTBL (neighbouring table)</li>
+<li>ADDRLABEL (address labeling)</li>
+</ol>
+<p>不仅是路由子系统，几乎所有 L3 和 L2 的功能，都通过 rtnetlink 暴露出去</p>
+<h2 id="3-generic-netlink-protocol"><a href="#3-generic-netlink-protocol" class="headerlink" title="3. generic netlink protocol"></a>3. generic netlink protocol</h2><p>netlink 协议簇数最大 32 个（MAX_LINKS），为支持更多的协议簇，开发了通用 netlink 簇 NETLINK_GENERIC。generic netlink 以 netlink 协议为基础，多做了一层多路复用，从而能够支持更多的子系统（netlink 本身已经完成了一次多路复用）。</p>
+<p>同理，generic netlink 也需要通过 <code>netlink_kernel_create</code> 初始化：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> __net_init <span class="hljs-title">genl_pernet_init</span><span class="hljs-params">(struct net *net)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">netlink_kernel_cfg</span> <span class="hljs-title">cfg</span> =</span> &#123;<br>        .input        = genl_rcv,<br>        .flags        = NL_CFG_F_NONROOT_RECV,<br>    &#125;;<br><br>    net-&gt;genl_sock = netlink_kernel_create(net, NETLINK_GENERIC, &amp;cfg);<br><br>    <span class="hljs-keyword">if</span> (!net-&gt;genl_sock &amp;&amp; net_eq(net, &amp;init_net))<br>        panic(<span class="hljs-string">&quot;GENL: Cannot initialize generic netlink\n&quot;</span>);<br><br>    <span class="hljs-keyword">if</span> (!net-&gt;genl_sock)<br>        <span class="hljs-keyword">return</span> -ENOMEM;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>也就是说，generic netlink socket 的 <code>nlk-&gt;netlink_rcv</code> 会对应 <code>genl_rcv</code>，在这个函数中，主要是查找对应的 generic family，然后调用其对应的 <code>doit</code> 回调函数。</p>
+<p>这一点其实不难理解，netlink 本身支持多种协议簇，所以维护了一张 nl_table，保存了所有协议对应的处理方式，以 protocol 作为下标，取出对应的协议回调函数即可，这是第一层<strong>多路复用</strong>。</p>
+<p>而 generic netlink 在这个基础上进一步维护了多路复用，同理也是维护一张表格，通过二级协议类型 <code>genl_family</code> 作为下标，道理其实非常相似。</p>
+<p>genl_family 可以通过 genl_register_family/genl_unregister_family 进行注册和注销。</p>
+<p>只不过有一点不大一样，genl_family 用到了 <code>struct idr</code> 这个结构，相比数组而言更加灵活，这里不过多赘述。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/">linux</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/network/">network</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/network/netlink/">netlink</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/network/netlink/ipc/">ipc</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/02/22/linux/network/neigh%20system/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">neighbouring subsystem</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02/22/linux/network/routing/">
+                        <span class="hidden-mobile">ipv4 routing system</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+  <div class="col-lg-7 mx-auto nopadding-x-md">
+    <div class="container custom post-custom mx-auto">
+      <img src="https://octodex.github.com/images/jetpacktocat.png" srcset="/img/loading.gif" lazyload class="rounded mx-auto d-block mt-5" style="width:150px; height:150px;">
+    </div>
+  </div>
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

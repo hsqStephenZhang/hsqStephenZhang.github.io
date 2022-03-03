@@ -24,7 +24,7 @@
 <meta property="og:description" content="1. procfs 是什么众所周知，文件系统是 Linux 的骨架，proc 文件系统就是其中一个展示程序运行状态的虚拟文件系统。 如果你查看 &#x2F;proc 目录下的内容，会发现，除了一堆数字命名的文件夹，还有很多杂七杂八的文件，比如 kallsyms cpuinfo meminfo，这些文件也都是系统的一些信息，比如 kallsyms 可以展示当前 vmlinux 的所有符号，cpuinfo 展示">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2022-01-19T08:49:40.000Z">
-<meta property="article:modified_time" content="2022-01-20T00:37:15.431Z">
+<meta property="article:modified_time" content="2022-02-24T07:25:55.455Z">
 <meta property="article:author" content="mem::swap(Rust, 🦀 )">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -251,7 +251,7 @@
             <div class="markdown-body">
               <h2 id="1-procfs-是什么"><a href="#1-procfs-是什么" class="headerlink" title="1. procfs 是什么"></a>1. procfs 是什么</h2><p>众所周知，文件系统是 Linux 的骨架，proc 文件系统就是其中一个<strong>展示程序运行状态</strong>的<strong>虚拟</strong>文件系统。</p>
 <p>如果你查看 <code>/proc</code> 目录下的内容，会发现，除了一堆数字命名的文件夹，还有很多杂七杂八的文件，比如 <code>kallsyms cpuinfo meminfo</code>，这些文件也都是系统的一些信息，比如 kallsyms 可以展示当前 vmlinux 的所有符号，cpuinfo 展示的是 cpu 的一些参数，meminfo 展示的是内存的一些参数。这些实现都比较简单；稍微复杂一些的是以数字命名的文件夹，也就是所有进程的信息，这也正是 proc 文件系统名字的由来。</p>
-<p>之前的一篇 <a href="#">Post not found: linux-basic/seq_file 文章</a>中已经介绍了 procfs 下 <code>/proc/kallsyms</code> 以及 seq_file 的实现机制，而本文着重 procfs 的整体框架，并着重分析和 process 有关的 <code>/proc/$&#123;pid&#125;</code> 一系列内容</p>
+<p>之前的一篇 <a href="/2022/01/19/linux/seq_file/" title="文章">文章</a>中已经介绍了 procfs 下 <code>/proc/kallsyms</code> 以及 seq_file 的实现机制，而本文着重 procfs 的整体框架，并着重分析和 process 有关的 <code>/proc/$&#123;pid&#125;</code> 一系列内容</p>
 <h2 id="2-procfs-的-inode-以及-file-operations"><a href="#2-procfs-的-inode-以及-file-operations" class="headerlink" title="2. procfs 的 inode 以及 file_operations"></a>2. procfs 的 inode 以及 file_operations</h2><p>了解一个文件系统，可以直接从 inode_operations &amp;&amp; file_operations 入手</p>
 <p>在 <code>fs/proc/root.c</code> 可以查到，procfs 的根目录为 <code>/proc</code>，根目录项为 <code>proc_root</code>，对应 inode_operations 为 <code>proc_root_inode_operations</code>，最关键的就是 lookup 回调函数</p>
 <p>其实这种虚拟文件系统的 lookup 已经比 ext 这种磁盘文件系统简化很多了，大部分 dentry 都是非常有规律地保存在内存中的，而不像磁盘那样还要和硬件存取打交道。</p>

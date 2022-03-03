@@ -203,15 +203,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/12/26/movies/Stranger%20Things/" target="_self">
-          Strange Things
+        <a href="/2022/01/10/rust/tower_internal/middleware-rate/" target="_self">
+          2.2 tower-rate limit
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/12/26/movies/Stranger%20Things/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/middleware-rate/" target="_self">
           
-          写在前面： 说来很奇怪，一直很喜欢看影评，但是自己从来没有写过，所以这算是一次全新的尝试吧。 第一次接触怪奇物语这部片子，是在B站上的小片片说大片的解说，不过那已经是很早以前的事情了，而且这个系列无疾而终，所以也没有给我留下很深刻的印象。第二次则是在上海字节跳动，和同事散步的时候，他聊起的这部电视剧，说是相当好看。 正好和 npy 分手之后，意志比较消沉，什么正经事都不想干，于是乎去搜了搜 Net
+          Tower 自带的流量控制中间件，核心功能为：在 x 时间内，最多接收 n 个请求，如果超出最大流量，休眠直到下一个刷新点 1. 核心数据结构为了描述这个核心功能，我们定义了下面的核心数据结构:  rate: 描述一段时间内，最多允许多少请求通过 sleep: 定时器，表示休眠的时间  而这里的 RateLimit 就是我们想要对外提供的 Service，通过相对应的 RateLayer 创建，结
         </a>
       </p>
 
@@ -219,140 +219,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-12-26 08:25" pubdate>
-              2021-12-26
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/12/24/riscv/instruction-set/" target="_self">
-          RISC-V -- instruction set
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/12/24/riscv/instruction-set/" target="_self">
-          
-          RISC-V  – instruction set1. 什么是 RISC-V定义： RISC-V（发音为“risk-five”）是一个基于精简指令集（RISC）原则的开源指令集架构（ISA），简易解释为开源软件运动相对应的一种“开源硬件”。该项目2010年始于加州大学柏克莱分校，但许多贡献者是该大学以外的志愿者和行业工作者。 作为除了 x86 和 Arm 以外的第三大指令集，RISC-V 正在逐渐
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-12-24 18:35" pubdate>
-              2021-12-24
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/12/24/linux/network/tls/" target="_self">
-          TLS
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/12/24/linux/network/tls/" target="_self">
-          
-          1. TLS 是什么我们需要在网络中实现安全通信，最直接的思路是，将内容通过某种手段加密，再通过某种手段解密。 这个手段可以有两种：  非对称加密。比如 RSA，ECC 算法，加解密过程是不可逆的，可以方便地对于数据进行签名&#x2F;验证，但是计算速度慢 对称加密。计算速度快，加密强度大，但关键是，加解密用的是相同的密钥，需要通过安全的手段传输密钥才行。  我们最终肯定还是希望可以使用性能更好的对称加密，
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-12-24 18:35" pubdate>
-              2021-12-24
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/12/24/linux/network/zero%20copy/" target="_self">
-          zero copy
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/12/24/linux/network/zero%20copy/" target="_self">
-          
-          1. 传统 IO为了更好的理解零拷贝解决的问题，我们首先了解一下传统 I&#x2F;O 方式存在的问题： 在 Linux 系统中，传统的访问方式是通过 write() 和 read() 两个系统调用实现的，通过 read() 函数读取文件到到缓存区中，然后通过 write() 方法把缓存中的数据输出到网络端口： 12read(file_fd, tmp_buf, len);write(socket_fd, t
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-12-24 18:35" pubdate>
-              2021-12-24
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/11/24/rust/futures/future-explained3/" target="_self">
-          future explained(3)
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/11/24/rust/futures/future-explained3/" target="_self">
-          
-          withoutboats 是 Rust 异步的主要负责人，他在一次分享中详细描述了 Pin 的演变过程和背后的心路历程 1. Future 模式引入在 Rust 之前的很多语言，绝大多数选择了回调机制实现的异步逻辑，比如C语言中的 libevent，再还有 nodejs 中的 callback。首先在 Rust 中，你很难写出 nodejs 那种回调模式的异步代码，下面是一小段典型的 nodejs
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-11-24 14:04" pubdate>
-              2021-11-24
+            <time datetime="2022-01-10 13:47" pubdate>
+              2022-01-10
             </time>
           </div>
         
@@ -362,7 +230,9 @@
             
               <a href="/categories/rust/">rust</a>
             
-              <a href="/categories/rust/async/">async</a>
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/middlewares/">middlewares</a>
             
           </div>
         
@@ -377,15 +247,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/11/24/rust/futures/future-explained2/" target="_self">
-          future explained(2)
+        <a href="/2022/01/10/rust/tower_internal/middleware-timeout/" target="_self">
+          2.3 tower-timeout limit
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/11/24/rust/futures/future-explained2/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/middleware-timeout/" target="_self">
           
-          前面提到了，future 其实分为 Non-Leaf-Future 和 Leaf-Future，前者由 async&#x2F;await 生成，后者由开发者手动对接系统 Io。 那么为什么会出现 self referential 的问题呢？ 其实主要的原因出现在 async&#x2F;await 生成的 Non-Leaf-Future 上！ 试想下面的这段代码 1234async fn test()&amp;#123;
+          Timeout 这个中间件的责任也非常明确：如果某个服务调用时间过长，超出了规定的超时时间，直接返回错误 1. 模型抽象为此，Timeout 肯定需要保留下面两个结构  inner Service 超时时间 duration  12345#[derive(Debug, Clone)]pub struct Timeout&lt;T&gt; &amp;#123;    inner: T,    timeout
         </a>
       </p>
 
@@ -393,8 +263,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-11-24 14:03" pubdate>
-              2021-11-24
+            <time datetime="2022-01-10 13:47" pubdate>
+              2022-01-10
             </time>
           </div>
         
@@ -404,7 +274,9 @@
             
               <a href="/categories/rust/">rust</a>
             
-              <a href="/categories/rust/async/">async</a>
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/middlewares/">middlewares</a>
             
           </div>
         
@@ -419,15 +291,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/11/24/rust/futures/future-explained1/" target="_self">
-          future explained(1)
+        <a href="/2022/01/10/rust/tower_internal/service-ext/" target="_self">
+          1.4 tower-ext
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/11/24/rust/futures/future-explained1/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/service-ext/" target="_self">
           
-          在Post not found: rust&#x2F;future-explained0 上一篇文章中，我们深入分析了 async&#x2F;await 状态机的底层实现，接下我们就可以进一步探究，Rust 中的 Future ，以及为什么会出现 自引用结构。 1. Future 是什么在浏览本节之前，希望你可以大致了解一下 Future 设计思想的演进过程，比如 javascript 中的 Promise 那么 R
+          1. ext 设计模式xxx-ext 是 Rust 当中常用的一个设计模式，在满足某个 Trait 的前提下，引入很多的扩展功能（比如最常用的 Iterator，其实 skip, enumerate, take 都是针对 Iterator trait 的扩充） Tower 也给 Service 引入了这个设计模式，十分好用。 源码如下，TL；DR 1234567891011121314151617
         </a>
       </p>
 
@@ -435,8 +307,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-11-24 14:02" pubdate>
-              2021-11-24
+            <time datetime="2022-01-10 13:47" pubdate>
+              2022-01-10
             </time>
           </div>
         
@@ -446,7 +318,9 @@
             
               <a href="/categories/rust/">rust</a>
             
-              <a href="/categories/rust/async/">async</a>
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/basic/">basic</a>
             
           </div>
         
@@ -461,15 +335,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/11/24/rust/futures/future-explained0/" target="_self">
-          future explained(0)
+        <a href="/2022/01/10/rust/tower_internal/tower-core/" target="_self">
+          1.1 tower 核心抽象
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/11/24/rust/futures/future-explained0/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/tower-core/" target="_self">
           
-          generator（生成器）是 Rust 中 async&#x2F;await 的基础，state machine 又是生成器的基础。 和闭包类似，不同的编译器会给 generator 生成不同的语义。但有一点是约定俗成的，也就是生成器最大的特点：程序的执行流程可以在生成器和调用者之间来回切换。 当我们需要暂时从生成器中返回的时候，可以使用 yield 关键字，当调用者希望再次进入生成器的时候，就调用 re
+          1. Tower 的起源说起 Tower，就不得不提到 Rust 另一个重要的框架，Tokio，这两个单词连起来读，就是 Tokyo Tower（东京塔），这也从另一个方面说明，Tower 是 Tokio 官方支持的中间件框架，Axum ，Tower-web，Tonic 这些项目，都广泛使用了 Tower 这层抽象。 那么，我们不禁要问，Tower 到底是什么？官方给出的答案是：Tower 是一个
         </a>
       </p>
 
@@ -477,8 +351,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-11-24 14:01" pubdate>
-              2021-11-24
+            <time datetime="2022-01-10 13:47" pubdate>
+              2022-01-10
             </time>
           </div>
         
@@ -488,7 +362,9 @@
             
               <a href="/categories/rust/">rust</a>
             
-              <a href="/categories/rust/async/">async</a>
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/basic/">basic</a>
             
           </div>
         
@@ -503,15 +379,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/11/23/linux/tracing/index/" target="_self">
-          linux tracing
+        <a href="/2022/01/10/rust/tower_internal/tower-issues/" target="_self">
+          3.1 tower 不足之处
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/11/23/linux/tracing/index/" target="_self">
+        <a href="/2022/01/10/rust/tower_internal/tower-issues/" target="_self">
           
-          1. SummerizeLinux 中的 tracing 机制非常丰富，比如最火热的 ebpf，还有老牌的 perf，systemtap，kprobe，tracepoint，uprobe，usdt，bcc，ftrace，这些花样繁多的手段，其实都可以完成一定程度上的 tracing 功能，但是也给我们带来了幸福的烦恼：选择困难！ 看上去每一种方式都可以解决一定的问题，他们之间还有很多功能重叠的地方
+          这一部分，主要是探讨 Tower 中的一些不足之处，主要参考我实习期间使用 Tower 之后的一些体验以及和同事的讨论。 1. 问题1.1 call是否应该使用 Pin&lt;&amp;mut Self&gt; ？关于这个问题，已经有了一些github 讨论。但是到目前为止，Tower 官方还是决定采用一个普通的 &amp;mut self，这意味着 Service 必须是Unpin。 这个问题的
         </a>
       </p>
 
@@ -519,8 +395,222 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-11-23 23:21" pubdate>
-              2021-11-23
+            <time datetime="2022-01-10 13:47" pubdate>
+              2022-01-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/rust/">rust</a>
+            
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/more/">more</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/10/rust/tower_internal/tower-service/" target="_self">
+          1.2 tower service 设计心路历程
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/10/rust/tower_internal/tower-service/" target="_self">
+          
+          Tower Service 设计思路 -by tokio
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-10 13:47" pubdate>
+              2022-01-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/rust/">rust</a>
+            
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/basic/">basic</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/09/linux/tracing/ftrace/" target="_self">
+          ftrace
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/09/linux/tracing/ftrace/" target="_self">
+          
+          先说一个非常重要的参考资料，也就是 ftrace 作者本人的 pdf：ftrace kernel hook 接下来，主要跟着作者的思路，融入自己的一些思考，给大家解读一下 ftrace 究竟做了什么？ 1. 什么是 ftraceftrace，顾名思义，就是 function trace，针对函数级别的追踪调试机制。 我们平时是如何使用这个强大功能的呢？ 1.1 如何使用 ftrace可以通过 tr
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-09 13:47" pubdate>
+              2022-01-09
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/trace/">trace</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/09/linux/tracing/int3/" target="_self">
+          int3 黑魔法
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/09/linux/tracing/int3/" target="_self">
+          
+          发现和 tracing 有关的好多内容，脱离了 int3 都无法很好的展开。要么需要额外写很多内容，要么是不够详细，所以想在这里单独说明一下 int3 的黑魔法。 1. 程序执行视角众所周知，可执行程序，在 CPU 看来，只是很多的指令罢了，对于不同的指令，CPU 会有不同的反应，如果学习过汇编，可能会了解 mov add sub mul push pop call 这些最常见的指令，但是 CPU
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-09 13:47" pubdate>
+              2022-01-09
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/trace/">trace</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/09/linux/tracing/kprobe/" target="_self">
+          kprobe
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/09/linux/tracing/kprobe/" target="_self">
+          
+          1. kprobe 是什么Kprobe是一种内核调测手段，它可以动态地跟踪内核的行为、收集debug信息和性能信息。 可以跟踪内核几乎所有的代码地址。这点非常神奇啊，几乎所有的代码，Wow，究竟如何办到这一点呢？我们可以从 debugger 角度出发，探究一下这个问题。 众所周知，debugger 是依赖于 ptrace 这个系统调用，ptrace 赋予了程序调试别的进程的能力，这一点是如何办到的
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-09 13:47" pubdate>
+              2022-01-09
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/trace/">trace</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/09/linux/tracing/notify_chain/" target="_self">
+          notify chain
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/09/linux/tracing/notify_chain/" target="_self">
+          
+          Linux 中广泛采用了事件通知机制，即 注册 + 回调，notify chain 就是很典型的例子。 1. notify chain 是什么首先要明白，notify chain 是什么？ 将其比作 发布-订阅模式，可能更加容易理解： 某个读者订阅了某个杂志，当杂志发版之后，就会收到对应的通知；一旦不再想看这个杂志，取消订阅即可。 Linux 中为了及时相应某一些到来的事件，采取了通知链机制，可以
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-09 13:47" pubdate>
+              2022-01-09
             </time>
           </div>
         
@@ -543,7 +633,7 @@
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/page/4/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/#board">3</a><a class="page-number" href="/page/4/#board">4</a><span class="page-number current">5</span>
+      <a class="extend prev" rel="prev" href="/page/4/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/#board">3</a><a class="page-number" href="/page/4/#board">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/#board">6</a><a class="page-number" href="/page/7/#board">7</a><a class="extend next" rel="next" href="/page/6/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 

@@ -1,0 +1,496 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="mem::swap(Rust, 🦀 )">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1. tcpdump 简介tcpdump 类似于 wireshark，是常用的一款抓包工具，其是如何抓到内核态的网络包的呢？如果让你写一个抓包程序，你能完成吗？ 2. tcpdump internal2.1 tcpdump 抓包点首先要明确，tcpdump 抓包的入口在何处，这里先讨论收包这种情况： 从软中断到tcp&#x2F;ip协议栈的收包路径为 12345678net_rx_action    --&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tcpdump 原理">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2022/02/25/linux/network/tcpdump/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. tcpdump 简介tcpdump 类似于 wireshark，是常用的一款抓包工具，其是如何抓到内核态的网络包的呢？如果让你写一个抓包程序，你能完成吗？ 2. tcpdump internal2.1 tcpdump 抓包点首先要明确，tcpdump 抓包的入口在何处，这里先讨论收包这种情况： 从软中断到tcp&#x2F;ip协议栈的收包路径为 12345678net_rx_action    --&amp;">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-02-25T01:40:45.000Z">
+<meta property="article:modified_time" content="2022-03-02T02:02:10.070Z">
+<meta property="article:author" content="mem::swap(Rust, 🦀 )">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>tcpdump 原理 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"hsqstephenzhang.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>mem::swap</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-user-fill"></i>
+                Links
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="tcpdump 原理">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-02-25 09:40" pubdate>
+        February 25, 2022 am
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.3k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      37 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">tcpdump 原理</h1>
+            
+            <div class="markdown-body">
+              <h2 id="1-tcpdump-简介"><a href="#1-tcpdump-简介" class="headerlink" title="1. tcpdump 简介"></a>1. tcpdump 简介</h2><p>tcpdump 类似于 wireshark，是常用的一款抓包工具，其是如何抓到内核态的网络包的呢？如果让你写一个抓包程序，你能完成吗？</p>
+<h2 id="2-tcpdump-internal"><a href="#2-tcpdump-internal" class="headerlink" title="2. tcpdump internal"></a>2. tcpdump internal</h2><h3 id="2-1-tcpdump-抓包点"><a href="#2-1-tcpdump-抓包点" class="headerlink" title="2.1 tcpdump 抓包点"></a>2.1 tcpdump 抓包点</h3><p>首先要明确，tcpdump 抓包的入口在何处，这里先讨论收包这种情况：</p>
+<p>从软中断到tcp/ip协议栈的收包路径为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><pre><code class="hljs text">net_rx_action<br>    --&gt; napi_poll<br>        --&gt; napi_struct-&gt;poll<br>        --&gt; napi_complete_done<br>            --&gt; netif_receive_skb_list_internal<br>                --&gt; __netif_receive_skb_list_core<br>                    --&gt; __netif_receive_skb_core<br>                    --&gt; ip_list_rcv<br></code></pre></td></tr></table></figure>
+
+<p>其中，napi_xxx 是 napi 驱动相关的操作，netif 是设备层面的操作，到了 ip_list_rcv，就要逐步交给上层协议栈去处理了。</p>
+<p>tcpdump 的作用位置正是位于 <code>__netif_receive_skb_core</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> __netif_receive_skb_core(struct sk_buff **pskb, <span class="hljs-keyword">bool</span> pfmemalloc,<br>				    struct packet_type **ppt_prev)<br>&#123;<br>	list_for_each_entry_rcu(ptype, &amp;ptype_all, <span class="hljs-built_in">list</span>) &#123;<br>		<span class="hljs-keyword">if</span> (pt_prev)<br>			ret = deliver_skb(skb, pt_prev, orig_dev);<br>		pt_prev = ptype;<br>	&#125;<br><br>	list_for_each_entry_rcu(ptype, &amp;skb-&gt;dev-&gt;ptype_all, <span class="hljs-built_in">list</span>) &#123;<br>		<span class="hljs-keyword">if</span> (pt_prev)<br>			ret = deliver_skb(skb, pt_prev, orig_dev);<br>		pt_prev = ptype;<br>	&#125;<br>    <span class="hljs-comment">// ...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>该函数中，遍历了 ptype_all/dev-&gt;ptype_all，并且针对其中的每一个 ptype，都会调用 <code>deliver_skb</code> 处理。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// include/linux/netdevice.h</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">packet_type</span> &#123;</span><br>	__be16			type;	<span class="hljs-comment">/* This is really htons(ether_type). */</span><br>	<span class="hljs-keyword">bool</span>			ignore_outgoing;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">net_device</span>	*<span class="hljs-title">dev</span>;</span>	<span class="hljs-comment">/* NULL is wildcarded here	     */</span><br>	<span class="hljs-keyword">int</span>			(*func) (struct sk_buff *,<br>					 struct net_device *,<br>					 struct packet_type *,<br>					 struct net_device *);<br>	<span class="hljs-keyword">void</span>			(*list_func) (struct list_head *,<br>					      struct packet_type *,<br>					      struct net_device *);<br>	<span class="hljs-keyword">bool</span>			(*id_match)(struct packet_type *ptype,<br>					    struct sock *sk);<br>	<span class="hljs-keyword">void</span>			*af_packet_priv;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span>	<span class="hljs-title">list</span>;</span><br>&#125;;<br><br><span class="hljs-comment">//net/core/dev.c</span><br><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-keyword">int</span> <span class="hljs-title">deliver_skb</span><span class="hljs-params">(struct sk_buff *skb,</span></span><br><span class="hljs-params"><span class="hljs-function">			      struct packet_type *pt_prev,</span></span><br><span class="hljs-params"><span class="hljs-function">			      struct net_device *orig_dev)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-comment">// ...</span><br>	<span class="hljs-keyword">return</span> pt_prev-&gt;func(skb, skb-&gt;dev, pt_prev, orig_dev);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>而在 <code>deliver_skb</code> 中，直接调用了 <code>packet_type-&gt;func</code> 进行回调，从而触发 tcpdump 事先设置好的回调函数。</p>
+<h3 id="2-2-tcpdump-与-ptype-all"><a href="#2-2-tcpdump-与-ptype-all" class="headerlink" title="2.2 tcpdump 与 ptype_all"></a>2.2 tcpdump 与 ptype_all</h3><p>上面提到，Linux 在网络收包路径中，已经为我们提供了 hook 点：<code>ptype_all</code>，只需要提前注册抓包相关的处理函数，就可以通过回调完成 tcpdump 的基本功能了。那么，就下来就来研究一下 tcpdump 是如何和 ptype_all 关联的。</p>
+<p>通过 <code>trace tcpdump -i eth0</code> 来查看 tcpdump 的内核函数调用链，发现其源头在于 <code>socket(AF_PACKET, SOCK_RAW, xxx)</code></p>
+<p>对于 socket api 有过了解的同学可能知道，socket 相当于一个多路复用器，该函数中的第一个参数 AF_PACKET 表示 packet 类型的协议族，对应注册到系统中的 <code>packet_family_ops</code> </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">net_proto_family</span> <span class="hljs-title">packet_family_ops</span> =</span> &#123;<br>	.family =	PF_PACKET,<br>	.create =	packet_create,<br>	.owner	=	THIS_MODULE,<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>在 socket 对应的系统调用中，会取出该 net_proto_family，并调用 <code>pf-&gt;create()</code> 来完成 socket 的创建，从而完成该特定类型 sock 的初始化工作</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">int</span> __sock_create(struct net *net, <span class="hljs-keyword">int</span> family, <span class="hljs-keyword">int</span> type, <span class="hljs-keyword">int</span> protocol,<br>			 struct socket **res, <span class="hljs-keyword">int</span> kern)<br>&#123;<br>	<span class="hljs-keyword">if</span> (family &lt; <span class="hljs-number">0</span> || family &gt;= NPROTO)<br>		<span class="hljs-keyword">return</span> -EAFNOSUPPORT;<br>	<span class="hljs-keyword">if</span> (type &lt; <span class="hljs-number">0</span> || type &gt;= SOCK_MAX)<br>		<span class="hljs-keyword">return</span> -EINVAL;<br><br>	sock = sock_alloc();<br>    <br>    <span class="hljs-comment">// ...</span><br>	pf = rcu_dereference(net_families[family]);<br>	err = pf-&gt;create(net, sock, protocol, kern);<br>	<span class="hljs-comment">// ...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>由上可知，AF_PACKET 的关键在于 <code>packet_create</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">packet_create</span><span class="hljs-params">(struct net *net, struct socket *sock, <span class="hljs-keyword">int</span> protocol,</span></span><br><span class="hljs-params"><span class="hljs-function">			 <span class="hljs-keyword">int</span> kern)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// ...</span><br>	po-&gt;prot_hook.func = packet_rcv;<br><br>	<span class="hljs-keyword">if</span> (sock-&gt;type == SOCK_PACKET)<br>		po-&gt;prot_hook.func = packet_rcv_spkt;<br><br>	po-&gt;prot_hook.af_packet_priv = sk;<br><br>	<span class="hljs-keyword">if</span> (proto) &#123;<br>		po-&gt;prot_hook.type = proto;<br>		__register_prot_hook(sk);<br>	&#125;<br><br>    <span class="hljs-comment">// ...</span><br>&#125;<br><br><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> __register_prot_hook(struct sock *sk)<br>&#123;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">packet_sock</span> *<span class="hljs-title">po</span> =</span> pkt_sk(sk);<br><br>	<span class="hljs-keyword">if</span> (!po-&gt;running) &#123;<br>		<span class="hljs-keyword">if</span> (po-&gt;fanout)<br>			__fanout_link(sk, po);<br>		<span class="hljs-keyword">else</span><br>			dev_add_pack(&amp;po-&gt;prot_hook);<br><br>		sock_hold(sk);<br>		po-&gt;running = <span class="hljs-number">1</span>;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>该函数中将 <code>prot_hook.func</code> 设置为 <code>packet_rcv</code>，并且通过 <code>__register_prot_hook</code>，将 prot_hook 注册到了 dev 的 ptype_all 链表中。这样，在遍历 dev-&gt;ptype_all 链表时，就可以找到 <code>packet_rcv</code> 并执行了。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">inline</span> struct list_head *<span class="hljs-title">ptype_head</span><span class="hljs-params">(<span class="hljs-keyword">const</span> struct packet_type *pt)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">if</span> (pt-&gt;type == htons(ETH_P_ALL))<br>		<span class="hljs-keyword">return</span> pt-&gt;dev ? &amp;pt-&gt;dev-&gt;ptype_all : &amp;ptype_all;<br>	<span class="hljs-keyword">else</span><br>		<span class="hljs-keyword">return</span> pt-&gt;dev ? &amp;pt-&gt;dev-&gt;ptype_specific :<br>				 &amp;ptype_base[ntohs(pt-&gt;type) &amp; PTYPE_HASH_MASK];<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">dev_add_pack</span><span class="hljs-params">(struct packet_type *pt)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> *<span class="hljs-title">head</span> =</span> ptype_head(pt);<br><br>	spin_lock(&amp;ptype_lock);<br>	list_add_rcu(&amp;pt-&gt;<span class="hljs-built_in">list</span>, head);<br>	spin_unlock(&amp;ptype_lock);<br>&#125;<br>EXPORT_SYMBOL(dev_add_pack);<br></code></pre></td></tr></table></figure>
+
+<p>之前的解释其实并不太严谨，因为在 <code>ptype_head</code> 中，会根据 packet_type 是否设置了 dev 字段，进而判断将 packet_type 挂载到 dev-&gt;ptype_all 还是全局的 ptype_all 上。但无论是哪种情况，在 <code>__netif_receive_skb_core</code> 都会进行处理</p>
+<h3 id="2-3-发送数据包"><a href="#2-3-发送数据包" class="headerlink" title="2.3 发送数据包"></a>2.3 发送数据包</h3><p>发送数据包的情况有所不同，因为 Linux 中还存在 netfilter 用来过滤数据包，如果数据包在到达 AF_PACKET 发包抓包点之前就已经被丢弃，无论如何也采集不到该数据包的内容。</p>
+<p>进入到设备层之后，发包的函数调用链为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs text">dev_hard_start_xmit<br>	--&gt; xmit_one<br>		--&gt; dev_queue_xmit_nit<br>			--&gt; deliver_skb // 遍历 ptype_all 链表，处理 AF_PACKET 回调 <br>		--&gt; netdev_start_xmit<br>			--&gt; __netdev_start_xmit<br>				--&gt; ops-&gt;ndo_start_xmit // 网卡驱动发送数据包<br></code></pre></td></tr></table></figure>
+
+<p>在发送数据包之前，会在 <code>dev_queue_xmit_nit</code> 中处理 ptype_all 链表上注册的回调函数，之后的处理相信大家都已经了然于胸了。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/">linux</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/network/">network</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/network/tcpdump/">tcpdump</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/network/tcpdump/af-packet/">af_packet</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/02/25/linux/network/unix%20socket/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02/24/linux/device/platform_driver/">
+                        <span class="hidden-mobile">platform device driver</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+  <div class="col-lg-7 mx-auto nopadding-x-md">
+    <div class="container custom post-custom mx-auto">
+      <img src="https://octodex.github.com/images/jetpacktocat.png" srcset="/img/loading.gif" lazyload class="rounded mx-auto d-block mt-5" style="width:150px; height:150px;">
+    </div>
+  </div>
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

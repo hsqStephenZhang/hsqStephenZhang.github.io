@@ -1,0 +1,511 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="mem::swap(Rust, 🦀 )">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1. what’s neighbouring subsystem邻居子系统是网络协议栈必不可少的一环，主要负责将 L3（network layer）地址转换为 L2（link layer）地址。 为了实现这个功能，Linux 实现了 Arp 协议（ipv4）以及 Neighbour Discovery Protocol（ipv6）。本章只会讨论 Arp 协议相关的内容。首选会介绍一下几个重要的数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="neighbouring subsystem">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2022/02/22/linux/network/neigh%20system/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. what’s neighbouring subsystem邻居子系统是网络协议栈必不可少的一环，主要负责将 L3（network layer）地址转换为 L2（link layer）地址。 为了实现这个功能，Linux 实现了 Arp 协议（ipv4）以及 Neighbour Discovery Protocol（ipv6）。本章只会讨论 Arp 协议相关的内容。首选会介绍一下几个重要的数据">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://hsqstephenzhang.github.io/images/arp-state-machine.png">
+<meta property="article:published_time" content="2022-02-22T13:15:45.000Z">
+<meta property="article:modified_time" content="2022-02-23T02:44:48.115Z">
+<meta property="article:author" content="mem::swap(Rust, 🦀 )">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://hsqstephenzhang.github.io/images/arp-state-machine.png">
+  
+  
+  <title>neighbouring subsystem - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"hsqstephenzhang.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>mem::swap</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-user-fill"></i>
+                Links
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="neighbouring subsystem">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-02-22 21:15" pubdate>
+        February 22, 2022 pm
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      7k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      59 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">neighbouring subsystem</h1>
+            
+            <div class="markdown-body">
+              <h2 id="1-what’s-neighbouring-subsystem"><a href="#1-what’s-neighbouring-subsystem" class="headerlink" title="1. what’s neighbouring subsystem"></a>1. what’s neighbouring subsystem</h2><p>邻居子系统是网络协议栈必不可少的一环，主要负责将 L3（network layer）地址转换为 L2（link layer）地址。</p>
+<p>为了实现这个功能，Linux 实现了 Arp 协议（ipv4）以及 Neighbour Discovery Protocol（ipv6）。本章只会讨论 Arp 协议相关的内容。首选会介绍一下几个重要的数据结构，然后再根据协议栈汇总收发包的路径进行串讲。</p>
+<h2 id="2-neighbouring-subsystem-internal"><a href="#2-neighbouring-subsystem-internal" class="headerlink" title="2. neighbouring subsystem internal"></a>2. neighbouring subsystem internal</h2><h3 id="2-1-more-details"><a href="#2-1-more-details" class="headerlink" title="2.1 more details"></a>2.1 more details</h3><p>当数据包经过 L2 时，需要 L2 目标地址，从而填充 L2 header，通过 neighbouring subsystem，可以通过 L3 地址来进行查询对应的 L2 地址，如果查不到，还可以发送 solicitation 数据包，通过 Arp 协议请求别的设备完成地址解析并相应该请求。</p>
+<p>我们绝大部分使用的都是 Ethernet，因此 L2 的目标/源地址都是 MAC 地址。</p>
+<h3 id="2-2-data-structure"><a href="#2-2-data-structure" class="headerlink" title="2.2 data structure"></a>2.2 data structure</h3><figure class="highlight c"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></div></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">neighbour</span> &#123;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">neighbour</span> __<span class="hljs-title">rcu</span>    *<span class="hljs-title">next</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">neigh_table</span>    *<span class="hljs-title">tbl</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">neigh_parms</span>    *<span class="hljs-title">parms</span>;</span><br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>        confirmed;<br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>        updated;<br>    <span class="hljs-keyword">rwlock_t</span>        lock;<br>    <span class="hljs-keyword">refcount_t</span>        refcnt;<br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span>        arp_queue_len_bytes;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sk_buff_head</span>    <span class="hljs-title">arp_queue</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">timer_list</span>    <span class="hljs-title">timer</span>;</span><br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>        used;<br>    <span class="hljs-keyword">atomic_t</span>        probes;<br>    __u8            flags;<br>    __u8            nud_state;<br>    __u8            type;<br>    __u8            dead;<br>    u8            protocol;<br>    <span class="hljs-keyword">seqlock_t</span>        ha_lock;<br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span>        ha[ALIGN(MAX_ADDR_LEN, <span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>))] __aligned(<span class="hljs-number">8</span>);<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">hh_cache</span>        <span class="hljs-title">hh</span>;</span><br>    <span class="hljs-keyword">int</span>            (*output)(struct neighbour *, struct sk_buff *);<br>    <span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">neigh_ops</span>    *<span class="hljs-title">ops</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span>    <span class="hljs-title">gc_list</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">rcu_head</span>        <span class="hljs-title">rcu</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">net_device</span>    *<span class="hljs-title">dev</span>;</span><br>    u8            primary_key[<span class="hljs-number">0</span>];<br>&#125; __randomize_layout;<br><br>关键字段的含义：<br><br><span class="hljs-number">1.</span> next：neighbour 在哈希表中的下一个节点<br><span class="hljs-number">2.</span> tbl：neighbour 所在的 neigh_table<br><span class="hljs-number">3.</span> confirmed：neighbour 的验证时间（arp 协议）<br><span class="hljs-number">4.</span> timer：对应 neigh_timer_handler 回调函数，会定时判定该 neighbour 的 Neighbour Unreachability Detection State（NUD）<br><span class="hljs-number">5.</span> ha：neighbour 的硬件地址<br><span class="hljs-number">6.</span> hh：L2 头部信息缓存<br><span class="hljs-number">7.</span> nud_state：Neighbour Unreachability Detection State（NUD），会随着时间动态更新<br><span class="hljs-number">8.</span> dead：neighbour 是否已经失效<br><span class="hljs-number">9.</span> primary_key：neighbour 的 L3 地址，用于在 neigh_table 中进行哈希查找<br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">neigh_table</span> &#123;</span><br>    <span class="hljs-keyword">int</span>            family;<br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span>        entry_size;<br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span>        key_len;<br>    __be16            protocol;<br>    __u32            (*hash)(<span class="hljs-keyword">const</span> <span class="hljs-keyword">void</span> *pkey,<br>                    <span class="hljs-keyword">const</span> struct net_device *dev,<br>                    __u32 *hash_rnd);<br>    <span class="hljs-keyword">bool</span>            (*key_eq)(<span class="hljs-keyword">const</span> struct neighbour *, <span class="hljs-keyword">const</span> <span class="hljs-keyword">void</span> *pkey);<br>    <span class="hljs-keyword">int</span>            (*constructor)(struct neighbour *);<br>    <span class="hljs-keyword">int</span>            (*pconstructor)(struct pneigh_entry *);<br>    <span class="hljs-keyword">void</span>            (*pdestructor)(struct pneigh_entry *);<br>    <span class="hljs-keyword">void</span>            (*proxy_redo)(struct sk_buff *skb);<br>    <span class="hljs-keyword">int</span>            (*is_multicast)(<span class="hljs-keyword">const</span> <span class="hljs-keyword">void</span> *pkey);<br>    <span class="hljs-keyword">bool</span>            (*allow_add)(<span class="hljs-keyword">const</span> struct net_device *dev,<br>                         struct netlink_ext_ack *extack);<br>    <span class="hljs-keyword">char</span>            *id;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">neigh_parms</span>    <span class="hljs-title">parms</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span>    <span class="hljs-title">parms_list</span>;</span><br>    <span class="hljs-keyword">int</span>            gc_interval;<br>    <span class="hljs-keyword">int</span>            gc_thresh1;<br>    <span class="hljs-keyword">int</span>            gc_thresh2;<br>    <span class="hljs-keyword">int</span>            gc_thresh3;<br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>        last_flush;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">delayed_work</span>    <span class="hljs-title">gc_work</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">timer_list</span>     <span class="hljs-title">proxy_timer</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sk_buff_head</span>    <span class="hljs-title">proxy_queue</span>;</span><br>    <span class="hljs-keyword">atomic_t</span>        entries;<br>    <span class="hljs-keyword">atomic_t</span>        gc_entries;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span>    <span class="hljs-title">gc_list</span>;</span><br>    <span class="hljs-keyword">rwlock_t</span>        lock;<br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>        last_rand;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">neigh_statistics</span>    __<span class="hljs-title">percpu</span> *<span class="hljs-title">stats</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">neigh_hash_table</span> __<span class="hljs-title">rcu</span> *<span class="hljs-title">nht</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pneigh_entry</span>    **<span class="hljs-title">phash_buckets</span>;</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>关键字段含义：</p>
+<ol>
+<li>next：每一个 L2 协议都会创建自己的 neigh_table，因此需要通过链表来进行管理</li>
+<li>family：protocol 协议簇，AF_INET 表示 ipv4，AF_INET6 表示 ipv6</li>
+<li>entry_size，key_len，hash：哈希表有关的配置</li>
+<li>constructor，pconstructor，pdestructor：neighbour 的初始化以及析构函数</li>
+<li>id：neigh_table 的名称</li>
+<li>params：neigh_table 的配置，包含了很多属性</li>
+<li>phash_buckets：哈希表（哈希桶 + 链表）</li>
+</ol>
+<p>neighbour 作为哈希表的 value 存在于 neigh_table 当中，而哈希表的 key 就是 L3 地址。因此通过 skb ip头中的目标地址，可以快速找到对应的 neighbour。</p>
+<h3 id="2-3-从-Layer3-到-Layer2"><a href="#2-3-从-Layer3-到-Layer2" class="headerlink" title="2.3 从 Layer3 到 Layer2"></a>2.3 从 Layer3 到 Layer2</h3><p>发送数据包时，要通过下面的函数调用链</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs text">ip_local_out<br>    --&gt; ip_output<br>        --&gt; ip_finish_output<br>            --&gt; ip_finish_output2<br>                --&gt; neigh_output<br>                    --&gt; dev_queue_xmit<br></code></pre></td></tr></table></figure>
+
+<p>其中，从 L3 到 L2 的转换对应 <code>ip_finish_output2</code> 中 <code>neigh_output</code> 的调用。下面来看具体实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">ip_finish_output2</span><span class="hljs-params">(struct net *net, struct sock *sk, struct sk_buff *skb)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dst_entry</span> *<span class="hljs-title">dst</span> =</span> skb_dst(skb);<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">rtable</span> *<span class="hljs-title">rt</span> =</span> (struct rtable *)dst;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">net_device</span> *<span class="hljs-title">dev</span> =</span> dst-&gt;dev;<br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> hh_len = LL_RESERVED_SPACE(dev);<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">neighbour</span> *<span class="hljs-title">neigh</span>;</span><br>    <span class="hljs-keyword">bool</span> is_v6gw = <span class="hljs-literal">false</span>;<br><br>    <span class="hljs-comment">// ...</span><br><br>    rcu_read_lock_bh();<br><br>    <span class="hljs-comment">// 1. 查询 neigh</span><br>    neigh = ip_neigh_for_gw(rt, skb, &amp;is_v6gw);<br>    <span class="hljs-keyword">if</span> (!IS_ERR(neigh)) &#123;<br>        <span class="hljs-keyword">int</span> res;<br><br>        sock_confirm_neigh(skb, neigh);<br><br>        <span class="hljs-comment">// 2. 进入 Layer2</span><br>        res = neigh_output(neigh, skb, is_v6gw);<br>        rcu_read_unlock_bh();<br>        <span class="hljs-keyword">return</span> res;<br>    &#125;<br>    rcu_read_unlock_bh();<br><br>    <span class="hljs-comment">//...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>ip_finish_output2</code> 中首先通过 <code>ip_neigh_for_gw</code> 获取了 neigh，然后调用 <code>neigh_output</code> 进入 Layer2 并完成后续的操作。前者其实非常简单，最后调用了下面的函数进行查询</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs c"><br>\*<br>ip_neigh_for_gw<br>    --&gt; ip_neigh_gw4<br>        --&gt; __ipv4_neigh_lookup_noref<br>            --&gt; ___neigh_lookup_noref<br>*\<br><br><span class="hljs-keyword">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">neighbour</span> *___<span class="hljs-title">neigh_lookup_noref</span>(</span><br><span class="hljs-class">    <span class="hljs-keyword">struct</span> <span class="hljs-title">neigh_table</span> *<span class="hljs-title">tbl</span>,</span><br><span class="hljs-class">    <span class="hljs-title">bool</span> (*<span class="hljs-title">key_eq</span>)(<span class="hljs-title">const</span> <span class="hljs-keyword">struct</span> <span class="hljs-title">neighbour</span> *<span class="hljs-title">n</span>, <span class="hljs-title">const</span> <span class="hljs-title">void</span> *<span class="hljs-title">pkey</span>),</span><br><span class="hljs-class">    __<span class="hljs-title">u32</span> (*<span class="hljs-title">hash</span>)(<span class="hljs-title">const</span> <span class="hljs-title">void</span> *<span class="hljs-title">pkey</span>,</span><br><span class="hljs-class">              <span class="hljs-title">const</span> <span class="hljs-keyword">struct</span> <span class="hljs-title">net_device</span> *<span class="hljs-title">dev</span>,</span><br><span class="hljs-class">              __<span class="hljs-title">u32</span> *<span class="hljs-title">hash_rnd</span>),</span><br><span class="hljs-class">    <span class="hljs-title">const</span> <span class="hljs-title">void</span> *<span class="hljs-title">pkey</span>,</span><br><span class="hljs-class">    <span class="hljs-keyword">struct</span> <span class="hljs-title">net_device</span> *<span class="hljs-title">dev</span>)</span><br><span class="hljs-class">&#123;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">neigh_hash_table</span> *<span class="hljs-title">nht</span> =</span> rcu_dereference_bh(tbl-&gt;nht);<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">neighbour</span> *<span class="hljs-title">n</span>;</span><br>    u32 hash_val;<br><br>    hash_val = hash(pkey, dev, nht-&gt;hash_rnd) &gt;&gt; (<span class="hljs-number">32</span> - nht-&gt;hash_shift);<br>    <span class="hljs-keyword">for</span> (n = rcu_dereference_bh(nht-&gt;hash_buckets[hash_val]);<br>         n != <span class="hljs-literal">NULL</span>;<br>         n = rcu_dereference_bh(n-&gt;next)) &#123;<br>        <span class="hljs-keyword">if</span> (n-&gt;dev == dev &amp;&amp; key_eq(n, pkey))<br>            <span class="hljs-keyword">return</span> n;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>___neigh_lookup_noref</code> 函数完成了一个简单的 hash_bucket 查询：计算出 hash_val，取出 hash_val 对应的链表，遍历链表，并按照 key_eq 函数判定哈希值是否相等。</p>
+<p>有了 neigh 之后，就可以根据这个邻居开始真正的邻居子系统之旅，接下来的 <code>neigh_output</code> 函数中有两条路径，分别为 <code>neigh_hh_output</code> 和 <code>neighbour-&gt;output</code>，跟踪源码，前者最终会调用 <code>dev_start_xmit</code> 进入驱动层发送数据包，而后者在这里对应 <code>neigh_resolve_output</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-keyword">int</span> <span class="hljs-title">neigh_output</span><span class="hljs-params">(struct neighbour *n, struct sk_buff *skb,</span></span><br><span class="hljs-params"><span class="hljs-function">                   <span class="hljs-keyword">bool</span> skip_cache)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">hh_cache</span> *<span class="hljs-title">hh</span> =</span> &amp;n-&gt;hh;<br><br>    <span class="hljs-keyword">if</span> ((n-&gt;nud_state &amp; NUD_CONNECTED) &amp;&amp; hh-&gt;hh_len &amp;&amp; !skip_cache)<br>        <span class="hljs-keyword">return</span> neigh_hh_output(hh, skb);<br>    <span class="hljs-keyword">else</span><br>        <span class="hljs-keyword">return</span> n-&gt;output(n, skb);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>关键点在于，何时直接发送数据包？何时调用 output 回调函数？这主要是由 <code>n-&gt;nud_state</code> 决定的。nud_state 从何而来，那就不得不提 Arp 协议的实现了</p>
+<h3 id="2-4-Arp-协议"><a href="#2-4-Arp-协议" class="headerlink" title="2.4 Arp 协议"></a>2.4 Arp 协议</h3><p>前面说到，<code>neigh_output</code> 需要根据 nud_state 选择一个合适的分支，这一步很关键，只有当状态为 <code>NUD_CONNECTED</code> 时才会通过该邻居发送数据包。</p>
+<p>nud_state 全称为 <strong>Neighbour Unreachability Detection State</strong>，也就是 Arp 协议解析的状态，其中，<code>NUD_CONNECTED</code> 表示已经建立连接，<code>NUD_STALE</code> 表示已经过期，<code>NUD_DELAY</code> 表示延迟到期，<code>NUD_PROBE</code> 表示正在探测，<code>NUD_FAILED</code> 表示失败。只有当 neighbour 处于 <code>NUD_CONNECTED</code> 状态时，表示该邻居是可达的，才能继续发送数据包，否则需要通过 Arp 协议更新状态，直到状态转换为 <code>NUD_CONNECTED</code> 才能重新发送。</p>
+<p>ARP 协议中用到的状态完整定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> NUD_INCOMPLETE    0x01</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> NUD_REACHABLE    0x02</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> NUD_STALE    0x04</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> NUD_DELAY    0x08</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> NUD_PROBE    0x10</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> NUD_FAILED    0x20</span><br><br><span class="hljs-comment">/* Dummy states */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> NUD_NOARP    0x40</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> NUD_PERMANENT    0x80</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> NUD_NONE    0x00</span><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> NUD_IN_TIMER    (NUD_INCOMPLETE|NUD_REACHABLE|NUD_DELAY|NUD_PROBE)</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> NUD_VALID    (NUD_PERMANENT|NUD_NOARP|NUD_REACHABLE|NUD_PROBE|NUD_STALE|NUD_DELAY)</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> NUD_CONNECTED    (NUD_PERMANENT|NUD_NOARP|NUD_REACHABLE)</span><br></code></pre></td></tr></table></figure>
+
+<p>ARP 协议最复杂的地方也在于此，需要一个完备的状态机，才不至于迷失在各种状态的转化中。</p>
+<p><img src="/images/arp-state-machine.png" srcset="/img/loading.gif" lazyload alt="arp state machine"></p>
+<ol>
+<li>如何转换为 <code>NUD_REACHABLE</code> 状态？<br><code>NUD_REACHABLE</code> 约等于 <code>NUD_CONNECTED</code>，如果该状态的 neighbour 是可以发送数据包的，同时，其状态也会缓存下来<br>有两个方式可以转换到该状态：1) 发送 solicit 数据包，并在规定时间内收到了肯定应答；2) 收到了上层协议的确认包</li>
+<li>如何转换为 <code>NUD_INCOMPLETE</code> 状态？<br><code>NUD_INCOMPLETE</code> 表示已经发送了 solicit 数据包，但是还没有收到应答，此时无有效的 Layer2 Address<br><code>NUD_INCOMPLETE</code> 只能从初始的 <code>NUD_NONE</code> 而来，最终也只能转换为 <code>NUD_FAILED</code> 状态</li>
+<li><code>NUD_STALE</code> <code>NUD_DELAY</code> <code>NUD_PROBE</code> 状态表示什么？<br><code>NUD_STALE</code> 表示虽然已经缓存 neighbour 信息，但是已经过期，当 neighbour 位于这个状态时，会在下一次发送数据包时触发 reachability 的检测，并且转换为 <code>NUD_DELAY</code> 状态<br><code>NUD_DELAY</code> 表示一个可以等待 reachability 确认的时间窗口，当完成了 solicit 确认之后，也会转换为 <code>NUD_INCOMPLETE</code> 状态<br>位于 <code>NUD_DELAY</code>  超出容忍的最长时间之后，会进入到 <code>NUD_PROBE</code> 状态，此时，会像 <code>NUD_INCOMPLETE</code> 一样循环发送 solicit 数据包，等待应答或者直到发送次数用完，表明本次 Arp 请求失败</li>
+</ol>
+<h3 id="2-5-用户与-neighbouring-subsystem-交互"><a href="#2-5-用户与-neighbouring-subsystem-交互" class="headerlink" title="2.5 用户与 neighbouring subsystem 交互"></a>2.5 用户与 neighbouring subsystem 交互</h3><p>在讲解 netlink 的时候提到过，NETLINK_ROUTE 不仅包含了路由子系统，还包含了邻居子系统，因此，和 neighbour 相关的操作也是通过 rtnetlink 暴露出去的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> __init <span class="hljs-title">neigh_init</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span></span><br><span class="hljs-function"></span>&#123;<br>    rtnl_register(PF_UNSPEC, RTM_NEWNEIGH, neigh_add, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);<br>    rtnl_register(PF_UNSPEC, RTM_DELNEIGH, neigh_delete, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);<br>    rtnl_register(PF_UNSPEC, RTM_GETNEIGH, neigh_get, neigh_dump_info, <span class="hljs-number">0</span>);<br><br>    rtnl_register(PF_UNSPEC, RTM_GETNEIGHTBL, <span class="hljs-literal">NULL</span>, neightbl_dump_info,<br>              <span class="hljs-number">0</span>);<br>    rtnl_register(PF_UNSPEC, RTM_SETNEIGHTBL, neightbl_set, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>例如 <code>ip neigh show</code> 这条指令，就对应了 <code>neigh_dump_info</code> 这个回调函数。</p>
+<p>如果想进一步深入了解，可以在掌握了 netlink 的基础上，通过 strace/funcgraph 等工具来进行内核代码追踪，相信你能有更加深刻的理解。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/">linux</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/network/">network</a>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/network/neighbour/">neighbour</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/02/22/linux/network/traffic%20control/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">traffic control</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02/22/linux/network/netlink/">
+                        <span class="hidden-mobile">netlink</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+  <div class="col-lg-7 mx-auto nopadding-x-md">
+    <div class="container custom post-custom mx-auto">
+      <img src="https://octodex.github.com/images/jetpacktocat.png" srcset="/img/loading.gif" lazyload class="rounded mx-auto d-block mt-5" style="width:150px; height:150px;">
+    </div>
+  </div>
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
