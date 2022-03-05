@@ -1,0 +1,570 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="mem::swap(Rust, 🦀 )">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1. why do i write this?哎，老了，记忆力不行了，几个月前的实习经历已经忘得差不多了，但在我潜意识里，我认为自己可以很好得讲述当时的技术细节，这种落差带了一个非常严重的后果：面试时对于实习期间所学一问三不知。 所以，想在这里稍微针对简历中的 internship 经历和学习到的知识点做一个简单的记录和梳理 2. 实习经历2.1 字节跳动-财经部-自有支付-实习生2.1.1 闲谈">
+<meta property="og:type" content="article">
+<meta property="og:title" content="internship">
+<meta property="og:url" content="https://hsqstephenzhang.github.io/2022/03/05/experience/internship/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. why do i write this?哎，老了，记忆力不行了，几个月前的实习经历已经忘得差不多了，但在我潜意识里，我认为自己可以很好得讲述当时的技术细节，这种落差带了一个非常严重的后果：面试时对于实习期间所学一问三不知。 所以，想在这里稍微针对简历中的 internship 经历和学习到的知识点做一个简单的记录和梳理 2. 实习经历2.1 字节跳动-财经部-自有支付-实习生2.1.1 闲谈">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://hsqstephenzhang.github.io/images/process-thread.png">
+<meta property="og:image" content="https://cdn.learnku.com/uploads/images/202003/11/58489/a4vWtvRWGQ.jpeg!large">
+<meta property="og:image" content="https://hsqstephenzhang.github.io/images/protobuf2.png">
+<meta property="article:published_time" content="2022-03-05T01:03:00.000Z">
+<meta property="article:modified_time" content="2022-03-05T13:35:57.518Z">
+<meta property="article:author" content="mem::swap(Rust, 🦀 )">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://hsqstephenzhang.github.io/images/process-thread.png">
+  
+  
+  <title>internship - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"hsqstephenzhang.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>mem::swap</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-user-fill"></i>
+                Links
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="internship">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-05 09:03" pubdate>
+        March 5, 2022 am
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.6k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      47 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">internship</h1>
+            
+            <div class="markdown-body">
+              <h2 id="1-why-do-i-write-this"><a href="#1-why-do-i-write-this" class="headerlink" title="1. why do i write this?"></a>1. why do i write this?</h2><p>哎，老了，记忆力不行了，几个月前的实习经历已经忘得差不多了，但在我潜意识里，我认为自己可以很好得讲述当时的技术细节，这种落差带了一个非常严重的后果：面试时对于实习期间所学一问三不知。</p>
+<p>所以，想在这里稍微针对简历中的 internship 经历和学习到的知识点做一个简单的记录和梳理</p>
+<h2 id="2-实习经历"><a href="#2-实习经历" class="headerlink" title="2. 实习经历"></a>2. 实习经历</h2><h3 id="2-1-字节跳动-财经部-自有支付-实习生"><a href="#2-1-字节跳动-财经部-自有支付-实习生" class="headerlink" title="2.1 字节跳动-财经部-自有支付-实习生"></a>2.1 字节跳动-财经部-自有支付-实习生</h3><h4 id="2-1-1-闲谈"><a href="#2-1-1-闲谈" class="headerlink" title="2.1.1 闲谈"></a>2.1.1 闲谈</h4><p>还记得这份工作当时也准备了蛮久，最终在腾讯与字节中选择了后者。</p>
+<p>这个地方第一次让我认识到了大厂是一个什么样的工作环境，以及这里的人是什么样的工作状态。大家看起来还蛮轻松的，桌子上满满当当的饮料和零食，一时间竟觉得来到了天堂。不过，后来也慢慢认清了现实：工作时间是真久啊，会议室真难订啊，周末是真没精力学习啊。</p>
+<p>不过也收获了很多知识吧，下面一一说明</p>
+<h4 id="2-1-2-Golang-知识"><a href="#2-1-2-Golang-知识" class="headerlink" title="2.1.2 Golang 知识"></a>2.1.2 Golang 知识</h4><p>众所周知，字节 70% 的业务在用 Golang 开发，上手的第一件事就是认真学习 Golang。得益于之前学习 Linux 的一些经验，看起框架源码和 Golang 源码也不算太吃力。借助内部丰富的学习资源，很快也就掌握了其使用。Golang 里面最吸引我的是 CSP 模型以及底层的 goroutine 和 channel 的使用，本着掘地三尺的精神，我深扒了其源码，总算有了一些头绪。</p>
+<h5 id="2-1-2-1-goroutine-amp-amp-Scheduler"><a href="#2-1-2-1-goroutine-amp-amp-Scheduler" class="headerlink" title="2.1.2.1 goroutine &amp;&amp; Scheduler"></a>2.1.2.1 goroutine &amp;&amp; Scheduler</h5><p>Golang 在并发编程上有很大的能力，得益于其底层对于并发的支持，最值得一提的当然是 goroutine 的设计。但是这里首先要提一下 进程、线程、协程 的区别和联系</p>
+<h6 id="2-1-2-1-1-进程-VS-线程"><a href="#2-1-2-1-1-进程-VS-线程" class="headerlink" title="2.1.2.1.1 进程 VS 线程"></a>2.1.2.1.1 进程 VS 线程</h6><p>众所周知，进程是资源分配的基本单位，线程是 CPU 任务调度的基本单位，协程是轻量化的用户态线程。这句话怎么理解呢？</p>
+<p>很多人都知道，Linux 中的进程和线程都通过 task_struct 来表示（因为其过于庞大复杂，这里不列出），但是很多人不清楚的是，线程专门对应了一个结构体 thread_struct</p>
+<figure class="highlight c"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></div></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">thread_struct</span> &#123;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">desc_struct</span>	<span class="hljs-title">tls_array</span>[<span class="hljs-title">GDT_ENTRY_TLS_ENTRIES</span>];</span><br><br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>		sp;<br><br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">short</span>		es;<br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">short</span>		ds;<br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">short</span>		fsindex;<br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">short</span>		gsindex;<br><br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>		fsbase;<br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>		gsbase;<br><br><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">perf_event</span>	*<span class="hljs-title">ptrace_bps</span>[<span class="hljs-title">HBP_NUM</span>];</span><br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>           virtual_dr6;<br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>           ptrace_dr7;<br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>		cr2;<br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>		trap_nr;<br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>		error_code;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">io_bitmap</span>	*<span class="hljs-title">io_bitmap</span>;</span><br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>		iopl_emul;<br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span>		sig_on_uaccess_err:<span class="hljs-number">1</span>;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fpu</span>		<span class="hljs-title">fpu</span>;</span><br><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>从这里可以窥见线程和进程的一大区别了：需要保存的状态很少。对于 CPU 来说，其基本上只关心几个寄存器的值，所以在 thread_struct 中也主要对应这几个寄存器的状态。</p>
+<p>更加精确的表达是：<br>    线程是CPU执行与调度最基本的单位，每一个线程创建之初都是内核线程；创建之后如果与具体的进程上下文绑定，那线程就成了用户线程；如果此线程是进程的第一个线程，那么称之为进程的主线程；其实，在CPU执行和调度中并没有本质上的区别。</p>
+<div class="code-wrapper"><pre><code class="hljs">在用户角度，执行一个个程序就是创建一个个进程的主线程。当主线程创建时，同时创建用户空间，打开输入输出资源，载入依赖库等。主线程创建好后开始运行，进程也就同时存在了，这时程序可以根据需要创建用户线程，用户线程创建好后，共享主线程的用户空间，文件资源，依赖库等，用户线程退出后，主线程不会退出，进程也不会退出。当主线程退出时，内核开始关闭打开的文件，释放相关资源，主线程退出后进程也就退出了。这时，即使用户线程只执行到一半也无济于事了。
+</code></pre></div>
+<p>进程和线程之间是一对多的关系，这又是如何抽象出来的呢？答案在于 task_struct-&gt;thread_group。</p>
+<p>一个进程下的所有线程会保存在 thread_groups/thread_head 链表中，并且可以通过 <code>for_each_thread</code> 来进行遍历</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> __for_each_thread(signal, t)	\</span><br><span class="hljs-meta">	list_for_each_entry_rcu(t, &amp;(signal)-&gt;thread_head, thread_node)</span><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> for_each_thread(p, t)		\</span><br><span class="hljs-meta">	__for_each_thread((p)-&gt;signal, t)</span><br></code></pre></td></tr></table></figure>
+
+<p>也就是说，其实进程和线程之间存在一个抽象层（thread group），对应下面的结构</p>
+<p><img src="/images/process-thread.png" srcset="/img/loading.gif" lazyload alt="process-thread"></p>
+<h6 id="2-1-2-1-2-线程-VS-协程"><a href="#2-1-2-1-2-线程-VS-协程" class="headerlink" title="2.1.2.1.2 线程 VS 协程"></a>2.1.2.1.2 线程 VS 协程</h6><p>线程模型存在一个很大的问题：切换开销太大（需要经过系统调用的上下文切换）。虽然相较于进程切换已经好了很多，但仍然有很大的代价。同时，线程同样使用 task_struct 这个结构体来表示，占用的内存也不可小觑。因此，人们就想要在用户空间抽象出对线程进一步细化，让不同任务的切换代价尽可能小，从而在 <strong>IO 密集型任务</strong>中提高效率。</p>
+<p>为此，协程应运而生。</p>
+<p>协程与内核线程是多对一的关系，也具有上下文，不过这个结构非常简单，只有几个必要的寄存器（sp，rip），这样就可以在线程上轻松自如地切换，而不用付出系统调用等开销。</p>
+<h4 id="2-1-2-2-Golang-scheduler"><a href="#2-1-2-2-Golang-scheduler" class="headerlink" title="2.1.2.2 Golang scheduler"></a>2.1.2.2 Golang scheduler</h4><p>既然是在用户空间对于协程进行管理，自然也少不了调度器，Golang 调度器也是历经多次改动，才成了如今<strong>高效</strong>的代名词。</p>
+<p>下面从其发展过程中慢慢领会设计之美</p>
+<h5 id="2-1-2-2-1-多线程调度器"><a href="#2-1-2-2-1-多线程调度器" class="headerlink" title="2.1.2.2.1 多线程调度器"></a>2.1.2.2.1 多线程调度器</h5><p>最早的多线程调度器可以描述为 G-M，其中 G 是 goroutine，M 是 kernel thread。</p>
+<p>在多线程调度器中，每一个内核线程相当于 worker，每一个 goroutine 相当于轻量级 task，内核线程负责从 goroutine 队列中取出任务并执行，但是这样存在很严重的问题：</p>
+<ol>
+<li>调度器和锁是全局资源，资源竞争严重</li>
+<li>线程之间的 goroutine 传递带来的延迟（局部性很差）很严重</li>
+<li>系统调用（线程阻塞与取消阻塞操作）非常频繁</li>
+</ol>
+<h5 id="2-1-2-2-2-任务窃取调度器"><a href="#2-1-2-2-2-任务窃取调度器" class="headerlink" title="2.1.2.2.2 任务窃取调度器"></a>2.1.2.2.2 任务窃取调度器</h5><p>在多线程调度器的基础上，来自 Google 的工程师提出了两点改进：</p>
+<ol>
+<li>引入中间层 P，用于抽象和管理资源</li>
+<li>引入多级队列，在 P 的基础上实现任务窃取</li>
+</ol>
+<p>这就是沿用至今的 G-M-P 模型。</p>
+<p>P 它包含了运行 goroutine 的资源，如果线程想运行 goroutine，必须先获取 P，P 中还包含了可运行的 G 队列。</p>
+<p>第二个改进点的思想主要是减少 goroutine 这个关键资源的抢占：每一个 P 管理着局部 goroutine 队列，同时还存在着全局队列，属于 P 自己的 goroutine 先用着，出队入队都不需要加锁，效率最高，再不行就去全局队列取 gorutine，效率稍低，再不行就去别的 P 任务队列中<strong>窃取</strong>，分摊压力。</p>
+<h5 id="2-1-2-2-3-GMP-模型"><a href="#2-1-2-2-3-GMP-模型" class="headerlink" title="2.1.2.2.3 GMP 模型"></a>2.1.2.2.3 GMP 模型</h5><p>G</p>
+<p>Goroutine 是 Go 语言调度器中待执行的任务，是一种更加细粒度的带哦度单位，使用 runtime.g 来表示</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> g <span class="hljs-keyword">struct</span> &#123;<br><br>    <span class="hljs-comment">// Goroutine 的栈结构，stackguard 用于抢占式调度</span><br>    stack       stack   <span class="hljs-comment">// offset known to runtime/cgo</span><br>	stackguard0 <span class="hljs-keyword">uintptr</span> <span class="hljs-comment">// offset known to liblink</span><br>	stackguard1 <span class="hljs-keyword">uintptr</span> <span class="hljs-comment">// offset known to liblink</span><br><br>    <span class="hljs-comment">// _panic _defer 分别用于存放 panic 和 defer 链表</span><br>	_panic    *_panic <span class="hljs-comment">// innermost panic - offset known to liblink</span><br>	_defer    *_defer <span class="hljs-comment">// innermost defer</span><br><br>    <span class="hljs-comment">// m: 当前 goroutine 占用的线程，可能为 nil</span><br>	m         *m      <span class="hljs-comment">// current m; offset known to arm liblink</span><br>    <span class="hljs-comment">// shed：和调度相关的数据</span><br>	sched     gobuf<br>    <span class="hljs-comment">// goid：goroutine id，唯一标识</span><br>    goid         <span class="hljs-keyword">int64</span><br>    <span class="hljs-comment">// ...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上述字段中，需要展开的是 gobuf 结构</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> gobuf <span class="hljs-keyword">struct</span> &#123;<br>	sp   <span class="hljs-keyword">uintptr</span><br>	pc   <span class="hljs-keyword">uintptr</span><br>	g    guintptr<br>	ret  sys.Uintreg<br>	<span class="hljs-comment">// ...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>关键字段的含义：</p>
+<ul>
+<li>sp：栈指针</li>
+<li>pc：程序计数器</li>
+<li>g：持有 runtime.gobuf 的 Goroutine</li>
+<li>ret：系统调用的返回值</li>
+</ul>
+<p>这些字段是用于保存 goroutine 的执行状态，也就是 goroutine 的<strong>上下文</strong>，可以看出，确实非常<strong>轻量</strong>。</p>
+<p>M</p>
+<p>Go 语言并发模型中的 M 是操作系统线程。调度器最多可以创建 10000 个线程，但是其中大多数的线程都不会执行用户代码（可能陷入系统调用），最多只会有 GOMAXPROCS 个活跃线程能够正常运行。</p>
+<p>在默认情况下，运行时会将 GOMAXPROCS 设置成当前机器的核数，我们也可以在程序中使用 runtime.GOMAXPROCS 来改变最大的活跃线程数</p>
+<p>M 对应的结构体如下所示</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> m <span class="hljs-keyword">struct</span> &#123;<br>	g0      *g     <span class="hljs-comment">// goroutine with scheduling stack</span><br>    curg          *g       <span class="hljs-comment">// current running goroutine</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中 g0 是持有调度栈的 goroutine，curg 是在当前线程上运行的用户 goroutine，这两者是线程运行唯一需要关心的。</p>
+<p>P</p>
+<p>调度器中的 processor P 是线程和 goroutine 的中间层，它能提供线程需要的上下文环境，也会负责调度线程上的等待队列，通过 P 的调度，每一个内核线程都能够执行多个 goroutine，它能在 goroutine 进行一些 I/O 操作时及时让出计算资源，提高线程的利用率</p>
+<p>runtime.p 是处理器的运行时表示</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> p <span class="hljs-keyword">struct</span> &#123;<br>	id          <span class="hljs-keyword">int32</span><br>	status      <span class="hljs-keyword">uint32</span> <span class="hljs-comment">// one of pidle/prunning/...</span><br>	m           muintptr   <span class="hljs-comment">// back-link to associated m (nil if idle)</span><br>    <span class="hljs-comment">// ...</span><br>	<span class="hljs-comment">// Queue of runnable goroutines. Accessed without lock.</span><br>	runqhead <span class="hljs-keyword">uint32</span><br>	runqtail <span class="hljs-keyword">uint32</span><br>	runq     [<span class="hljs-number">256</span>]guintptr<br>	<br>	runnext guintptr<br><br>	<span class="hljs-comment">// Per-P GC state</span><br>	<span class="hljs-comment">// gcXXX   xxx</span><br><br>    <span class="hljs-comment">// Per-P timer</span><br>	<span class="hljs-comment">// xxTimer xxx</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>m 维护着线程与处理器之间的关系，而 runqhead、runqtail 和 runq 三个字段表示处理器持有的运行队列，status 字段会是以下五种中的一种：</p>
+<ul>
+<li>_Pidle    ：处理器没有运行用户代码或者调度器，被空闲队列或者改变其状态的结构持有，运行队列为空</li>
+<li>_Prunning    ：被线程 M 持有，并且正在执行用户代码或者调度器</li>
+<li>_Psyscall    ：没有执行用户代码，当前线程陷入系统调用</li>
+<li>_Pgcstop    ：被线程 M 持有，当前处理器由于垃圾回收被停止</li>
+<li>_Pdead    ：当前处理器已经不被使用</li>
+</ul>
+<h5 id="2-1-2-2-4-GMP-细节"><a href="#2-1-2-2-4-GMP-细节" class="headerlink" title="2.1.2.2.4 GMP 细节"></a>2.1.2.2.4 GMP 细节</h5><ol>
+<li>P 和 M 的创建时机？</li>
+</ol>
+<p>P 创建的时机：确定了 P 的最大数量之后，Golang 运行时初始化时会创建相应数量的 P<br>M 创建的时机：当没有足够的 M 去和 P 关联</p>
+<ol start="2">
+<li>GMP 执行流</li>
+</ol>
+<p><img src="https://cdn.learnku.com/uploads/images/202003/11/58489/a4vWtvRWGQ.jpeg!large" srcset="/img/loading.gif" lazyload alt="调度流程"></p>
+<ol>
+<li><p>调用 go func () 创建一个 goroutine；</p>
+</li>
+<li><p>新创建的 G 优先保存在 P 的<strong>本地队列</strong>中，如果 P 的本地队列已经满了就会保存在全局的队列中；</p>
+</li>
+<li><p>M 需要在 P 的本地队列弹出一个可执行的 G，如果 P 的本地队列为空，则先会去<strong>全局队列</strong>中获取 G，如果全局队列也为空则去其他 P 中<strong>偷取</strong> G 放到自己的 P 中</p>
+</li>
+<li><p>G 将相关参数传输给 M，为 M 执行 G 做准备</p>
+</li>
+<li><p>当 M 执行某一个 G 时候如果发生了<strong>系统调用</strong>并且导致 M 阻塞，如果当前 P 队列中有一些 G，runtime 会将线程 M 和 P 分离，然后再获取空闲的线程或创建一个新的内核级的线程来服务于这个 P，阻塞调用完成后 G 被销毁将值返回；</p>
+</li>
+<li><p>销毁 G，将执行结果返回</p>
+</li>
+<li><p>当 M 系统调用结束时候，这个 M 会尝试获取一个空闲的 P 执行，如果获取不到 P，那么这个线程 M 变成休眠状态， 加入到空闲线程中。</p>
+</li>
+<li><p>GMP 相较于 GM 的优化点</p>
+<ol>
+<li>本地队列带来锁竞争的减少</li>
+<li>Work Stealing 算法</li>
+<li>调用阻塞的系统调用时，会 detach M（ M 释放绑定的 P），提高了资源利用率</li>
+</ol>
+</li>
+</ol>
+<h3 id="2-2-字节跳动-基础架构-Rust-框架组"><a href="#2-2-字节跳动-基础架构-Rust-框架组" class="headerlink" title="2.2 字节跳动-基础架构-Rust 框架组"></a>2.2 字节跳动-基础架构-Rust 框架组</h3><h4 id="2-2-1-tower-中间件模型"><a href="#2-2-1-tower-中间件模型" class="headerlink" title="2.2.1 tower 中间件模型"></a>2.2.1 tower 中间件模型</h4><p>最主要的一点是，采用了洋葱圈模型，之前的系列博客中已经详细说明其实现原理以及设计思路。</p>
+<h4 id="2-2-2-rpc-框架的序列化和反序列化"><a href="#2-2-2-rpc-框架的序列化和反序列化" class="headerlink" title="2.2.2 rpc 框架的序列化和反序列化"></a>2.2.2 rpc 框架的序列化和反序列化</h4><h5 id="2-2-2-1-protobuf-编解码"><a href="#2-2-2-1-protobuf-编解码" class="headerlink" title="2.2.2.1 protobuf 编解码"></a>2.2.2.1 protobuf 编解码</h5><p>带着 protobuf <strong>体积小，编解码快</strong>的优点，来探究一下其深层的原理</p>
+<ol>
+<li>varint 和 zigzag 的编码方式：varint 是一种变长编码方式，对于小整数，可以节约相当多的空间，而 zigzag 编码则是通过将有符号整数映射为无符号整数，解决 varint 对于负数编码效率低的问题。</li>
+<li>隔断冗余信息的剔除：protobuf <strong>首先将消息里每一个字段编码之后</strong>，再通过 key + length + data (TLV) 的方式存储数据（length 可选），减少了分隔符的使用，存储非常紧凑，空间利用率高</li>
+</ol>
+<p><img src="/images/protobuf2.png" srcset="/img/loading.gif" lazyload alt="protobuf"></p>
+<p>Xml 这种需要文档结构解析的传输方式，效率低下自不必多言，Json 虽然简单直观，但是不论是编解码还是压缩，和 protobuf 相比都不尽如人意。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/experience/">experience</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03/03/life/why%20we%20sleep/">
+                        <span class="hidden-mobile">why we sleep</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+  <div class="col-lg-7 mx-auto nopadding-x-md">
+    <div class="container custom post-custom mx-auto">
+      <img src="https://octodex.github.com/images/jetpacktocat.png" srcset="/img/loading.gif" lazyload class="rounded mx-auto d-block mt-5" style="width:150px; height:150px;">
+    </div>
+  </div>
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

@@ -203,6 +203,48 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/01/09/linux/tracing/notify_chain/" target="_self">
+          notify chain
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/09/linux/tracing/notify_chain/" target="_self">
+          
+          Linux 中广泛采用了事件通知机制，即 注册 + 回调，notify chain 就是很典型的例子。 1. notify chain 是什么首先要明白，notify chain 是什么？ 将其比作 发布-订阅模式，可能更加容易理解： 某个读者订阅了某个杂志，当杂志发版之后，就会收到对应的通知；一旦不再想看这个杂志，取消订阅即可。 Linux 中为了及时相应某一些到来的事件，采取了通知链机制，可以
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-09 13:47" pubdate>
+              2022-01-09
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/trace/">trace</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/01/09/linux/tracing/tracepoint/" target="_self">
           tracepoint
         </a>
@@ -502,48 +544,6 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
             <time datetime="2021-11-24 14:04" pubdate>
-              2021-11-24
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/rust/">rust</a>
-            
-              <a href="/categories/rust/async/">async</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/11/24/rust/futures/future-explained2/" target="_self">
-          future explained(2)
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/11/24/rust/futures/future-explained2/" target="_self">
-          
-          前面提到了，future 其实分为 Non-Leaf-Future 和 Leaf-Future，前者由 async&#x2F;await 生成，后者由开发者手动对接系统 Io。 那么为什么会出现 self referential 的问题呢？ 其实主要的原因出现在 async&#x2F;await 生成的 Non-Leaf-Future 上！ 试想下面的这段代码 1234async fn test()&amp;#123;
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-11-24 14:03" pubdate>
               2021-11-24
             </time>
           </div>
