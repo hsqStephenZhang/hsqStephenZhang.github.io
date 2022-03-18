@@ -203,6 +203,96 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/02/23/linux/network/kernel%20&amp;&amp;%20nic%20&amp;&amp;%20napi/" target="_self">
+          kernel &amp;&amp; nic &amp;&amp; napic
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/23/linux/network/kernel%20&amp;&amp;%20nic%20&amp;&amp;%20napi/" target="_self">
+          
+          1. kernel 与 nic 交互接收数据帧的过程中，kernel 与网卡有两种交互方式：  中断（interrupt） 轮询（polling）  1.1 中断方式如果要保证低延迟（laytency）则可以考虑中断的方式，保证一有数据就通过硬件中断通知 CPU，然后中断处理函数读取数据包，存放到上层的输入队列，再通知内核 1.2 轮询方式采用 polling 的方式，定期检查网络设备中是否有数据
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-23 16:19" pubdate>
+              2022-02-23
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/network/">network</a>
+            
+              <a href="/categories/linux/network/napi/">napi</a>
+            
+              <a href="/categories/linux/network/napi/nic/">nic</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/02/23/linux/network/xdp/" target="_self">
+          xdp
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/23/linux/network/xdp/" target="_self">
+          
+          什么是 xdp
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-23 12:53" pubdate>
+              2022-02-23
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/network/">network</a>
+            
+              <a href="/categories/linux/network/xdp/">xdp</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/02/22/linux/network/traffic%20control/" target="_self">
           traffic control
         </a>
@@ -547,81 +637,6 @@
               <a href="/categories/linux/network/namespace/">namespace</a>
             
               <a href="/categories/linux/network/namespace/veth/">veth</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/02/13/linux/network/network_system/" target="_self">
-          
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/02/13/linux/network/network_system/" target="_self">
-          
-          
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-02-13 13:35" pubdate>
-              2022-02-13
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/02/12/linux/execve/" target="_self">
-          do_execve 源码解析
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/02/12/linux/execve/" target="_self">
-          
-          大家都知道，Linux 下面的可执行文件格式为 elf ，全称是 executable linkable format，中文名为“可执行可链接文件”，这种文件是以二进制的方式存储的，我们也可以将其称为二进制对象（binary object）。 以 gcc 为例，最终需要将很多 ‘.c’ 文件编译为一个 elf 格式的可执行文件，最终才能在 Linux 上运行，那么问题来了，Linux 是如何识别
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-02-12 10:47" pubdate>
-              2022-02-12
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/execve/">execve</a>
             
           </div>
         
