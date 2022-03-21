@@ -203,6 +203,50 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/01/10/rust/tower_internal/middleware-buffer/" target="_self">
+          2.5 middleware-buffer
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/10/rust/tower_internal/middleware-buffer/" target="_self">
+          
+          不知道大家有没有发现，Tower Service trait 中，要求 ready + call 都接收一个 &amp;mut self，这也就意味着，我们无法将其很好地扩展到多线程上！ 你可能会觉得，针对每一个 service，调用一下 service.clone()，再传入不就好了吗？但假如一个 Service 包装了很多中间件，clone 的开销也是不可小觑的。 Tower 提供了这样一个中
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-10 13:47" pubdate>
+              2022-01-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/rust/">rust</a>
+            
+              <a href="/categories/rust/tower/">tower</a>
+            
+              <a href="/categories/rust/tower/middlewares/">middlewares</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/01/10/rust/tower_internal/middleware-concurrency/" target="_self">
           2.4 tower-concurrency limit
         </a>
@@ -585,48 +629,6 @@
               <a href="/categories/rust/tower/">tower</a>
             
               <a href="/categories/rust/tower/basic/">basic</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/09/linux/tracing/ftrace/" target="_self">
-          ftrace
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/09/linux/tracing/ftrace/" target="_self">
-          
-          先说一个非常重要的参考资料，也就是 ftrace 作者本人的 pdf：ftrace kernel hook 接下来，主要跟着作者的思路，融入自己的一些思考，给大家解读一下 ftrace 究竟做了什么？ 1. 什么是 ftraceftrace，顾名思义，就是 function trace，针对函数级别的追踪调试机制。 我们平时是如何使用这个强大功能的呢？ 1.1 如何使用 ftrace可以通过 tr
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-09 13:47" pubdate>
-              2022-01-09
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/trace/">trace</a>
             
           </div>
         

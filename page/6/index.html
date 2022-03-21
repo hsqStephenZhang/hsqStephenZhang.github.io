@@ -203,6 +203,48 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/01/09/linux/tracing/ftrace/" target="_self">
+          ftrace
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/09/linux/tracing/ftrace/" target="_self">
+          
+          先说一个非常重要的参考资料，也就是 ftrace 作者本人的 pdf：ftrace kernel hook 接下来，主要跟着作者的思路，融入自己的一些思考，给大家解读一下 ftrace 究竟做了什么？ 1. 什么是 ftraceftrace，顾名思义，就是 function trace，针对函数级别的追踪调试机制。 我们平时是如何使用这个强大功能的呢？ 1.1 如何使用 ftrace可以通过 tr
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-09 13:47" pubdate>
+              2022-01-09
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/trace/">trace</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/01/09/linux/tracing/int3/" target="_self">
           int3 黑魔法
         </a>
@@ -521,39 +563,6 @@
         <a href="/2021/12/24/riscv/instruction-set/" target="_self">
           
           RISC-V  – instruction set1. 什么是 RISC-V定义： RISC-V（发音为“risk-five”）是一个基于精简指令集（RISC）原则的开源指令集架构（ISA），简易解释为开源软件运动相对应的一种“开源硬件”。该项目2010年始于加州大学柏克莱分校，但许多贡献者是该大学以外的志愿者和行业工作者。 作为除了 x86 和 Arm 以外的第三大指令集，RISC-V 正在逐渐
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-12-24 18:35" pubdate>
-              2021-12-24
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/12/24/linux/network/tls/" target="_self">
-          TLS
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/12/24/linux/network/tls/" target="_self">
-          
-          1. TLS 是什么我们需要在网络中实现安全通信，最直接的思路是，将内容通过某种手段加密，再通过某种手段解密。 这个手段可以有两种：  非对称加密。比如 RSA，ECC 算法，加解密过程是不可逆的，可以方便地对于数据进行签名&#x2F;验证，但是计算速度慢 对称加密。计算速度快，加密强度大，但关键是，加解密用的是相同的密钥，需要通过安全的手段传输密钥才行。  我们最终肯定还是希望可以使用性能更好的对称加密，
         </a>
       </p>
 
