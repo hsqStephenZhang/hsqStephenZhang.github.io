@@ -203,6 +203,128 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/01/19/hardware/LCD%20vs%20OLED/" target="_self">
+          LCD vs OLED
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/19/hardware/LCD%20vs%20OLED/" target="_self">
+          
+          1. LCD 原理LCD 的发光，简要概括为：所有像素点对应一个背光层，负责发光，每个像素点最外层对应一个彩色滤光片，由中间层的正负极电路来控制液晶层的偏角，从而控制 RGB 三种颜色的混合比例。 2. OLED 原理OLED 全程为 Organic Light-Emitting Diode，即有机发光二极管 OLED 是一种特殊设计的自发光二极管，通过正负极电路，控制夹在中间的发光二极管发光。通
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-19 13:17" pubdate>
+              2022-01-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/hardware/">hardware</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/19/hardware/pcie/" target="_self">
+          PCIE
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/19/hardware/pcie/" target="_self">
+          
+          1. South bridge在解释 PCIE 之前，有必要先来解释一下 South bridge，cpu，主板之间的一些概念。 大家都知道，计算机中所有的数据都需要交给 CPU 处理才能发挥作用（不完全对），但那么多的设备，难道都需要和 CPU 交互吗？ 当然不行，那样不仅极大地加重了 CPU 的负担（无论是制造还是运行），对于主板的布线也是一大考验，那有什么解决方案呢？ 其实，这里可以分级的思
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-19 13:17" pubdate>
+              2022-01-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/hardware/">hardware</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/01/18/linux/initcall/" target="_self">
+          Linux initcall 机制
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/01/18/linux/initcall/" target="_self">
+          
+          1. initcall 设计思想linux 对驱动程序提供静态编译进内核和动态加载两种方式，当我们试图将一个驱动程序编译进内核时，开发者通常提供一个xxx_init() 函数接口，以启动这个驱动程序同时提供某些服务。 那么，根据常识来说，这个 xxx_init() 函数肯定是要在系统启动的某个时候被调用，才能启动这个驱动程序。 最简单直观地做法就是：开发者试图添加一个驱动程序时，在内核启动 ini
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-01-18 13:47" pubdate>
+              2022-01-18
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/basic/">basic</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/01/10/rust/tower_internal/middleware-buffer/" target="_self">
           2.5 middleware-buffer
         </a>
@@ -476,138 +598,6 @@
         <a href="/2022/01/10/rust/tower_internal/service-ext/" target="_self">
           
           1. ext 设计模式xxx-ext 是 Rust 当中常用的一个设计模式，在满足某个 Trait 的前提下，引入很多的扩展功能（比如最常用的 Iterator，其实 skip, enumerate, take 都是针对 Iterator trait 的扩充） Tower 也给 Service 引入了这个设计模式，十分好用。 源码如下，TL；DR 1234567891011121314151617
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-10 13:47" pubdate>
-              2022-01-10
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/rust/">rust</a>
-            
-              <a href="/categories/rust/tower/">tower</a>
-            
-              <a href="/categories/rust/tower/basic/">basic</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/10/rust/tower_internal/tower-core/" target="_self">
-          1.1 tower 核心抽象
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/10/rust/tower_internal/tower-core/" target="_self">
-          
-          1. Tower 的起源说起 Tower，就不得不提到 Rust 另一个重要的框架，Tokio，这两个单词连起来读，就是 Tokyo Tower（东京塔），这也从另一个方面说明，Tower 是 Tokio 官方支持的中间件框架，Axum ，Tower-web，Tonic 这些项目，都广泛使用了 Tower 这层抽象。 那么，我们不禁要问，Tower 到底是什么？官方给出的答案是：Tower 是一个
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-10 13:47" pubdate>
-              2022-01-10
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/rust/">rust</a>
-            
-              <a href="/categories/rust/tower/">tower</a>
-            
-              <a href="/categories/rust/tower/basic/">basic</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/10/rust/tower_internal/tower-issues/" target="_self">
-          3.1 tower 不足之处
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/10/rust/tower_internal/tower-issues/" target="_self">
-          
-          这一部分，主要是探讨 Tower 中的一些不足之处，主要参考我实习期间使用 Tower 之后的一些体验以及和同事的讨论。 1. 问题1.1 call是否应该使用 Pin&lt;&amp;mut Self&gt; ？关于这个问题，已经有了一些github 讨论。但是到目前为止，Tower 官方还是决定采用一个普通的 &amp;mut self，这意味着 Service 必须是Unpin。 这个问题的
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-01-10 13:47" pubdate>
-              2022-01-10
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/rust/">rust</a>
-            
-              <a href="/categories/rust/tower/">tower</a>
-            
-              <a href="/categories/rust/tower/more/">more</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/01/10/rust/tower_internal/tower-service/" target="_self">
-          1.2 tower service 设计心路历程
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/01/10/rust/tower_internal/tower-service/" target="_self">
-          
-          Tower Service 设计思路 -by tokio
         </a>
       </p>
 

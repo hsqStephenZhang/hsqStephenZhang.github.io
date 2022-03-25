@@ -203,6 +203,144 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/02/25/linux/network/tcpdump/" target="_self">
+          tcpdump 原理
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/25/linux/network/tcpdump/" target="_self">
+          
+          1. tcpdump 简介tcpdump 类似于 wireshark，是常用的一款抓包工具，其是如何抓到内核态的网络包的呢？如果让你写一个抓包程序，你能完成吗？ 2. tcpdump internal2.1 tcpdump 抓包点首先要明确，tcpdump 抓包的入口在何处，这里先讨论收包这种情况： 从软中断到tcp&#x2F;ip协议栈的收包路径为 12345678net_rx_action    --&amp;
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-25 09:40" pubdate>
+              2022-02-25
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/network/">network</a>
+            
+              <a href="/categories/linux/network/tcpdump/">tcpdump</a>
+            
+              <a href="/categories/linux/network/tcpdump/af-packet/">af_packet</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/02/24/linux/device/platform_driver/" target="_self">
+          platform device driver
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/24/linux/device/platform_driver/" target="_self">
+          
+          1. 什么是平台设备驱动首先需要区分物理总线和驱动总线。  物理总线：芯片和功能外设之间传送信息的公共（专用）通信线路，包括了地址总线，数据总线，控制总线，传递的是电信号。 驱动总线：Linux 为设备驱动模型虚拟出来的总线，指定，执行设备与驱动的匹配规则，自动完成设备与驱动之间的匹配，执行驱动的初始化函数。  对于常见的 I2C，USB，PCI 等物理总线，Linux 都会为其自动创建驱动总线，
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-24 21:28" pubdate>
+              2022-02-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/device/">device</a>
+            
+              <a href="/categories/linux/device/driver/">driver</a>
+            
+              <a href="/categories/linux/device/driver/platform/">platform</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/02/24/linux/device/kobject/" target="_self">
+          kobject
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/24/linux/device/kobject/" target="_self">
+          
+          1. kobject 是什么在 Linux 设备驱动框架 一文中，我们提到了 Linux 设备驱动是以 Device，Bus，Driver，Class 这几种结构为核心，从而方便管理。 由于设备与设备，设备与总线之间有非常明显的拓扑关系（设备接在总线上，设备也会有依赖关系），因此，可以通过树状结构进行管理，而 kobject 就是这种管理方式的核心，同时辅助以 kset&#x2F;ktype，构成了设备框架
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-24 17:12" pubdate>
+              2022-02-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/linux/">linux</a>
+            
+              <a href="/categories/linux/driver/">driver</a>
+            
+              <a href="/categories/linux/driver/kobject/">kobject</a>
+            
+              <a href="/categories/linux/driver/kobject/kset/">kset</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/02/24/linux/device/index/" target="_self">
           linux driver framework
         </a>
@@ -501,140 +639,6 @@
               <a href="/categories/linux/network/">network</a>
             
               <a href="/categories/linux/network/route/">route</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/02/20/life/engineer%20culture/" target="_self">
-          Engineer Culture
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/02/20/life/engineer%20culture/" target="_self">
-          
-          看了一篇为什么要工程师文化-博客，深有感触，觉得对作为程序员的自己有很强的警示作用 从程序员说起成为一名计算机学院的学生以来，我并没有把自己当做一个工程师，而是目标成为一个程序员，而程序员在我的印象中，有下面几个特点：  思维缜密 虽然累但是挣钱多 沉默寡言，不善攀谈  这也符合大部分对于程序员的刻板印象，但是这样就够了吗？直到我仔细读完了上面那篇文章，才有了更进一步的领悟。 作为一名工科的学生，
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-02-20 20:21" pubdate>
-              2022-02-20
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/life/">life</a>
-            
-              <a href="/categories/life/thinking/">thinking</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/02/15/linux/network/netfilter/" target="_self">
-          netfilter
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/02/15/linux/network/netfilter/" target="_self">
-          
-          1. netfilter 简介1.1 什么是 netfilter如今的 netfilter 遍布 Linux network system 的各个角落，我们首先来回顾一下其发展历史。 早些的 Linux 版本中，也存在用来进行 ip 过滤、管理等操作的框架，不论是 ipchains 还是 ipfwadm（ip firewall admin），功能都比较局限。直到 netfilter 出现，作为一个
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-02-15 23:23" pubdate>
-              2022-02-15
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/network/">network</a>
-            
-              <a href="/categories/linux/network/netfilter/">netfilter</a>
-            
-              <a href="/categories/linux/network/netfilter/nf-hook/">nf_hook</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/02/15/linux/network/bridge/" target="_self">
-          bridge
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/02/15/linux/network/bridge/" target="_self">
-          
-          1. Overlook1.1 什么是 bridge即使你之前没有听说过 bridge 这种新奇玩意，但凡是学过计算机网络的同学，对交换机（switch）总有所耳闻吧。 通常所说的交换机工作在 OSI 参考模型的数据链路层，使用 MAC 地址转发数据，通过学习得到 MAC 地址到目标端口的映射表，依据这张表决定转发的下一个设备，并且有广播和单播等多种能力。 bridge 是 Linux 软件模拟出来
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-02-15 09:56" pubdate>
-              2022-02-15
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/linux/">linux</a>
-            
-              <a href="/categories/linux/network/">network</a>
-            
-              <a href="/categories/linux/network/docker/">docker</a>
-            
-              <a href="/categories/linux/network/docker/bridge/">bridge</a>
             
           </div>
         
